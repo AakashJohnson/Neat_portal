@@ -5,6 +5,9 @@
 /** PHP error that a Laravel catch(Exception) block would have reported. */
 export class PhpError extends Error {}
 
+/** PHP ucfirst() (C locale): only an ASCII a-z first byte is upper-cased. */
+export const phpUcfirst = (s) => (typeof s === 'string' && /^[a-z]/.test(s) ? s[0].toUpperCase() + s.slice(1) : s);
+
 /** `$obj->name` on null: "Trying to get property 'name' of non-object". */
 export function prop(obj, name) {
   if (obj === null || obj === undefined || typeof obj !== 'object') {
