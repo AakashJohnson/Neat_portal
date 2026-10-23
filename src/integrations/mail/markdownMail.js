@@ -34,6 +34,15 @@ export const panel = (markdown) => `<table class="panel" width="100%" cellpaddin
 </table>`;
 
 /**
+ * Markdown mailables whose view is plain HTML (no mail::message component):
+ * Laravel renders the view as-is and only inlines the theme CSS.
+ */
+export function renderRawHtml(html) {
+  const text = html.replace(/<style[\s\S]*?<\/style>/gi, '').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  return { html: juice.inlineContent(html, css), text };
+}
+
+/**
  * Wraps a mail::message body in the Laravel layout.
  * @param {string} bodyMarkdown markdown (may contain inline HTML from the components above)
  * @param {{ appUrl: string, appName?: string, year?: number }} opts
