@@ -43,7 +43,7 @@ function customClaims(user, jti) {
  * @param {{ issuer: string, ip?: string, userAgent?: string }} ctx
  *        issuer = $request->url() of the issuing request (e.g. http://host/api/login)
  */
-export async function issueToken(user, { issuer, ip, userAgent }) {
+export async function issueToken(user, { issuer, ip, userAgent, extraClaims = {} }) {
   const row = await apiTokens.createForUser(user.id, { ip, userAgent, ttlMinutes: env.JWT_TTL });
   const iat = unixNow();
   const { jti, ...custom } = customClaims(user, row.id);
@@ -56,6 +56,8 @@ export async function issueToken(user, { issuer, ip, userAgent }) {
     sub: user.id,
     prv: SUBJECT_PRV,
     ...custom,
+    // Only used by panel impersonation ("imp": impersonator id); never set by login.
+    ...extraClaims,
   };
   // Header must be {"typ":"JWT","alg":"HS256"} like lcobucci/namshi output.
   // payload.iat is supplied explicitly, so jsonwebtoken keeps it (and its position).
