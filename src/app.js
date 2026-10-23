@@ -7,6 +7,7 @@ import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { apiThrottle, rateLimitHeaders } from './middleware/throttle.js';
 import { errorHandler, notFound } from './middleware/errors.js';
+import { normalizeInput } from './middleware/normalizeInput.js';
 import { healthRouter } from './routes/health.routes.js';
 import { apiRouter } from './routes/index.js';
 
@@ -53,7 +54,7 @@ export function createApp() {
   app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
   app.use('/health', healthRouter);
-  app.use('/api', apiThrottle(60), rateLimitHeaders, apiRouter);
+  app.use('/api', normalizeInput, apiThrottle(60), rateLimitHeaders, apiRouter);
 
   app.use(notFound);
   app.use(errorHandler);

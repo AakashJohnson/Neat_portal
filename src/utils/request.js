@@ -11,3 +11,12 @@ export function requestUrl(req) {
 
 /** Laravel $request->all(): query string merged with the body (body wins). */
 export const requestAll = (req) => ({ ...req.query, ...(req.body && typeof req.body === 'object' ? req.body : {}) });
+
+/**
+ * Laravel `$request->name` for several keys: missing input is null (never
+ * undefined), so query-builder calls behave like Eloquent (`col IS NULL`).
+ */
+export function input(req, ...keys) {
+  const all = requestAll(req);
+  return Object.fromEntries(keys.map((k) => [k, all[k] ?? null]));
+}

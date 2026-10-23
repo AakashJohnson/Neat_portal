@@ -77,28 +77,52 @@ export function extractToken(req) {
   return null;
 }
 
-const REQUIRED_CLAIMS = ['iss', 'iat', 'exp', 'nbf', 'sub', 'jti'];
+// jti is required too, but a missing jti surfaces as "Invalid jti claim."
+// (ExtendsJwtValidation runs its lookup with a null jti).
+const REQUIRED_CLAIMS = ['iss', 'iat', 'exp', 'nbf', 'sub'];
+
+function decodeSegment(segment) {
+  return JSON.parse(Buffer.from(segment, 'base64url').toString('utf8'));
+}
 
 /**
  * JWTAuth::getPayload() with the jti check from ExtendsJwtValidation.
+ * Error messages are the exact tymon/jwt-auth rc.5 + namshi/jose messages,
+ * because some endpoints echo them (e.g. verifyUserLoggedIn "reason").
+ *
+ * @param {string|null} token
+ * @param {{ checkPrv?: boolean }} [options] checkPrv: only the JWT *guard*
+ *        (auth middleware) checks the "prv" subject lock, JWTAuth::getPayload() does not.
  * @returns {Promise<object>} verified payload
  * @throws {JwtError}
  */
-export async function verifyToken(token) {
-  if (!token) throw new JwtError('absent', 'A token is required');
+export async function verifyToken(token, { checkPrv = false } = {}) {
+  if (!token || token.split('.').length !== 3) throw new JwtError('absent', 'A token is required');
+
+  const [headerPart, payloadPart] = token.split('.');
+  try {
+    decodeSegment(headerPart);
+    decodeSegment(payloadPart);
+  } catch {
+    throw new JwtError('invalid', `Could not decode token: The token "${token}" is an invalid JWS`);
+  }
+
   let payload;
   try {
     payload = jwt.verify(token, env.JWT_SECRET, { algorithms: ['HS256'] });
   } catch (err) {
     if (err.name === 'TokenExpiredError') throw new JwtError('expired', 'Token has expired');
-    throw new JwtError('invalid', err.name === 'NotBeforeError' ? 'Not Before (nbf) timestamp cannot be in the future' : 'Token Signature could not be verified.');
+    if (err.name === 'NotBeforeError') throw new JwtError('invalid', 'Not Before (nbf) timestamp cannot be in the future');
+    throw new JwtError('invalid', 'Token Signature could not be verified.');
   }
+  if (payload.iat > unixNow()) throw new JwtError('invalid', 'Issued At (iat) timestamp cannot be in the future');
   for (const claim of REQUIRED_CLAIMS) {
     if (payload[claim] === undefined) throw new JwtError('invalid', 'JWT payload does not contain the required claims');
   }
-  if (payload.iat > unixNow()) throw new JwtError('invalid', 'Issued At (iat) timestamp cannot be in the future');
-  if (payload.prv !== undefined && payload.prv !== SUBJECT_PRV) throw new JwtError('invalid', 'Token Signature could not be verified.');
-  if (!(await apiTokens.isValid(payload.jti, payload.sub))) throw new JwtError('invalid', 'Invalid jti claim.');
+  if (!(await apiTokens.isValid(payload.jti ?? null, payload.sub))) throw new JwtError('invalid', 'Invalid jti claim.');
+  if (checkPrv && payload.prv !== undefined && payload.prv !== SUBJECT_PRV) {
+    throw new JwtError('invalid', 'Subject model mismatch');
+  }
   return payload;
 }
 

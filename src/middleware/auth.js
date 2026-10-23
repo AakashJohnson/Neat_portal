@@ -13,7 +13,8 @@ export async function resolveAuth(req) {
   req.auth = null;
   if (!token) return null;
   try {
-    const payload = await verifyToken(token);
+    // The JWT guard (auth('api')) also enforces the "prv" subject-model lock.
+    const payload = await verifyToken(token, { checkPrv: true });
     const user = await findById(payload.sub);
     if (user) req.auth = { token, payload, user };
   } catch (err) {
