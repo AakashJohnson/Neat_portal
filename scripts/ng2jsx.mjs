@@ -1,8 +1,10 @@
 // Mechanical first pass of Angular template → JSX conversion (developer tool).
 //   node scripts/ng2jsx.mjs <component.html> [> out.jsx]
+//   node scripts/ng2jsx.mjs <component.html> --page [> src/app/<route>/page.js]
 // Output is a JSX fragment to paste into a component and finish by hand:
 // state, services, forms and Angular Material widgets are marked with TODO(ng).
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import path from 'node:path';
 import { parseDocument } from 'htmlparser2';
 
 const VOID = new Set(['img', 'br', 'hr', 'input', 'meta', 'link', 'source', 'area', 'col', 'embed', 'param', 'track', 'wbr']);
@@ -47,7 +49,7 @@ function interpolate(text) {
 }
 function textToJsx(text) {
   const withMarks = interpolate(text);
-  return esc(withMarks).replace(/\u0000/g, '{').replace(/\u0001/g, '}');
+  return esc(withMarks).replace(/\u0000/g, '{').replace(/\u0001/g, '}').replace(/ /g, "{'\\u00a0'}");
 }
 
 function styleObj(css) {
@@ -106,6 +108,11 @@ function convertAttrs(node, ctx) {
     if (name === 'style') { out.push(`style=${styleObj(value)}`); continue; }
     if (/^on[a-z]+$/.test(name)) { out.push(`/* TODO(ng): inline ${name}="${value}" */`); continue; }
     const mapped = ATTR_MAP[name.toLowerCase()] ?? name;
+    // Relative asset paths (../../../assets/x, ./assets/x) are served from public/assets.
+    if (/^(src|href|poster)$/.test(mapped) && /^(\.\.?\/)*assets(_new)?\//.test(value)) {
+      out.push(`${mapped}=${JSON.stringify(value.replace(/^(\.\.?\/)*/, '/'))}`);
+      continue;
+    }
     if (value === '' && !['value', 'alt', 'placeholder', 'href', 'src'].includes(mapped)) out.push(mapped);
     else if (/\{\{/.test(value)) out.push(`${mapped}={\`${value.replace(/\{\{([\s\S]+?)\}\}/g, (_, x) => `\${${expr(x)}}`)}\`}`);
     else if (mapped === 'href' && value.startsWith('javascript:')) out.push(`href="#"`);
@@ -142,7 +149,8 @@ function convertNode(node, depth) {
   const open = tag ? `<${tag}${attrs.length ? ` ${attrs.join(' ')}` : ''}` : '<';
   let el;
   if (!tag) el = `${pad}<>\n${children.join('\n')}\n${pad}</>`;
-  else if (VOID.has(tag) || (children.length === 0 && tag !== 'textarea' && tag !== 'script' && tag !== 'iframe' && tag !== 'i' && tag !== 'span')) el = `${pad}${open} />`;
+  else if (children.length === 0 && /^(textarea|script|iframe|i|span)$/.test(tag)) el = `${pad}${open}></${tag}>`;
+  else if (VOID.has(tag) || children.length === 0) el = `${pad}${open} />`;
   else el = `${pad}${open}>\n${children.join('\n')}\n${pad}</${tag}>`;
 
   if (ngFor) {
@@ -159,11 +167,50 @@ function convertNode(node, depth) {
   return el;
 }
 
-const file = process.argv[2];
+const args = process.argv.slice(2);
+const pageMode = args.includes('--page');
+const file = args.find((a) => !a.startsWith('--'));
 if (!file) {
-  console.error('usage: node scripts/ng2jsx.mjs <component.html>');
+  console.error('usage: node scripts/ng2jsx.mjs <component.html> [--page]');
   process.exit(1);
 }
 const doc = parseDocument(readFileSync(file, 'utf8'), { lowerCaseAttributeNames: false, lowerCaseTags: false, recognizeSelfClosing: true });
-const body = doc.children.map((c) => convertNode(c, 2)).filter((s) => s.trim() !== '').join('\n');
-console.log(`    <>\n${body}\n    </>`);
+
+if (!pageMode) {
+  const body = doc.children.map((c) => convertNode(c, 2)).filter((s) => s.trim() !== '').join('\n');
+  console.log(`    <>\n${body}\n    </>`);
+} else {
+  // --page: a complete App Router page module. Top-level <app-navbar>/<app-footer>
+  // become <SiteChrome>; a non-empty component stylesheet adds <Scope>.
+  const isChrome = (n) => n.type === 'tag' && (n.name === 'app-navbar' || n.name === 'app-footer');
+  const footer = doc.children.some((n) => n.type === 'tag' && n.name === 'app-footer');
+  const chrome = doc.children.some(isChrome);
+  const name = path.basename(file, '.component.html');
+  const cssFile = file.replace(/\.html$/, '.css');
+  const scoped = existsSync(cssFile) && readFileSync(cssFile, 'utf8').trim() !== '';
+  const depth = 2 + (chrome ? 1 : 0) + (scoped ? 1 : 0);
+  let body = doc.children.filter((n) => !isChrome(n)).map((c) => convertNode(c, depth)).filter((s) => s.trim() !== '').join('\n');
+  const pad = (d) => '  '.repeat(d);
+  if (scoped) body = `${pad(depth - 1)}<Scope name="${name}">\n${body}\n${pad(depth - 1)}</Scope>`;
+  if (chrome) body = `${pad(2)}<SiteChrome${footer ? '' : ' footer={false}'}>\n${body}\n${pad(2)}</SiteChrome>`;
+  const usesT = /\bt\(/.test(body);
+  const usesLink = /<Link\b/.test(body);
+  const comp = name.replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase());
+  const out = [
+    ...(usesT ? ["'use client';"] : []),
+    `// Port of ${path.relative(path.resolve(file, '../../../../..'), file).replace(/\\/g, '/').replace(/\.html$/, '.{html,ts}')}`,
+    ...(usesLink ? ["import Link from 'next/link';"] : []),
+    ...(chrome ? ["import SiteChrome from '@/components/layout/SiteChrome';"] : []),
+    ...(scoped ? ["import Scope from '@/components/common/Scope';"] : []),
+    ...(usesT ? ["import { useI18n } from '@/components/providers/I18nProvider';"] : []),
+    '',
+    `export default function ${comp}Page() {`,
+    ...(usesT ? ['  const { t } = useI18n();'] : []),
+    '  return (',
+    body.split('\n').length > 1 && !chrome && !scoped ? `${pad(2)}<>\n${body}\n${pad(2)}</>` : body,
+    '  );',
+    '}',
+    '',
+  ];
+  console.log(out.join('\n'));
+}

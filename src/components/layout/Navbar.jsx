@@ -27,9 +27,7 @@ function Dropdown({ label, children, href = '#', trailingSpace = true }) {
           setOpen((o) => !o);
         }}
       >
-        {' '}
-        {label}
-        {trailingSpace && ' '}
+        {` ${label}${trailingSpace ? ' ' : ''}`}
       </a>
       <div className={`dropdown-menu${open ? ' show' : ''}`} onClick={() => setOpen(false)}>
         {children}
@@ -169,13 +167,13 @@ export default function Navbar() {
 
                     <Dropdown label={t('NAVBAR.FAQS')}>
                       <Item href="/faqs-student">
-                        {t('NAVBAR.STUDENT/BENEFICIARY')} {t('NAVBAR.FAQS')}
+                        {`${t('NAVBAR.STUDENT/BENEFICIARY')} ${t('NAVBAR.FAQS')}`}
                       </Item>
                       <Item href="/faqs-companies">
-                        {t('NAVBAR.COMPANY')} {t('NAVBAR.FAQS')}
+                        {`${t('NAVBAR.COMPANY')} ${t('NAVBAR.FAQS')}`}
                       </Item>
                       <Item href="/faqs-institutes">
-                        {t('NAVBAR.INSTITUTES')} {t('NAVBAR.FAQS')}
+                        {`${t('NAVBAR.INSTITUTES')} ${t('NAVBAR.FAQS')}`}
                       </Item>
                     </Dropdown>
 

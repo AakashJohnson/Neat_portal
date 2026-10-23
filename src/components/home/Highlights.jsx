@@ -117,7 +117,9 @@ export default function Highlights() {
                         <div className="lstCatIn">
                           <a href="#" onClick={(e) => { e.preventDefault(); showProductDetails(product?.code, product?.product_type); }}>
                             <div className="CatInImg">
-                              <img src={fileUrl(`files/course_logo/${product?.course_logo_file}`)} alt="" />
+                              {/* No alt, as in the original: a missing logo shows the browser's broken-image box. */}
+                              {/* eslint-disable-next-line jsx-a11y/alt-text */}
+                              <img src={fileUrl(`files/course_logo/${product?.course_logo_file}`)} />
                             </div>
                             <div className="lstHdngCnt">
                               <div className="lLgoHdng">
