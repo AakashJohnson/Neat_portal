@@ -1,0 +1,30 @@
+'use client';
+import { useState } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Toaster } from 'sonner';
+import { SessionProvider } from './SessionProvider';
+import { I18nProvider } from './I18nProvider';
+
+// Angular Material prebuilt theme "deeppurple-amber" (src/styles.css).
+const theme = createTheme({
+  palette: { primary: { main: '#673ab7' }, secondary: { main: '#ffd740' } },
+  typography: { fontFamily: 'Roboto, "Helvetica Neue", sans-serif' },
+});
+
+export default function Providers({ children }) {
+  const [queryClient] = useState(() => new QueryClient({ defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } } }));
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={theme}>
+        <SessionProvider>
+          <I18nProvider>
+            {children}
+            {/* ngx-toastr config: timeOut 3000, bottom-right */}
+            <Toaster position="bottom-right" duration={3000} richColors closeButton />
+          </I18nProvider>
+        </SessionProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
