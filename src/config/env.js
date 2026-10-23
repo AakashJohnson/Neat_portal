@@ -37,6 +37,15 @@ const schema = z.object({
   // "smtp" sends real mail; "json" only logs/captures it (used in tests).
   MAIL_TRANSPORT: z.enum(['smtp', 'json']).default('json'),
 
+  // Security deviations (SECURITY_REVIEW). false = hardened (default): endpoints
+  // that were public in Laravel but expose personal data require a JWT whose
+  // application_number matches the request. true = original behaviour, only for
+  // the transition period while the unchanged Angular app is the client.
+  LEGACY_PUBLIC_ENDPOINTS: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
+
   // Absolute path of the directory that holds files/ and upload/ (Laravel's public/).
   PUBLIC_STORAGE_PATH: z.string().optional(),
   SETTINGS_PATH: z.string().optional(),

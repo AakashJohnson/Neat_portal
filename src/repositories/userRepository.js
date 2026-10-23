@@ -3,6 +3,21 @@ import { nowSql } from '../utils/time.js';
 
 const users = () => db(table('users'));
 
+/**
+ * Columns that must never leave the API (DEV-05). Neat\User::$hidden covered
+ * password/remember_token for Eloquent, but DB::table() rows were returned raw.
+ */
+export const SECRET_USER_COLUMNS = Object.freeze([
+  'password',
+  'remember_token',
+  'sms_otp',
+  'email_verification_token',
+  'two_factor_options',
+]);
+
+export const withoutSecrets = (row) =>
+  Object.fromEntries(Object.entries(row).filter(([k]) => !SECRET_USER_COLUMNS.includes(k)));
+
 export const findById = (id) => users().where('id', id).first();
 
 /**

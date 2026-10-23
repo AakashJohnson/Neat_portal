@@ -6,3 +6,7 @@ if (process.env.DB_DATABASE !== 'neat_portal_test') {
 }
 process.env.NODE_ENV = 'test';
 process.env.MAIL_TRANSPORT = 'json';
+
+// Contract suites compare against Laravel's original (public) behaviour;
+// hardened behaviour is asserted in tests/security/*.
+process.env.LEGACY_PUBLIC_ENDPOINTS = 'true';
