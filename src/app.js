@@ -8,6 +8,7 @@ import { logger } from './config/logger.js';
 import { apiThrottle, rateLimitHeaders } from './middleware/throttle.js';
 import { errorHandler, notFound } from './middleware/errors.js';
 import { normalizeInput } from './middleware/normalizeInput.js';
+import { publicPath } from './integrations/storage.js';
 import { healthRouter } from './routes/health.routes.js';
 import { apiRouter } from './routes/index.js';
 
@@ -52,6 +53,13 @@ export function createApp({ rateLimit = 60 } = {}) {
 
   app.use(express.json({ limit: '25mb' }));
   app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+
+  // Laravel served public/ at the web root; uploaded files keep their URLs.
+  // Static only (no script execution), no directory listings, no dotfiles.
+  const statics = { index: false, dotfiles: 'deny', fallthrough: true, maxAge: '1h' };
+  app.use('/files', express.static(publicPath('files'), statics));
+  app.use('/upload', express.static(publicPath('upload'), statics));
+  app.use('/assets', express.static(publicPath('assets'), statics));
 
   app.use('/health', healthRouter);
   // Laravel api group: throttle:60,1 (rateLimit is only raised by the test suite).

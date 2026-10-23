@@ -14,6 +14,12 @@ function normalize(value, key) {
   return value;
 }
 
+/** Re-applies the normalisation to a body parsed later (multipart via multer). */
+export function normalizeBody(req, _res, next) {
+  if (req.body && typeof req.body === 'object') req.body = normalize(req.body);
+  next();
+}
+
 export function normalizeInput(req, _res, next) {
   if (req.body && typeof req.body === 'object') req.body = normalize(req.body);
   // Express 5 exposes req.query as a getter; redefine it with the normalised copy.
