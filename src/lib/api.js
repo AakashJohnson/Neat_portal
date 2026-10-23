@@ -63,6 +63,13 @@ export async function subscribe(request, next, error) {
 
 export const api = {
   get: (path, params) => request('GET', path, { params }),
+  /**
+   * GET with a query string concatenated like the Angular services did
+   * (`'?bucket=' + bucket`): no encoding of &, +, =, and undefined/null become
+   * the strings "undefined"/"null". The browser only percent-encodes what it
+   * always encodes (spaces, non-ASCII) and drops a "#fragment".
+   */
+  getRaw: (path, rawQuery) => request('GET', `${path}?${rawQuery}`),
   post: (path, body, params) => request('POST', path, { body, params }),
   put: (path, body) => request('PUT', path, { body }),
   patch: (path, body) => request('PATCH', path, { body }),

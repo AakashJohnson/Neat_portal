@@ -22,12 +22,12 @@ export const companyService = {
   getProductBuckets: () => api.get('/getProductBuckets'),
   getB2BProductBuckets: () => api.get('/getB2BProductBuckets'),
   getB2CProductBuckets: () => api.get('/getB2CProductBuckets'),
-  getBucketWiseProducts: (bucket) => api.get('/getBucketWiseProducts', { bucket }),
-  getB2BBucketWiseProducts: (bucket) => api.get('/getB2BBucketWiseProducts', { bucket }),
-  getB2CBucketWiseProducts: (bucket) => api.get('/getB2CBucketWiseProducts', { bucket }),
-  getBucketWiseSearchProducts: (bucket) => api.get('/getBucketWiseSearchProducts', { bucket }),
-  getB2BBucketWiseSearchProducts: (bucket) => api.get('/getB2BBucketWiseSearchProducts', { bucket }),
-  getB2CBucketWiseSearchProducts: (bucket) => api.get('/getB2CBucketWiseSearchProducts', { bucket }),
+  getBucketWiseProducts: (bucket) => api.getRaw('/getBucketWiseProducts', 'bucket=' + bucket),
+  getB2BBucketWiseProducts: (bucket) => api.getRaw('/getB2BBucketWiseProducts', 'bucket=' + bucket),
+  getB2CBucketWiseProducts: (bucket) => api.getRaw('/getB2CBucketWiseProducts', 'bucket=' + bucket),
+  getBucketWiseSearchProducts: (bucket) => api.getRaw('/getBucketWiseSearchProducts', 'bucket=' + bucket),
+  getB2BBucketWiseSearchProducts: (bucket) => api.getRaw('/getB2BBucketWiseSearchProducts', 'bucket=' + bucket),
+  getB2CBucketWiseSearchProducts: (bucket) => api.getRaw('/getB2CBucketWiseSearchProducts', 'bucket=' + bucket),
   getProductFlags: (data) => api.post('/getProductFlags', data),
   submitProductDetails: (data) => api.post('/submitProductDetails', data),
   getStudentTransactionIds: () => api.get('/getStudentTransactionIds'),
@@ -88,8 +88,8 @@ export const instituteService = {
 
 export const adminService = {
   getAdminCounts: () => api.get('/getAdminCounts'),
-  getStudents: (page, perPage, search) => api.get('/getAdminStudents', { page, per_page: perPage, search: search ?? '' }),
-  getLearners: (page, perPage, search) => api.get('/getAdminLearners', { page, per_page: perPage, search: search ?? '' }),
+  getStudents: (page, perPage, search) => api.getRaw('/getAdminStudents', 'page=' + page + '&per_page=' + perPage + '&search=' + encodeURIComponent(search)),
+  getLearners: (page, perPage, search) => api.getRaw('/getAdminLearners', 'page=' + page + '&per_page=' + perPage + '&search=' + encodeURIComponent(search)),
   getAdminProducts: () => api.get('/getAdminProducts'),
   getCompanies: () => api.get('/getCompanies'),
   getInstitutes: () => api.get('/getInstitutes'),
@@ -99,7 +99,7 @@ export const adminService = {
   getFreeSeatStudent: () => api.get('/free-seat-student'),
   getMouList: () => api.get('/mou-list'),
   getProductList: () => api.get('/product-management'),
-  getCompanyDetails: (neatId) => api.get('/getCompanyDetails', { neat_id: neatId }),
+  getCompanyDetails: (neatId) => api.getRaw('/getCompanyDetails', 'neat_id=' + neatId),
   getCourseWiseProduct: (data) => api.post('/getCourseWiseProduct', data),
   updateMouDate: (neatId, date) => api.post('/update-mou-date', { neat_id: neatId, mou_date: date }),
 };
@@ -109,7 +109,7 @@ export const grievanceService = {
   submitFeedback: (data) => api.post('/submitFeedback', data),
   submitContactUs: (data) => api.post('/submitContactUs', data),
   getAnnouncements: () => api.get('/getAnnouncements'),
-  getDetailArticle: (id) => api.get('/get-details-article', { id }),
+  getDetailArticle: (id) => api.getRaw('/get-details-article', 'id=' + id),
 };
 
 export const paymentService = {

@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { companyService } from '@/services';
 import { fileUrl } from '@/lib/format';
 import SafeHtml from '@/components/common/SafeHtml';
+import { slideToggle } from '@/lib/jquery';
 import Scope from '@/components/common/Scope';
 
 export default function Highlights() {
@@ -14,7 +15,6 @@ export default function Highlights() {
   const [products, setProducts] = useState([]);
   const [buckets, setBuckets] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [listOpen, setListOpen] = useState(true);
   const leftPanel = useRef(null);
   const leftContent = useRef(null);
   const rightContent = useRef(null);
@@ -67,7 +67,7 @@ export default function Highlights() {
                 <div
                   className="browsHdng"
                   onClick={() => {
-                    setListOpen((o) => !o);
+                    slideToggle(leftContent.current, 'slow'); // $('.browsLstCnt').slideToggle('slow')
                     setTimeout(setEqualPanelHeight, 600);
                   }}
                 >
@@ -75,7 +75,7 @@ export default function Highlights() {
                     <i className="fa fa-list-ul" aria-hidden="true"></i> Select Category
                   </h1>
                 </div>
-                <div className="browsLstCnt" ref={leftContent} style={listOpen ? undefined : { display: 'none' }}>
+                <div className="browsLstCnt" ref={leftContent}>
                   <ul>
                     <li>
                       <a href="#" onClick={(e) => { e.preventDefault(); companyService.getBucketWiseProducts('All').then(handleProducts); }}>
