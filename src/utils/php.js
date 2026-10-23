@@ -13,6 +13,27 @@ export function prop(obj, name) {
   return obj[name];
 }
 
+/**
+ * `$value['key']` with PHP 7.4 diagnostics (all became ErrorException in Laravel):
+ *   array/object without the key → "Undefined index: key"
+ *   string                       → "Illegal string offset 'key'"
+ *   null / int / bool / float    → "Trying to access array offset on value of type null|int|bool|float"
+ */
+export function idx(value, key) {
+  if (value === null || value === undefined) throw new PhpError('Trying to access array offset on value of type null');
+  if (typeof value === 'string') throw new PhpError(`Illegal string offset '${key}'`);
+  if (typeof value === 'boolean') throw new PhpError('Trying to access array offset on value of type bool');
+  if (typeof value === 'number') throw new PhpError(`Trying to access array offset on value of type ${Number.isInteger(value) ? 'int' : 'float'}`);
+  if (!(key in value)) throw new PhpError(`Undefined index: ${key}`);
+  return value[key];
+}
+
+/** `'text' . $array` → "Array to string conversion" notice. */
+export function strOf(value) {
+  if (value !== null && typeof value === 'object') throw new PhpError('Array to string conversion');
+  return phpConcat(value);
+}
+
 /** `$array[0]` on a missing offset: "Undefined offset: 0". */
 export function offset(arr, i) {
   if (!Array.isArray(arr) || i >= arr.length) throw new PhpError(`Undefined offset: ${i}`);
