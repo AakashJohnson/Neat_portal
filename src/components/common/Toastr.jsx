@@ -8,6 +8,8 @@
 //     > .toast-success.ngx-toastr > .toast-title + .toast-message
 // Usage (same call shape as ToastrService): toastr.success(message, title?)
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
+import { getOverlayContainer } from '@/components/cdk/overlay';
 
 const CONFIG = { timeOut: 3000, extendedTimeOut: 1000, easeTime: 300, positionClass: 'toast-bottom-right' };
 
@@ -87,14 +89,14 @@ function Toast({ toast }) {
 
 export function ToastContainer() {
   const list = useSyncExternalStore(subscribe, () => toasts, () => toasts);
-  if (!list.length) return null;
-  return (
-    <div className="cdk-overlay-container">
-      <div id="toast-container" className={`${CONFIG.positionClass} toast-container`}>
-        {list.map((t) => (
-          <Toast key={t.id} toast={t} />
-        ))}
-      </div>
-    </div>
+  // The pane lives in the shared .cdk-overlay-container (created on first toast).
+  if (!list.length || typeof document === 'undefined') return null;
+  return createPortal(
+    <div id="toast-container" className={`${CONFIG.positionClass} toast-container`}>
+      {list.map((t) => (
+        <Toast key={t.id} toast={t} />
+      ))}
+    </div>,
+    getOverlayContainer(),
   );
 }

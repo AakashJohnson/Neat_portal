@@ -66,18 +66,28 @@ export function useFormGroup(spec, groupValidator) {
   const [value, setValue] = useState(initial);
   const [touched, setTouched] = useState({});
   const [dirty, setDirty] = useState({});
+  // FormGroupDirective.submitted: set by the form's submit event.
+  const [submitted, setSubmitted] = useState(false);
+  // Validators replaced at runtime (setValidators/clearValidators).
+  const [overrides, setOverrides] = useState({});
 
-  const errors = useMemo(() => {
+  const controlErrors = useMemo(() => {
     const out = {};
-    for (const [k, [, validators]] of Object.entries(spec)) {
+    for (const [k, [, specValidators]] of Object.entries(spec)) {
+      const validators = k in overrides ? overrides[k] : specValidators;
       const list = Array.isArray(validators) ? validators : validators ? [validators] : [];
       out[k] = Validators.compose(list)(value[k]);
     }
     return out;
     // spec is a literal recreated each render; validators are static per form.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
-  const groupErrors = groupValidator ? groupValidator(value) : null;
+  }, [value, overrides]);
+  // A group validator may return { controlErrors: { name: {...} } } to emulate
+  // control.setErrors() from inside it (it replaces that control's errors);
+  // any other non-null result is a group-level error.
+  const groupResult = groupValidator ? groupValidator(value) : null;
+  const errors = groupResult?.controlErrors ? { ...controlErrors, ...groupResult.controlErrors } : controlErrors;
+  const groupErrors = groupResult && !groupResult.controlErrors ? groupResult : null;
   const valid = !groupErrors && Object.values(errors).every((e) => e === null);
 
   const setControl = useCallback((name, v, { markDirty = true } = {}) => {
@@ -104,6 +114,9 @@ export function useFormGroup(spec, groupValidator) {
     onBlur: () => setTouched((t) => ({ ...t, [name]: true })),
   });
 
+  /** Default ErrorStateMatcher: control.invalid && (control.touched || form submitted). */
+  const errorState = (name) => errors[name] !== null && (!!touched[name] || submitted);
+
   /** Mirrors form.controls[name]: value, errors, valid, invalid, touched, dirty. */
   const control = (name) => ({
     value: value[name],
@@ -121,9 +134,16 @@ export function useFormGroup(spec, groupValidator) {
     valid,
     invalid: !valid,
     errors: groupErrors,
+    submitted,
     bind,
     bindValue,
     control,
+    errorState,
+    /** Call from the form's onSubmit: marks the FormGroupDirective submitted. */
+    markSubmitted: () => setSubmitted(true),
+    /** control.setValidators(list) / clearValidators() (pass null to clear). */
+    setValidators: (name, validators) => setOverrides((o) => ({ ...o, [name]: validators ?? [] })),
+    hasError: (name, code) => !!errors[name]?.[code],
     setValue: setControl,
     patchValue: (patch) => setValue((prev) => ({ ...prev, ...patch })),
     markAllAsTouched: () => setTouched(Object.fromEntries(Object.keys(spec).map((k) => [k, true]))),
@@ -132,6 +152,7 @@ export function useFormGroup(spec, groupValidator) {
       setValue(Object.fromEntries(Object.keys(initial).map((k) => [k, to[k] ?? null])));
       setTouched({});
       setDirty({});
+      setSubmitted(false);
     },
   };
 }

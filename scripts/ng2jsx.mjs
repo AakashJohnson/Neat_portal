@@ -16,11 +16,11 @@ const ATTR_MAP = {
   marginwidth: 'marginWidth', marginheight: 'marginHeight', scrolling: 'scrolling', allow: 'allow',
 };
 // Angular Material elements with a ported component (src/components/mat/*).
-const MAT_COMPONENTS = { 'mat-radio-group': 'MatRadioGroup', 'mat-radio-button': 'MatRadioButton' };
-const MAT_MODULE = { MatRadioGroup: 'MatRadio', MatRadioButton: 'MatRadio' };
+const MAT_COMPONENTS = { 'mat-radio-group': 'MatRadioGroup', 'mat-radio-button': 'MatRadioButton', 'mat-select': 'MatSelect', 'mat-option': 'MatOption', 'mat-error': 'MatError' };
+const MAT_MODULE = { MatRadioGroup: 'MatRadio', MatRadioButton: 'MatRadio', MatSelect: 'MatSelect', MatOption: 'MatSelect', MatError: 'MatError' };
 const usedMat = new Set();
 const BOOLEAN_ATTRS = new Set(['allowFullScreen', 'disabled', 'readOnly', 'required', 'checked', 'selected', 'multiple', 'autoFocus', 'noValidate', 'hidden', 'controls', 'autoPlay', 'loop', 'muted', 'defer', 'async', 'open', 'download']);
-const EVENTS = { click: 'onClick', change: 'onChange', keyup: 'onKeyUp', keydown: 'onKeyDown', input: 'onInput', submit: 'onSubmit', ngSubmit: 'onSubmit', blur: 'onBlur', focus: 'onFocus', mouseenter: 'onMouseEnter', mouseleave: 'onMouseLeave', selectionChange: 'onChange' };
+const EVENTS = { click: 'onClick', change: 'onChange', keyup: 'onKeyUp', keydown: 'onKeyDown', input: 'onInput', submit: 'onSubmit', ngSubmit: 'onSubmit', blur: 'onBlur', focus: 'onFocus', mouseenter: 'onMouseEnter', mouseleave: 'onMouseLeave', selectionChange: 'onChange', keypress: 'onKeyPress', dblclick: 'onDoubleClick', mouseover: 'onMouseOver', mouseout: 'onMouseOut', paste: 'onPaste' };
 
 const camel = (s) => s.trim().replace(/-([a-z])/g, (_, c) => c.toUpperCase());
 const esc = (s) => s.replace(/[{}]/g, (c) => `{'${c}'}`);
@@ -45,6 +45,14 @@ function expr(src) {
     else if (name === 'safe' || name === 'safeHtml') e = `${e}`;
     else e = `/* TODO(ng): pipe ${name} */ ${e}`;
   }
+  // Reactive-form access → the useFormGroup API (lib/forms.js).
+  e = e
+    .replace(/\b\w+Form\.controls\[['"](\w+)['"]\]\.hasError\(['"](\w+)['"]\)/g, "form.hasError('$1', '$2')")
+    .replace(/\b\w+Form\.get\(['"](\w+)['"]\)\.hasError\(['"](\w+)['"]\)/g, "form.hasError('$1', '$2')")
+    .replace(/\b\w+Form\.controls\[['"](\w+)['"]\]\.(\w+)/g, "form.control('$1').$2")
+    .replace(/\b\w+Form\.controls\.(\w+)\.(\w+)/g, "form.control('$1').$2")
+    .replace(/\b\w+Form\.get\(['"](\w+)['"]\)\.(\w+)/g, "form.control('$1').$2")
+    .replace(/\b\w+Form\.(valid|invalid|value)\b/g, 'form.$1');
   // Angular safe-navigation `a?.b` is valid JS; `===` etc unchanged.
   return e;
 }
@@ -106,9 +114,17 @@ function convertAttrs(node, ctx) {
     }
     if (name.startsWith('(') && name.endsWith(')')) {
       const ev = name.slice(1, -1);
+      if (ev === 'selectionChange' && MAT_COMPONENTS[node.name]) {
+        out.push(`onSelectionChange={(value) => { ${value.replace(/\$event\.value/g, 'value').replace(/\$event/g, '{ value }')}; }}`);
+        continue;
+      }
       const react = EVENTS[ev] ?? `on${ev[0].toUpperCase()}${ev.slice(1)}`;
-      const body = value.replace(/\$event/g, 'e');
-      out.push(`${react}={(e) => { ${ev === 'ngSubmit' || ev === 'submit' ? 'e.preventDefault(); ' : ''}${body}; }}`);
+      const body = expr(value.replace(/\$event/g, 'e'));
+      const submit = ev === 'ngSubmit' || ev === 'submit';
+      // Angular calls preventDefault() when a listener expression returns false.
+      const single = !/;\s*\S/.test(body.trim()) && !/(^|[^=!<>])=(?!=)/.test(body);
+      const call = single ? `if ((${body.trim().replace(/;$/, '')}) === false) e.preventDefault();` : `${body};`;
+      out.push(`${react}={(e) => { ${submit ? 'e.preventDefault(); form.markSubmitted(); ' : ''}${call} }}`);
       continue;
     }
     if (name.startsWith('mat') || name.startsWith('cdk')) { out.push(`/* TODO(ng): ${name}="${value}" */`); continue; }
@@ -117,7 +133,8 @@ function convertAttrs(node, ctx) {
     const mapped = ATTR_MAP[name.toLowerCase()] ?? name;
     // Relative asset paths (../../../assets/x, ./assets/x) are served from public/assets.
     if (/^(src|href|poster)$/.test(mapped) && /^(\.\.?\/)*assets(_new)?\//.test(value)) {
-      out.push(`${mapped}=${JSON.stringify(value.replace(/^(\.\.?\/)*/, '/'))}`);
+      const v = value.replace(/^(\.\.?\/)*/, '/');
+      out.push(/\{\{/.test(v) ? `${mapped}={\`${v.replace(/\{\{([\s\S]+?)\}\}/g, (_, x) => `\${${expr(x)}}`)}\`}` : `${mapped}=${JSON.stringify(v)}`);
       continue;
     }
     if (value === '' && BOOLEAN_ATTRS.has(mapped)) out.push(mapped);
@@ -169,7 +186,7 @@ function convertNode(node, depth) {
     const m = ngFor.match(/let\s+(\w+)\s+of\s+([^;]+)(?:;\s*let\s+(\w+)\s*=\s*index)?(?:;.*)?/);
     if (m) {
       const [, item, list, idx = 'i'] = m;
-      el = `${pad}{(${expr(list)} ?? []).map((${item}, ${idx}) => (\n${el.replace(new RegExp(`^${pad}<(\\w+)`), `${pad}  <$1 key={${idx}}`)}\n${pad}))}`;
+      el = `${pad}{(${expr(list)} ?? []).map((${item}, ${idx}) => (\n${el.replace(new RegExp(`^${pad}<([\\w.-]+)`), `${pad}  <$1 key={${idx}}`)}\n${pad}))}`;
     } else el = `${pad}{/* TODO(ng): *ngFor="${ngFor}" */}\n${el}`;
   }
   if (ngIf) {

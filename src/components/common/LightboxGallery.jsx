@@ -24,7 +24,6 @@ export default function LightboxGallery({ thumbs, slides }) {
         {thumbs.map((thumb, i) => (
           <div className="col-lg-4 col-md-6 mb-30" key={i}>
             <div className="gallery-img">
-              {/* eslint-disable-next-line jsx-a11y/alt-text -- alt as in the original markup */}
               <img
                 src={thumb.src}
                 style={{ maxWidth: '100%', height: 'auto' }}
@@ -49,7 +48,6 @@ export default function LightboxGallery({ thumbs, slides }) {
             <div className="hover-effect mySlides frame-square3" key={i} style={index === null ? undefined : { display: index === i + 1 ? 'block' : 'none' }}>
               <div className="zoom-icon crop3">
                 <div className="numbertext">{slide.label}</div>
-                {/* eslint-disable-next-line jsx-a11y/alt-text -- alt as in the original markup */}
                 <img src={slide.src} style={{ maxWidth: '100%', height: 'auto' }} />
               </div>
             </div>
