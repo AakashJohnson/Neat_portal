@@ -91,12 +91,19 @@ function decodeSegment(segment) {
  * because some endpoints echo them (e.g. verifyUserLoggedIn "reason").
  *
  * @param {string|null} token
- * @param {{ checkPrv?: boolean }} [options] checkPrv: only the JWT *guard*
- *        (auth middleware) checks the "prv" subject lock, JWTAuth::getPayload() does not.
+ * @param {{ checkPrv?: boolean, mode?: 'getPayload'|'parseToken' }} [options]
+ *   checkPrv: only the JWT *guard* (auth middleware) checks the "prv" subject
+ *   lock; JWTAuth::getPayload() does not.
+ *   mode: JWTAuth::getToken()+getPayload() swallows parse errors and reports
+ *   "A token is required"; JWTAuth::parseToken() reports the parse error itself.
  * @returns {Promise<object>} verified payload
  * @throws {JwtError}
  */
-export async function verifyToken(token, { checkPrv = false } = {}) {
+export async function verifyToken(token, { checkPrv = false, mode = 'getPayload' } = {}) {
+  if (mode === 'parseToken') {
+    if (!token) throw new JwtError('absent', 'The token could not be parsed from the request');
+    if (token.split('.').length !== 3) throw new JwtError('invalid', 'Wrong number of segments');
+  }
   if (!token || token.split('.').length !== 3) throw new JwtError('absent', 'A token is required');
 
   const [headerPart, payloadPart] = token.split('.');

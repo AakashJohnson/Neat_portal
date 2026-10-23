@@ -7,8 +7,10 @@ import { createApp } from '../../src/app.js';
 
 export const LARAVEL = process.env.LARAVEL_REFERENCE_URL ?? 'http://127.0.0.1:8001';
 
+// The production limit (60/min) is covered by tests/unit/throttle.test.js;
+// contract suites need far more requests per minute.
 let app;
-export const nodeApp = () => (app ??= createApp());
+export const nodeApp = () => (app ??= createApp({ rateLimit: 100_000 }));
 
 export async function laravelAvailable() {
   try {

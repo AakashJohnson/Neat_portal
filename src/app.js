@@ -15,7 +15,7 @@ import { apiRouter } from './routes/index.js';
  * Builds the Express application. Kept separate from server.js so tests can
  * exercise it with supertest without opening a port.
  */
-export function createApp() {
+export function createApp({ rateLimit = 60 } = {}) {
   const app = express();
 
   app.disable('x-powered-by');
@@ -54,7 +54,8 @@ export function createApp() {
   app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
   app.use('/health', healthRouter);
-  app.use('/api', normalizeInput, apiThrottle(60), rateLimitHeaders, apiRouter);
+  // Laravel api group: throttle:60,1 (rateLimit is only raised by the test suite).
+  app.use('/api', normalizeInput, apiThrottle(rateLimit), rateLimitHeaders, apiRouter);
 
   app.use(notFound);
   app.use(errorHandler);

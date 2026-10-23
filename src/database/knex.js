@@ -13,11 +13,12 @@ export const db = knexFactory({
     password: env.DB_PASSWORD,
     database: env.DB_DATABASE,
     charset: 'utf8mb4',
-    // Match Laravel/PDO result shapes: dates and big/decimal numbers come
-    // back as strings instead of JS Date / float.
+    // Match Laravel/PDO result shapes (native prepares, ATTR_STRINGIFY_FETCHES
+    // off): integers incl. BIGINT are numbers, DECIMAL stays a string, dates
+    // are "Y-m-d H:i:s" strings. BIGINTs beyond 2^53 come back as strings.
     dateStrings: true,
     supportBigNumbers: true,
-    bigNumberStrings: true,
+    bigNumberStrings: false,
     decimalNumbers: false,
     timezone: 'Z',
   },
