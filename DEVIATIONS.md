@@ -16,7 +16,7 @@ Original *functional* defects that are reproduced as-is are not deviations. They
 | DEV-02 | `StartSession` wrote a `sessions` row on every API request | Stateless API, no session rows | Not a business feature; avoids DB growth | R-20; account/stock contract tests | PROPOSED |
 | DEV-03 | Mail transport errors `print_r`'d into the response body (corrupting the JSON) | Clean JSON body; error logged | Information disclosure / broken responses | verification service | PROPOSED |
 | DEV-04 | Patched vendor exception handler appended " Line: N" (file/line) to error messages | Same message without the source-location suffix | Information disclosure | `src/middleware` error handler; contract tests | PROPOSED |
-| DEV-05 | `users` rows serialised with secret columns (password hash, tokens, …) where `$hidden` did not cover them | Secret columns never leave the API | Credential exposure | `src/services/auth/*` (`SECRET_USER_COLUMNS`) | PROPOSED |
+| DEV-05 | `users` rows serialised with secret columns (password hash, tokens, …) where `$hidden` did not cover them | Secret columns never leave the API | Credential exposure | `src/repositories/userRepository.js` (`SECRET_USER_COLUMNS`) | PROPOSED |
 | DEV-06 | Errors `echo`'d / `print_r`'d before the JSON body | Clean JSON body; error logged | Information disclosure / broken responses | course/company services | PROPOSED |
 | DEV-08 | Admin endpoints only checked that *a* user was logged in | Admin role (1) required | Broken access control | `src/services/auth/permissions.js`; security tests | PROPOSED |
 | DEV-09 | Any logged-in user could edit any company's product | Only the owning company (or admin) | Broken access control (IDOR) | companyService; `company.contract.test.js` | PROPOSED |
