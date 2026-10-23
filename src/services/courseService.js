@@ -257,7 +257,9 @@ export const applyForPaidCourse = (req, input) =>
     const price = (await db(table('product_details')).where('code', code).first('price'))?.price ?? null;
     const fee = phpMultiply(price, quantity);
 
-    const [[{ uuid }]] = await db.raw('select UUID() as uuid');
+    // DEV-11: the original used MySQL UUID() (time-based v1, partly predictable)
+    // as the purchase session secret. A random v4 UUID has the same format.
+    const uuid = randomUUID();
     const audit = () => db(table('product_purchased_audit'));
     const count = Number((await audit().where({ application_number: appNo, code }).count({ n: '*' }))[0].n);
     const paidCount = Number((await audit().where({ application_number: appNo, code, status: 'Payment Successful' }).count({ n: '*' }))[0].n);
