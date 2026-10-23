@@ -6,6 +6,7 @@ export const ACTIVITY = Object.freeze({
   LOGGED_IN: 'Logged in.',
   LOGGED_OUT: 'Logged out.',
   CREATED_ACCOUNT: 'Created an account.',
+  REQUESTED_PASSWORD_RESET: 'Requested password reset email.',
 });
 
 /** neatapp/activity-log Logger::log() */
