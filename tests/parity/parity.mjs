@@ -61,6 +61,8 @@ async function capture(browser, base, route, width) {
   await page.goto(base + route, { waitUntil: 'load', timeout: 90000 }).catch((e) => errors.push(`goto: ${e.message.split('\n')[0]}`));
   await page.addStyleTag({ content: FREEZE_CSS }).catch(() => {});
   await page.waitForTimeout(3500);
+  // Layout depends on image sizes (galleries load ~20 MB of photos).
+  await page.waitForFunction(() => [...document.images].every((img) => img.complete), null, { timeout: 60000 }).catch(() => errors.push('images still loading after 60 s'));
   const text = await page.evaluate(() => {
     // Adjacent text nodes of one element are merged: React keeps `{a} {b}` as
     // separate DOM text nodes where Angular has one; rendering is identical.

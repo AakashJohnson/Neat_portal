@@ -4,7 +4,7 @@
 //   2. the global stylesheet cascade from angular.json, @imports expanded in order,
 //      url()s rewritten to /legacy/<path> and their targets copied → public/legacy/legacy.css
 // Run: node scripts/sync-legacy-assets.mjs   (writes a report to scripts/legacy-assets-report.json)
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const APP = path.resolve(import.meta.dirname, '..');
@@ -14,9 +14,21 @@ const PUBLIC = path.join(APP, 'public');
 
 const report = { copied: [], missing: [], cssFiles: [], cssAssets: [] };
 
+/** The path as spelled on disk (Windows resolves `12.JPG` to the file `12.jpg`). */
+function trueCase(abs) {
+  const dir = path.dirname(abs);
+  const real = readdirSync(dir).find((n) => n.toLowerCase() === path.basename(abs).toLowerCase());
+  return path.join(dir, real ?? path.basename(abs));
+}
+
+// Destination names follow the source's real spelling: the Next.js static
+// server is case-sensitive (like production), so `12.JPG` must not shadow `12.jpg`.
 function copy(fromAbs, toAbs) {
   mkdirSync(path.dirname(toAbs), { recursive: true });
-  copyFileSync(fromAbs, toAbs);
+  const src = trueCase(fromAbs);
+  const dest = path.join(path.dirname(toAbs), path.basename(src));
+  if (existsSync(dest) && trueCase(dest) !== dest) unlinkSync(trueCase(dest)); // wrong-case leftover
+  copyFileSync(src, dest);
 }
 
 // ---------------------------------------------------------------- 1. assets
@@ -34,6 +46,17 @@ const refs = new Set();
 for (const f of sources) for (const m of readFileSync(f, 'utf8').matchAll(ASSET_RE)) refs.add(m[0]);
 // Loaded dynamically by ngx-translate (prefix + lang + suffix).
 ['assets/i18n/en.json', 'assets/i18n/fr.json'].forEach((r) => refs.add(r));
+// Gallery components: `import ImageName from '…/ImageName.json'` lists file
+// names that the template renders as src=".../assets/<dir>/{{image}}".
+for (const ts of sources.filter((f) => f.endsWith('.component.ts'))) {
+  const imp = readFileSync(ts, 'utf8').match(/import\s+ImageName\s+from\s+'([^']+ImageName\.json)'/);
+  const html = ts.replace(/\.ts$/, '.html');
+  if (!imp || !existsSync(html)) continue;
+  const names = Object.keys(JSON.parse(readFileSync(path.resolve(path.dirname(ts), imp[1]), 'utf8')).Images ?? {});
+  for (const m of readFileSync(html, 'utf8').replace(/<!--[\s\S]*?-->/g, '').matchAll(/((?:assets_new|assets)\/[^"{]*\/)\{\{\s*image\s*\}\}/g)) {
+    for (const n of names) refs.add(m[1] + n);
+  }
+}
 
 for (const rel of [...refs].sort()) {
   const from = path.join(NG_SRC, rel);
