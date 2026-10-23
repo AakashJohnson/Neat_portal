@@ -10,7 +10,6 @@ export const notFound = (_req, res) => res.status(404).json({ message: '' });
  * else is logged (with redaction) and rendered like Laravel's generic 500
  * {"message": "Server Error"} without leaking internals.
  */
-// eslint-disable-next-line no-unused-vars
 export function errorHandler(err, req, res, _next) {
   if (err instanceof HttpError) return res.status(err.status).json(err.body);
 

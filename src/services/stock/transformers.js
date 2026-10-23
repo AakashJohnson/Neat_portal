@@ -19,7 +19,8 @@ export function avatarUrl(req, avatar) {
 export const nameOrEmail = (u) => `${u.first_name ?? ''} ${u.last_name ?? ''}`.trim() || u.email;
 
 export function userTransformer(req, u) {
-  let options = null;
+  // json_decode($user->two_factor_options, true): null for null/invalid JSON.
+  let options;
   try {
     options = u.two_factor_options == null ? null : JSON.parse(u.two_factor_options);
   } catch {
