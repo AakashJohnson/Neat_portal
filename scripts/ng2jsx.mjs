@@ -15,6 +15,11 @@ const ATTR_MAP = {
   'accept-charset': 'acceptCharset', crossorigin: 'crossOrigin', srcset: 'srcSet', usemap: 'useMap', datetime: 'dateTime',
   marginwidth: 'marginWidth', marginheight: 'marginHeight', scrolling: 'scrolling', allow: 'allow',
 };
+// Angular Material elements with a ported component (src/components/mat/*).
+const MAT_COMPONENTS = { 'mat-radio-group': 'MatRadioGroup', 'mat-radio-button': 'MatRadioButton' };
+const MAT_MODULE = { MatRadioGroup: 'MatRadio', MatRadioButton: 'MatRadio' };
+const usedMat = new Set();
+const BOOLEAN_ATTRS = new Set(['allowFullScreen', 'disabled', 'readOnly', 'required', 'checked', 'selected', 'multiple', 'autoFocus', 'noValidate', 'hidden', 'controls', 'autoPlay', 'loop', 'muted', 'defer', 'async', 'open', 'download']);
 const EVENTS = { click: 'onClick', change: 'onChange', keyup: 'onKeyUp', keydown: 'onKeyDown', input: 'onInput', submit: 'onSubmit', ngSubmit: 'onSubmit', blur: 'onBlur', focus: 'onFocus', mouseenter: 'onMouseEnter', mouseleave: 'onMouseLeave', selectionChange: 'onChange' };
 
 const camel = (s) => s.trim().replace(/-([a-z])/g, (_, c) => c.toUpperCase());
@@ -82,8 +87,10 @@ function convertAttrs(node, ctx) {
     if (name === 'routerLink' || name === '[routerLink]') { isLink = true; href = routerHref(value, name.startsWith('[')); continue; }
     if (name === 'routerLinkActive' || name === '[routerLinkActiveOptions]') continue;
     if (name.startsWith('#')) { out.push(`/* TODO(ng): template ref ${name} */`); continue; }
-    if (name === 'formControlName') { out.push(`{...register(${JSON.stringify(value)})}`); continue; }
-    if (name === '[formGroup]' || name === 'formGroupName' || name === 'ngModelGroup') continue;
+    if (name === 'formControlName') { out.push(`{...form.bind(${JSON.stringify(value)})}`); continue; }
+    // Angular adds novalidate to forms handled by FormsModule/ReactiveFormsModule.
+    if (name === '[formGroup]') { out.push('noValidate'); continue; }
+    if (name === 'formGroupName' || name === 'ngModelGroup') continue;
     if (name === '[(ngModel)]') { out.push(`value={${value} ?? ''} onChange={(e) => set_${value.replace(/\W/g, '_')}(e.target.value)} /* TODO(ng): ngModel ${value} */`); continue; }
     if (name === '[ngClass]') { out.push(`className={cx(${expr(value)})} /* TODO(ng): ngClass */`); continue; }
     if (name === '[innerHTML]') { out.push(`dangerouslySetInnerHTML={{ __html: sanitize(${expr(value)}) }}`); continue; }
@@ -113,7 +120,7 @@ function convertAttrs(node, ctx) {
       out.push(`${mapped}=${JSON.stringify(value.replace(/^(\.\.?\/)*/, '/'))}`);
       continue;
     }
-    if (value === '' && !['value', 'alt', 'placeholder', 'href', 'src'].includes(mapped)) out.push(mapped);
+    if (value === '' && BOOLEAN_ATTRS.has(mapped)) out.push(mapped);
     else if (/\{\{/.test(value)) out.push(`${mapped}={\`${value.replace(/\{\{([\s\S]+?)\}\}/g, (_, x) => `\${${expr(x)}}`)}\`}`);
     else if (mapped === 'href' && value.startsWith('javascript:')) out.push(`href="#"`);
     else out.push(`${mapped}=${JSON.stringify(value)}`);
@@ -140,7 +147,12 @@ function convertNode(node, depth) {
   if (tag === 'ng-container' || tag === 'ng-template') tag = '';
   const { attrs, ngIf, ngFor, isLink, href } = convertAttrs(node, {});
   if (tag.startsWith('app-')) return `${pad}<${tag.replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase()).replace(/^App/, '')} ${attrs.join(' ')} /> {/* TODO(ng): <${tag}> */}`;
-  if (tag.startsWith('mat-') || tag.startsWith('cdk-')) attrs.unshift(`/* TODO(ng): <${tag}> */`);
+  if (MAT_COMPONENTS[tag]) {
+    tag = MAT_COMPONENTS[tag];
+    usedMat.add(tag);
+    // Value-based binding for Material controls.
+    for (let i = 0; i < attrs.length; i++) attrs[i] = attrs[i].replace(/^\{\.\.\.form\.bind\(/, '{...form.bindValue(');
+  } else if (tag.startsWith('mat-') || tag.startsWith('cdk-')) attrs.unshift(`/* TODO(ng): <${tag}> */`);
   if (isLink) {
     if (tag === 'a') tag = 'Link';
     attrs.unshift(`href=${href}`);
@@ -189,23 +201,34 @@ if (!pageMode) {
   const cssFile = file.replace(/\.html$/, '.css');
   const scoped = existsSync(cssFile) && readFileSync(cssFile, 'utf8').trim() !== '';
   const depth = 2 + (chrome ? 1 : 0) + (scoped ? 1 : 0);
-  let body = doc.children.filter((n) => !isChrome(n)).map((c) => convertNode(c, depth)).filter((s) => s.trim() !== '').join('\n');
+  // Markup after <app-footer> stays after the footer (SiteChrome `after`).
+  const footerAt = doc.children.findLastIndex((n) => n.type === 'tag' && n.name === 'app-footer');
+  const main = footerAt < 0 ? doc.children : doc.children.slice(0, footerAt);
+  const tail = footerAt < 0 ? [] : doc.children.slice(footerAt + 1);
+  let body = main.filter((n) => !isChrome(n)).map((c) => convertNode(c, depth)).filter((s) => s.trim() !== '').join('\n');
+  const afterJsx = tail.filter((n) => !isChrome(n)).map((c) => convertNode(c, 4)).filter((s) => s.trim() !== '').join('\n');
   const pad = (d) => '  '.repeat(d);
   if (scoped) body = `${pad(depth - 1)}<Scope name="${name}">\n${body}\n${pad(depth - 1)}</Scope>`;
-  if (chrome) body = `${pad(2)}<SiteChrome${footer ? '' : ' footer={false}'}>\n${body}\n${pad(2)}</SiteChrome>`;
+  const afterProp = afterJsx ? ` after={\n${pad(3)}<>\n${afterJsx}\n${pad(3)}</>\n${pad(2)}}` : '';
+  if (chrome) body = `${pad(2)}<SiteChrome${footer ? '' : ' footer={false}'}${afterProp}>\n${body}\n${pad(2)}</SiteChrome>`;
   const usesT = /\bt\(/.test(body);
+  const usesForm = /\bform\./.test(body);
+  const matModules = [...new Set([...usedMat].map((c) => MAT_MODULE[c]))];
   const usesLink = /<Link\b/.test(body);
   const comp = name.replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase());
   const out = [
-    ...(usesT ? ["'use client';"] : []),
+    ...(usesT || usesForm || matModules.length ? ["'use client';"] : []),
     `// Port of ${path.relative(path.resolve(file, '../../../../..'), file).replace(/\\/g, '/').replace(/\.html$/, '.{html,ts}')}`,
     ...(usesLink ? ["import Link from 'next/link';"] : []),
     ...(chrome ? ["import SiteChrome from '@/components/layout/SiteChrome';"] : []),
     ...(scoped ? ["import Scope from '@/components/common/Scope';"] : []),
     ...(usesT ? ["import { useI18n } from '@/components/providers/I18nProvider';"] : []),
+    ...matModules.map((m) => `import { ${[...usedMat].filter((c) => MAT_MODULE[c] === m).join(', ')} } from '@/components/mat/${m}';`),
+    ...(usesForm ? ["import { useFormGroup, Validators } from '@/lib/forms';"] : []),
     '',
     `export default function ${comp}Page() {`,
     ...(usesT ? ['  const { t } = useI18n();'] : []),
+    ...(usesForm ? ['  const form = useFormGroup({ /* TODO(ng): controls from the component TS */ });'] : []),
     '  return (',
     body.split('\n').length > 1 && !chrome && !scoped ? `${pad(2)}<>\n${body}\n${pad(2)}</>` : body,
     '  );',

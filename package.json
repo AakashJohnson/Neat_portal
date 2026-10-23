@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "check:no-ts": "node scripts/check-no-ts.mjs",
-    "sync:legacy": "node scripts/sync-legacy-assets.mjs && node scripts/scope-component-css.mjs"
+    "sync:legacy": "node scripts/sync-legacy-assets.mjs && node scripts/extract-material-css.mjs && node scripts/scope-component-css.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -28,7 +28,6 @@
     "react-dom": "^19.3.1",
     "react-hook-form": "^7.90.0",
     "server-only": "^0.0.1",
-    "sonner": "^2.0.8",
     "swiper": "^14.3.0",
     "xlsx": "file:vendor/xlsx-0.20.3.tgz",
     "zod": "^4.6.7"

@@ -24,6 +24,9 @@ export default function RootLayout({ children }) {
         {/* eslint-disable-next-line @next/next/no-css-tags */}
         <link rel="stylesheet" href="/legacy/legacy.css" />
         {/* Angular component styles, scoped per component (scripts/scope-component-css.mjs + <Scope>). */}
+        {/* Angular Material component styles (injected at runtime by Angular, after the globals). */}
+        {/* eslint-disable-next-line @next/next/no-css-tags */}
+        <link rel="stylesheet" href="/legacy/material.css" />
         {/* eslint-disable-next-line @next/next/no-css-tags */}
         <link rel="stylesheet" href="/legacy/components.css" />
       </head>

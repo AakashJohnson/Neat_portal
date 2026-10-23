@@ -1,7 +1,10 @@
 // Backend-for-frontend proxy: /bff/<endpoint> → <API>/api/<endpoint>.
-// Adds the JWT from the httpOnly cookie both as "Authorization: Bearer" and as
-// ?token= (the Angular contract; some endpoints read $request->token). Bodies
-// (JSON, form data, multipart uploads) are streamed through unchanged.
+// Token handling mirrors the Angular services: requests the client marks with
+// a `token` parameter (the endpoints Angular called with ?token=, see
+// lib/tokenEndpoints.js) get the JWT from the httpOnly cookie as ?token= and
+// "Authorization: Bearer"; with no session they get ?token=null, the value
+// Angular sent from an empty localStorage. Unmarked requests carry no token.
+// Bodies (JSON, form data, multipart uploads) are streamed through unchanged.
 import { API_ORIGIN } from '@/lib/config';
 import { getToken } from '@/lib/server/session';
 
@@ -15,15 +18,15 @@ async function proxy(request, { params }) {
     if (k !== 'token') target.searchParams.append(k, v);
   });
 
-  const token = await getToken();
   const headers = new Headers();
   request.headers.forEach((v, k) => {
     if (!HOP_BY_HOP.has(k.toLowerCase())) headers.set(k, v);
   });
   headers.set('Accept', 'application/json');
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
-    target.searchParams.set('token', token);
+  if (incoming.searchParams.has('token')) {
+    const token = await getToken();
+    if (token) headers.set('Authorization', `Bearer ${token}`);
+    target.searchParams.set('token', token ?? 'null');
   }
 
   const hasBody = !['GET', 'HEAD'].includes(request.method);

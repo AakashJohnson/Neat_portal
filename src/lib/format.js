@@ -1,15 +1,27 @@
 // Shared helpers that replace Angular pipes and template utilities.
 import DOMPurify from 'dompurify';
 import { FILES_ORIGIN } from '@/lib/config';
+import { ngSanitizeHtml } from '@/lib/ngSanitize';
 
 /**
- * [innerHTML] binding: Angular sanitises HTML (DomSanitizer) — the port does
- * the same with DOMPurify. Server render returns '' and the client fills it.
+ * [innerHTML] binding: Angular's sanitizer (lib/ngSanitize.js), then DOMPurify.
+ * Server render returns '' and the client fills it.
  */
 export function sanitize(html) {
   if (html == null) return '';
   if (typeof window === 'undefined') return '';
-  return DOMPurify.sanitize(String(html));
+  // Angular's own sanitizer decides what is rendered (identical output); DOMPurify
+  // runs afterwards as defense in depth and does not change already-safe markup.
+  let safe;
+  try {
+    safe = ngSanitizeHtml(html);
+  } catch (e) {
+    console.error(e); // Angular threw here too; the binding rendered nothing.
+    return '';
+  }
+  // target is allowed by Angular (links opening in a new tab); unknown protocols
+  // only appear as Angular's inert "unsafe:…" prefix.
+  return DOMPurify.sanitize(safe, { ADD_ATTR: ['target'], ALLOW_UNKNOWN_PROTOCOLS: true });
 }
 
 /** `{{ imageUrl }}/files/...` — public URL of an uploaded file. */
