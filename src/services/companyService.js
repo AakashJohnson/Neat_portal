@@ -6,7 +6,8 @@ import { legacyAuthenticate, LegacyResponse } from './auth/legacyAuth.js';
 import { assertOwnApplication } from './auth/hardening.js';
 import { legacyRun } from './legacyErrors.js';
 import { nowSql } from '../utils/time.js';
-import { looseEq, phpEmpty } from '../utils/php.js';
+import { looseEq } from '../utils/php.js';
+import { phpEmpty } from '../utils/str.js';
 
 const ok = (body) => ({ status: 200, body });
 const KEYS = ['user_id', 'uuid', 'email'];
