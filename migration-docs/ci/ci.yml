@@ -1,0 +1,46 @@
+# GitHub Actions workflow of the monorepo (published to .github/workflows/ci.yml
+# by migration-docs/tools/publish-monorepo.sh). Static gates only: the contract
+# and parity suites need the MySQL test copy and the Laravel/Angular reference
+# apps, and run on the migration workstation (see TEST_PLAN.md).
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: express-backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: express-backend/package-lock.json
+      - run: npm ci
+      - run: npm run check:no-ts
+      - run: npm run check:no-ddl
+      - run: npm run check:imports
+      - run: npm run lint
+      - run: npx vitest run tests/unit
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nextjs-frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: nextjs-frontend/package-lock.json
+      - run: npm ci
+      - run: npm run check:no-ts
+      - run: npm run lint
+      - run: npm run build
