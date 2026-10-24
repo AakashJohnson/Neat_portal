@@ -4,7 +4,7 @@
 // AuthService and the per-component `atob(token.split('.')[1])` decoding.
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
-const SessionContext = createContext({ claims: null, ready: false, refresh: async () => {}, login: async () => ({}), logout: async () => {} });
+const SessionContext = createContext({ claims: null, ready: false, refresh: async () => {}, login: async () => ({}), logout: async () => {}, removeToken: async () => {} });
 
 const fetchSession = () =>
   fetch('/api/session', { cache: 'no-store' })
@@ -56,7 +56,13 @@ export function SessionProvider({ children }) {
     setClaims(null);
   }, []);
 
-  return <SessionContext.Provider value={{ claims, ready, legacyDecodable, refresh, login, logout }}>{children}</SessionContext.Provider>;
+  /** TokenService.remove() + AuthService.changeStatus(false): local only, other storage kept. */
+  const removeToken = useCallback(async () => {
+    await fetch('/api/session?revoke=0', { method: 'DELETE' }).catch(() => {});
+    setClaims(null);
+  }, []);
+
+  return <SessionContext.Provider value={{ claims, ready, legacyDecodable, refresh, login, logout, removeToken }}>{children}</SessionContext.Provider>;
 }
 
 export const useSession = () => useContext(SessionContext);

@@ -55,9 +55,12 @@ export async function GET() {
   return NextResponse.json({ claims: publicClaims(claims), legacyDecodable: legacyDecodable(token) });
 }
 
+// ?revoke=0: TokenService.remove() only (the shells' logout()): the cookie is
+// dropped without calling the API, so the token row stays valid as in Angular.
 export async function DELETE(request) {
   const token = await getToken();
-  if (token) {
+  const revoke = new URL(request.url).searchParams.get('revoke') !== '0';
+  if (token && revoke) {
     await fetch(`${API_ORIGIN}/api/logout?token=${encodeURIComponent(token)}`, { method: 'POST', headers: forwardHeaders(request) }).catch(() => {});
   }
   const response = NextResponse.json({ success: true });
