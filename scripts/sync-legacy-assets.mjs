@@ -8,7 +8,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSyn
 import path from 'node:path';
 
 const APP = path.resolve(import.meta.dirname, '..');
-const NG = path.resolve(APP, '..', 'frontend', 'frontend');
+const NG = path.resolve(APP, '..', '..', 'NEAT portal old', 'frontend', 'frontend');
 const NG_SRC = path.join(NG, 'src');
 const PUBLIC = path.join(APP, 'public');
 

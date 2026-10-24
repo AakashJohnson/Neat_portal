@@ -9,7 +9,7 @@ import postcss from 'postcss';
 import selectorParser from 'postcss-selector-parser';
 
 const APP = path.resolve(import.meta.dirname, '..');
-const NG_APP = path.resolve(APP, '..', 'frontend', 'frontend', 'src', 'app');
+const NG_APP = path.resolve(APP, '..', '..', 'NEAT portal old', 'frontend', 'frontend', 'src', 'app');
 
 function walk(dir, out = []) {
   for (const n of readdirSync(dir)) {

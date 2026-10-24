@@ -8,7 +8,7 @@ import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const APP = path.resolve(import.meta.dirname, '..');
-const ESM = path.resolve(APP, '..', 'frontend', 'frontend', 'node_modules', '@angular', 'material', 'esm2015');
+const ESM = path.resolve(APP, '..', '..', 'NEAT portal old', 'frontend', 'frontend', 'node_modules', '@angular', 'material', 'esm2015');
 const version = JSON.parse(readFileSync(path.join(ESM, '..', 'package.json'), 'utf8')).version;
 
 const STYLES = /styles:\s*\[((?:\s*"(?:[^"\\]|\\.)*"\s*,?)+)\s*\]/g;

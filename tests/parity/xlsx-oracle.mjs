@@ -11,7 +11,7 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 
 const requireNew = createRequire(import.meta.url);
-const requireOld = createRequire(path.resolve(import.meta.dirname, '../../../frontend/frontend/package.json'));
+const requireOld = createRequire(path.resolve(import.meta.dirname, '../../../../NEAT portal old/frontend/frontend/package.json'));
 const XNEW = requireNew('xlsx');
 const XOLD = requireOld('xlsx');
 console.log(`old ${XOLD.version} / new ${XNEW.version}`);
