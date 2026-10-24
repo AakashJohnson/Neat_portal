@@ -82,6 +82,16 @@ describe('AUTH-01 POST /api/login', () => {
     const l = await callLaravel('GET', '/api/verifyUserLoggedIn', { query: { token } });
     expect(l.body).toEqual({ message: 'Success' });
   });
+
+  it('tokens are cross-compatible: Node accepts a Laravel-issued token', async ({ skip }) => {
+    if (!reference) skip();
+    const token = await fixtureToken(callLaravel, ADMIN);
+    const n = await callNode('GET', '/api/verifyUserLoggedIn', { query: { token } });
+    expect(n.body).toEqual({ message: 'Success' });
+    const me = await callNode('GET', '/api/me', { headers: { Authorization: `Bearer ${token}` } });
+    expect(me.status).toBe(200);
+    expect(me.body.email).toBe(ADMIN);
+  });
 });
 
 describe('AUTH-02 POST /api/logout', () => {
