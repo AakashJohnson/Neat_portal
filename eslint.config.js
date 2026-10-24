@@ -5,7 +5,7 @@ export default [
   { ignores: ['node_modules/**', 'coverage/**', '.scratch/**'] },
   js.configs.recommended,
   {
-    files: ['**/*.js'],
+    files: ['**/*.js', '**/*.mjs'],
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: 'module',
