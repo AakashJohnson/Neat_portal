@@ -9,7 +9,7 @@
 //     Blade form never sends — R-41), role "User";
 //   - password reset: the stock broker (hashed token, expiry login_reset_token_lifetime);
 //   - e-mail verification: signed links (expires + signature), 60 minutes.
-import { createHmac, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import { db, table } from '../../database/knex.js';
 import { env } from '../../config/env.js';
@@ -22,7 +22,8 @@ import * as userRepo from '../../repositories/userRepository.js';
 import { ACTIVITY, logActivity } from '../../repositories/activityRepository.js';
 import { sendMail } from '../../integrations/mail/mailer.js';
 import { button, renderMessage } from '../../integrations/mail/markdownMail.js';
-import { userRegistered } from '../../integrations/mail/templates/authMails.js';
+import { resetPassword as resetPasswordMail, userRegistered } from '../../integrations/mail/templates/authMails.js';
+import { createBrokerToken } from '../auth/accountService.js';
 import { nowSql } from '../../utils/time.js';
 
 const ok = (body, status = 200) => ({ status, body });
@@ -117,6 +118,22 @@ export async function register(input, ctx) {
 
 // ---------------------------------------------------------- password reset
 
+/**
+ * ForgotPasswordController@sendResetLinkEmail (password-reset + guest): the
+ * broker's messages; the mail is the same NeatMailResetPassword the API
+ * sends (User::sendPasswordResetNotification), linking to the portal.
+ */
+export async function remindPassword(input, ctx) {
+  if (!settingEnabled('forgot_password')) throw httpException(404, '');
+  await validateOrFail(input, { email: 'required|email' });
+  const user = await db(table('users')).where('email', input.email).first();
+  if (!user) return ok({ message: 'The given data was invalid.', errors: { email: ["We can't find a user with that e-mail address."] } }, 422);
+  const token = await createBrokerToken(user.email);
+  await sendMail({ to: user.email, ...resetPasswordMail(token) });
+  await logActivity({ userId: user.id, description: ACTIVITY.REQUESTED_PASSWORD_RESET, ip: ctx.ip, userAgent: ctx.userAgent });
+  return ok({ message: 'We have e-mailed your password reset link!' });
+}
+
 /** ResetPasswordController@reset (ResetsPasswords): broker token, then log in. */
 export async function resetPassword(input, ctx) {
   await validateOrFail(input, { token: 'required', email: 'required|email', password: 'required|confirmed|min:8' });
@@ -140,7 +157,7 @@ export async function resetPassword(input, ctx) {
 const panelBase = () => (process.env.PANEL_URL || 'http://localhost:3000/panel').replace(/\/$/, '');
 const signingKey = () => createHmac('sha256', env.JWT_SECRET).update('panel-email-verification').digest();
 const sign = (url) => createHmac('sha256', signingKey()).update(url).digest('hex');
-const sha1 = (s) => createHmac('sha1', '').update(String(s)).digest('hex');
+const sha1 = (s) => createHash('sha1').update(String(s)).digest('hex');
 
 /** URL::temporarySignedRoute('verification.verify', +60 min, {id, hash: sha1(email)}). */
 function verificationUrl(user) {
