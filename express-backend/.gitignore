@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.*
+!.env.example
+coverage/
+*.log
+evidence-local/
+.scratch/
+
+# runtime settings copy (SETTINGS_PATH)
+storage/
