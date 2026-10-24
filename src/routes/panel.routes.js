@@ -13,6 +13,8 @@ const tokenCtx = (req) => ({ ip: clientIp(req), userAgent: req.get('user-agent')
 const h = (fn) => asyncHandler(async (req, res) => send(res, await fn(req)));
 const admin = [requireAuth, requirePermission('users.manage')];
 
+panelRouter.get('/panel/context', requireAuth, h((req) => panel.context(req, ctx(req))));
+
 panelRouter.post('/panel/settings/:group', requireAuth, h((req) => panel.updateSettings(ctx(req), req.params.group, requestAll(req))));
 
 panelRouter.post('/panel/impersonate/leave', requireAuth, h((req) => panel.leaveImpersonation(ctx(req), tokenCtx(req))));

@@ -8,11 +8,12 @@ import path from 'node:path';
 import { db, table } from '../../database/knex.js';
 import { env } from '../../config/env.js';
 import { HttpError, httpException } from '../../http/respond.js';
-import { hasPermissions } from '../auth/permissions.js';
+import { hasPermissions, rolePermissions } from '../auth/permissions.js';
+import { setting } from '../../config/settings.js';
 import { issueToken } from '../auth/jwtService.js';
 import { hashPassword } from '../auth/authService.js';
 import { logActivity } from '../../repositories/activityRepository.js';
-import { nameOrEmail } from '../stock/transformers.js';
+import { nameOrEmail, userTransformer } from '../stock/transformers.js';
 import { nowSql } from '../../utils/time.js';
 
 const ok = (body, status = 200) => ({ status, body });
@@ -60,6 +61,33 @@ export async function updateSettings(ctx, group, input) {
   writeFileSync(file, phpJsonEncode(data));
   await logActivity({ userId: ctx.user.id, description: 'Updated website settings.', ip: ctx.ip, userAgent: ctx.userAgent });
   return ok(data);
+}
+
+// --------------------------------------------------------------- context
+
+/**
+ * GET /api/panel/context — what the Blade layout read from the session for
+ * every page: the user (avatar, name), the role's permission names (sidebar
+ * items, @permission blocks), whether an impersonation is active, and the
+ * settings the views use.
+ */
+export async function context(req, ctx) {
+  const permissions = (await rolePermissions(ctx.user.role_id)).map((p) => p.name);
+  const role = await db(table('roles')).where('id', ctx.user.role_id).first('id', 'name', 'display_name');
+  return ok({
+    user: userTransformer(req, ctx.user),
+    role: role ?? null,
+    permissions,
+    impersonating: Boolean(ctx.payload.imp),
+    settings: {
+      app_name: setting('app_name'),
+      remember_me: setting('remember_me'),
+      forgot_password: setting('forgot_password'),
+      reg_enabled: setting('reg_enabled'),
+      tos: setting('tos'),
+      two_factor_enabled: setting('2fa.enabled', false),
+    },
+  });
 }
 
 // --------------------------------------------------------- impersonation
