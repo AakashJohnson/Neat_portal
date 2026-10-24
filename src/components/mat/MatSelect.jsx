@@ -68,6 +68,7 @@ export function MatSelect({
   required = false,
   invalid = false, // errorState: control.invalid && (touched || form submitted)
   onOpenedChange, // (opened) => … — e.g. a surrounding MatFormField (shouldLabelFloat)
+  ref, // the host element, e.g. for a wrapping MatTooltip
   children,
   ...rest
 }) {
@@ -384,7 +385,11 @@ export function MatSelect({
 
   return (
     <mat-select
-      ref={hostRef}
+      ref={(el) => {
+        hostRef.current = el;
+        if (typeof ref === 'function') ref(el);
+        else if (ref) ref.current = el;
+      }}
       class={classes}
       role="listbox"
       id={id}

@@ -39,12 +39,14 @@ export default function MatTooltip({ message, position = 'below', disabled = fal
   const [visibility, setVisibility] = useState('initial'); // initial | visible | hidden
   const [attached, setAttached] = useState(false);
   const [style, setStyle] = useState(null);
-  const [ids] = useState(() => ({ message: `cdk-describedby-message-${describedById++}` }));
+  // Ids are assigned in the browser (as AriaDescriber does), not during render, so SSR markup matches.
+  const messageId = useRef(null);
   const [overlayId, setOverlayId] = useState(null);
 
   // AriaDescriber: hidden message element + aria-describedby on the host.
   useEffect(() => {
-    if (!message) return;
+    if (!message || !host) return;
+    messageId.current ??= `cdk-describedby-message-${describedById++}`;
     let container = document.getElementById('cdk-describedby-message-container');
     if (!container) {
       container = document.createElement('div');
@@ -54,11 +56,15 @@ export default function MatTooltip({ message, position = 'below', disabled = fal
       document.body.appendChild(container);
     }
     const el = document.createElement('div');
-    el.id = ids.message;
+    el.id = messageId.current;
     el.textContent = message;
     container.appendChild(el);
-    return () => el.remove();
-  }, [message, ids.message]);
+    host.setAttribute('aria-describedby', messageId.current);
+    return () => {
+      el.remove();
+      host.removeAttribute('aria-describedby');
+    };
+  }, [message, host]);
 
   const show = () => {
     if (disabled || !message) return; // matTooltipDisabled
@@ -107,7 +113,6 @@ export default function MatTooltip({ message, position = 'below', disabled = fal
 
   const child = cloneElement(children, {
     ref: setHost,
-    'aria-describedby': message ? ids.message : undefined,
     onMouseEnter: (e) => {
       children.props.onMouseEnter?.(e);
       show();
