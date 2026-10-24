@@ -13,7 +13,7 @@ import { db } from '../../src/database/knex.js';
 
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
 const PDF = Buffer.from('%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n');
-const LARAVEL_PUBLIC = path.resolve('../backend/backend/public');
+const LARAVEL_PUBLIC = path.resolve('../../NEAT portal old/backend/backend/public');
 const NODE_PUBLIC = process.env.PUBLIC_STORAGE_PATH;
 
 let reference;

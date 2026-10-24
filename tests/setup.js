@@ -24,5 +24,5 @@ process.env.EOI_API_URL = process.env.EOI_API_URL_TEST ?? 'http://127.0.0.1:5999
 // Settings writes go to a temp copy of Laravel's storage/settings.json.
 import { copyFileSync } from 'node:fs';
 const testSettings = path.join(os.tmpdir(), 'neat-test-settings.json');
-copyFileSync(path.resolve('../backend/backend/storage/settings.json'), testSettings);
+copyFileSync(path.resolve('../../NEAT portal old/backend/backend/storage/settings.json'), testSettings);
 process.env.SETTINGS_PATH = testSettings;

@@ -48,7 +48,7 @@ const schema = z.object({
 
   // Directory that holds files/ and upload/ (Laravel's public/). Shared with
   // Laravel during the transition so existing uploads keep their URLs.
-  PUBLIC_STORAGE_PATH: z.string().default('../backend/backend/public'),
+  PUBLIC_STORAGE_PATH: z.string().default('../../NEAT portal old/backend/backend/public'),
   // External NEAT EoI system that receives uploaded MoU documents.
   EOI_API_URL: z.string().default('https://neatphase2eoiapi.aicte-india.org/api/saveDocument'),
   SETTINGS_PATH: z.string().optional(),
