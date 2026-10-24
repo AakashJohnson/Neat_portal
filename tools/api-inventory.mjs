@@ -8,8 +8,8 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..');
-const LARAVEL = path.join(ROOT, 'backend', 'backend');
-const ANGULAR_SERVICES = path.join(ROOT, 'frontend', 'frontend', 'src', 'app', 'Services');
+const LARAVEL = path.join(ROOT, '..', 'NEAT portal old', 'backend', 'backend');
+const ANGULAR_SERVICES = path.join(ROOT, '..', 'NEAT portal old', 'frontend', 'frontend', 'src', 'app', 'Services');
 const API_CTRL_DIR = path.join(LARAVEL, 'app', 'Http', 'Controllers', 'Api');
 
 const routesSrc = readFileSync(path.join(LARAVEL, 'routes', 'api.php'), 'utf8')
