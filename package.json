@@ -17,7 +17,8 @@
     "schema:baseline": "node scripts/schema-baseline.js",
     "check:no-ts": "node scripts/check-no-ts.js",
     "check:imports": "node scripts/check-imports.js",
-    "pretest": "node scripts/check-imports.js"
+    "pretest": "node scripts/check-imports.js",
+    "check:no-ddl": "node scripts/check-no-ddl.js src scripts tests"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

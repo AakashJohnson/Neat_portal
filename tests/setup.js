@@ -21,8 +21,15 @@ process.env.PUBLIC_STORAGE_PATH = testPublic;
 // The external EoI API is replaced by a local stub in tests (never production).
 process.env.EOI_API_URL = process.env.EOI_API_URL_TEST ?? 'http://127.0.0.1:59999/api/saveDocument';
 
-// Settings writes go to a temp copy of Laravel's storage/settings.json.
-import { copyFileSync } from 'node:fs';
+// Settings writes go to a temp copy of Laravel's storage/settings.json (the
+// configured SETTINGS_PATH, else the Laravel original); CI without either
+// starts from {} so every setting() falls back to its default.
+import { copyFileSync, existsSync, writeFileSync } from 'node:fs';
 const testSettings = path.join(os.tmpdir(), 'neat-test-settings.json');
-copyFileSync(path.resolve('../../NEAT portal old/backend/backend/storage/settings.json'), testSettings);
+const settingsSource = [process.env.SETTINGS_PATH, '../../NEAT portal old/backend/backend/storage/settings.json']
+  .filter(Boolean)
+  .map((p) => path.resolve(p))
+  .find((p) => existsSync(p));
+if (settingsSource) copyFileSync(settingsSource, testSettings);
+else writeFileSync(testSettings, '{}');
 process.env.SETTINGS_PATH = testSettings;
