@@ -17,7 +17,9 @@ const ATTR_MAP = {
 };
 // Angular Material elements with a ported component (src/components/mat/*).
 const MAT_COMPONENTS = { 'mat-radio-group': 'MatRadioGroup', 'mat-radio-button': 'MatRadioButton', 'mat-select': 'MatSelect', 'mat-option': 'MatOption', 'mat-error': 'MatError' };
-const MAT_MODULE = { MatRadioGroup: 'MatRadio', MatRadioButton: 'MatRadio', MatSelect: 'MatSelect', MatOption: 'MatSelect', MatError: 'MatError' };
+const MAT_MODULE = { MatRadioGroup: 'MatRadio', MatRadioButton: 'MatRadio', MatSelect: 'MatSelect', MatOption: 'MatSelect', MatError: 'MatError', MatInput: 'MatInput' };
+const PASSTHROUGH_TAGS = new Set(['mat-label', 'mat-hint', 'mat-card', 'mat-card-content', 'mat-card-title', 'mat-divider']);
+const NO_COMMENTS = process.argv.includes('--no-comments');
 const usedMat = new Set();
 const BOOLEAN_ATTRS = new Set(['allowFullScreen', 'disabled', 'readOnly', 'required', 'checked', 'selected', 'multiple', 'autoFocus', 'noValidate', 'hidden', 'controls', 'autoPlay', 'loop', 'muted', 'defer', 'async', 'open', 'download']);
 const EVENTS = { click: 'onClick', change: 'onChange', keyup: 'onKeyUp', keydown: 'onKeyDown', input: 'onInput', submit: 'onSubmit', ngSubmit: 'onSubmit', blur: 'onBlur', focus: 'onFocus', mouseenter: 'onMouseEnter', mouseleave: 'onMouseLeave', selectionChange: 'onChange', keypress: 'onKeyPress', dblclick: 'onDoubleClick', mouseover: 'onMouseOver', mouseout: 'onMouseOut', paste: 'onPaste' };
@@ -157,14 +159,26 @@ function convertNode(node, depth) {
     const trail = t.endsWith(' ') && t.length > 1 ? "{' '}" : '';
     return pad + lead + textToJsx(t.replace(/^ | $/g, '')) + trail;
   }
-  if (node.type === 'comment') return `${pad}{/* ${node.data.trim().replace(/\*\//g, '* /')} */}`;
+  if (node.type === 'comment') return NO_COMMENTS ? '' : `${pad}{/* ${node.data.trim().replace(/\*\//g, '* /')} */}`;
   if (node.type !== 'tag' && node.type !== 'script' && node.type !== 'style') return '';
 
   let tag = node.name;
   if (tag === 'ng-container' || tag === 'ng-template') tag = '';
   const { attrs, ngIf, ngFor, isLink, href } = convertAttrs(node, {});
   if (tag.startsWith('app-')) return `${pad}<${tag.replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase()).replace(/^App/, '')} ${attrs.join(' ')} /> {/* TODO(ng): <${tag}> */}`;
-  if (MAT_COMPONENTS[tag]) {
+  // <input matInput> → MatInput (Material classes/attributes, error state).
+  if ((tag === 'input' || tag === 'textarea') && node.attribs && 'matInput' in node.attribs) {
+    const control = node.attribs.formControlName;
+    for (let i = attrs.length - 1; i >= 0; i--) if (/TODO\(ng\): matInput/.test(attrs[i])) attrs.splice(i, 1);
+    if (control) attrs.push(`invalid={form.errorState(${JSON.stringify(control)})}`);
+    if (tag === 'textarea') attrs.push('as="textarea"');
+    tag = 'MatInput';
+    usedMat.add('MatInput');
+  }
+  // Material directives that add nothing outside a form field: keep the element.
+  if (PASSTHROUGH_TAGS.has(tag)) {
+    for (let i = 0; i < attrs.length; i++) attrs[i] = attrs[i].replace(/^className=/, 'class=').replace(/^\/\* TODO\(ng\): <[^>]+> \*\/$/, '');
+  } else if (MAT_COMPONENTS[tag]) {
     tag = MAT_COMPONENTS[tag];
     usedMat.add(tag);
     // Value-based binding for Material controls.
@@ -240,7 +254,7 @@ if (!pageMode) {
     ...(chrome ? ["import SiteChrome from '@/components/layout/SiteChrome';"] : []),
     ...(scoped ? ["import Scope from '@/components/common/Scope';"] : []),
     ...(usesT ? ["import { useI18n } from '@/components/providers/I18nProvider';"] : []),
-    ...matModules.map((m) => `import { ${[...usedMat].filter((c) => MAT_MODULE[c] === m).join(', ')} } from '@/components/mat/${m}';`),
+    ...matModules.map((m) => (m === 'MatInput' ? "import MatInput from '@/components/mat/MatInput';" : `import { ${[...usedMat].filter((c) => MAT_MODULE[c] === m).join(', ')} } from '@/components/mat/${m}';`)),
     ...(usesForm ? ["import { useFormGroup, Validators } from '@/lib/forms';"] : []),
     '',
     `export default function ${comp}Page() {`,

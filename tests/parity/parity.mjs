@@ -11,6 +11,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
+import { fixtureToken, loggedInContext } from './auth.mjs';
 
 const ANGULAR = process.env.PARITY_ANGULAR ?? 'http://localhost:4201';
 const NEXT = process.env.PARITY_NEXT ?? 'http://localhost:3000';
@@ -48,7 +49,9 @@ async function pinApi(page) {
 }
 
 async function capture(browser, base, route, width) {
-  const page = await browser.newPage({ viewport: { width, height: 900 } });
+  const ctx = TOKEN ? await loggedInContext(browser, base, TOKEN, { viewport: { width, height: 900 } }) : await browser.newContext({ viewport: { width, height: 900 } });
+  const page = await ctx.newPage();
+  page.on('dialog', (d) => d.accept());
   await pinApi(page);
   // Carousel auto-advance (Bootstrap interval 5000 ms in Angular, the same in
   // the port) would show different slides depending on load time.
@@ -84,7 +87,7 @@ async function capture(browser, base, route, width) {
     return out.map((x) => x.raw.replace(/\s+/g, ' ').trim()).filter(Boolean);
   });
   const png = PNG.sync.read(await page.screenshot({ fullPage: true }));
-  await page.close();
+  await ctx.close();
   return { text, png, errors };
 }
 
@@ -115,6 +118,9 @@ function textDiff(a, b) {
   return out;
 }
 
+// --role=student etc.: both apps logged in as that fixture user.
+const ROLE = args.find((a) => a.startsWith('--role='))?.slice(7);
+const TOKEN = ROLE ? await fixtureToken(ROLE) : null;
 const browser = await chromium.launch();
 const report = [];
 for (const route of routes) {

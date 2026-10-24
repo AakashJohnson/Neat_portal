@@ -58,30 +58,42 @@ export const Validators = {
 
 /**
  * @param {Record<string, [any, (((v:any)=>object|null)|((v:any)=>object|null)[])?]>} spec
- *   same shape as fb.group({...}): name → [initialValue, validator(s)]
+ *   same shape as fb.group({...}): name → [initialValue, validator(s)];
+ *   initialValue may be a boxed state { value, disabled } as in Angular.
  * @param {(values: object) => object|null} [groupValidator]  form-level validator
  */
 export function useFormGroup(spec, groupValidator) {
-  const [initial] = useState(() => Object.fromEntries(Object.entries(spec).map(([k, [v]]) => [k, v ?? null])));
+  const isBoxed = (v) => v !== null && typeof v === 'object' && Object.keys(v).length === 2 && 'value' in v && 'disabled' in v;
+  const [initial] = useState(() => Object.fromEntries(Object.entries(spec).map(([k, [v]]) => [k, isBoxed(v) ? (v.value ?? null) : (v ?? null)])));
   const [value, setValue] = useState(initial);
+  // Disabled controls: no errors, ignored by validity, left out of `value`.
+  const [disabled, setDisabled] = useState(() => Object.fromEntries(Object.entries(spec).map(([k, [v]]) => [k, isBoxed(v) && !!v.disabled])));
   const [touched, setTouched] = useState({});
   const [dirty, setDirty] = useState({});
   // FormGroupDirective.submitted: set by the form's submit event.
   const [submitted, setSubmitted] = useState(false);
   // Validators replaced at runtime (setValidators/clearValidators).
   const [overrides, setOverrides] = useState({});
+  // Validators contributed by control directives (e.g. matDatepicker's parse/min/max).
+  const [directiveErrors, setDirectiveErrorsState] = useState({});
 
   const controlErrors = useMemo(() => {
     const out = {};
     for (const [k, [, specValidators]] of Object.entries(spec)) {
       const validators = k in overrides ? overrides[k] : specValidators;
       const list = Array.isArray(validators) ? validators : validators ? [validators] : [];
-      out[k] = Validators.compose(list)(value[k]);
+      if (disabled[k]) {
+        out[k] = null;
+        continue;
+      }
+      const own = Validators.compose(list)(value[k]);
+      const extra = directiveErrors[k] ?? null;
+      out[k] = own || extra ? { ...(own ?? {}), ...(extra ?? {}) } : null;
     }
     return out;
     // spec is a literal recreated each render; validators are static per form.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, overrides]);
+  }, [value, overrides, directiveErrors, disabled]);
   // A group validator may return { controlErrors: { name: {...} } } to emulate
   // control.setErrors() from inside it (it replaces that control's errors);
   // any other non-null result is a group-level error.
@@ -99,6 +111,7 @@ export function useFormGroup(spec, groupValidator) {
   const bind = (name, { type } = {}) => ({
     name,
     value: value[name] ?? '',
+    disabled: !!disabled[name],
     onChange: (e) => {
       const raw = e.target.value;
       // NumberValueAccessor: '' → null, otherwise parseFloat.
@@ -110,6 +123,7 @@ export function useFormGroup(spec, groupValidator) {
   /** Props for value-based controls (MatRadioGroup, MatSelect, …): value + onChange(value). */
   const bindValue = (name) => ({
     value: value[name],
+    disabled: !!disabled[name],
     onChange: (v) => setControl(name, v),
     onBlur: () => setTouched((t) => ({ ...t, [name]: true })),
   });
@@ -123,6 +137,7 @@ export function useFormGroup(spec, groupValidator) {
     errors: errors[name],
     valid: errors[name] === null,
     invalid: errors[name] !== null,
+    disabled: !!disabled[name],
     touched: !!touched[name],
     untouched: !touched[name],
     dirty: !!dirty[name],
@@ -130,7 +145,9 @@ export function useFormGroup(spec, groupValidator) {
   });
 
   return {
-    value,
+    // FormGroup.value excludes disabled controls; getRawValue() includes them.
+    value: Object.fromEntries(Object.entries(value).filter(([k]) => !disabled[k])),
+    getRawValue: () => ({ ...value }),
     valid,
     invalid: !valid,
     errors: groupErrors,
@@ -144,9 +161,19 @@ export function useFormGroup(spec, groupValidator) {
     /** control.setValidators(list) / clearValidators() (pass null to clear). */
     setValidators: (name, validators) => setOverrides((o) => ({ ...o, [name]: validators ?? [] })),
     hasError: (name, code) => !!errors[name]?.[code],
+    /** A control directive's validator result for `name` (null = valid). */
+    setDirectiveErrors: (name, errs) =>
+      setDirectiveErrorsState((d) => (JSON.stringify(d[name] ?? null) === JSON.stringify(errs ?? null) ? d : { ...d, [name]: errs ?? null })),
     setValue: setControl,
-    patchValue: (patch) => setValue((prev) => ({ ...prev, ...patch })),
+    // patchValue ignores names that are not controls of the group.
+    patchValue: (patch) => setValue((prev) => ({ ...prev, ...Object.fromEntries(Object.entries(patch).filter(([k]) => k in prev)) })),
     markAllAsTouched: () => setTouched(Object.fromEntries(Object.keys(spec).map((k) => [k, true]))),
+    markAsTouched: (name) => setTouched((t) => ({ ...t, [name]: true })),
+    isDisabled: (name) => !!disabled[name],
+    disable: (name) => setDisabled((d) => ({ ...d, [name]: true })),
+    enable: (name) => setDisabled((d) => ({ ...d, [name]: false })),
+    /** FormGroup.enable(): every control. */
+    enableAll: () => setDisabled((d) => Object.fromEntries(Object.keys(d).map((k) => [k, false]))),
     // FormGroup.reset(value?): controls not given in `value` become null.
     reset: (to = {}) => {
       setValue(Object.fromEntries(Object.keys(initial).map((k) => [k, to[k] ?? null])));

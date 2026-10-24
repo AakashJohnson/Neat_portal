@@ -2,6 +2,30 @@
 // Browser API client — replaces the 13 Angular services' HttpClient calls.
 // All requests go to the same-origin BFF (/bff/*), which attaches the JWT.
 import { TOKEN_ENDPOINTS } from './tokenEndpoints';
+import { API_DISPLAY_BASE } from './config';
+
+const STATUS_TEXT = { 0: 'Unknown Error', 400: 'Bad Request', 401: 'Unauthorized', 403: 'Forbidden', 404: 'Not Found', 405: 'Method Not Allowed', 422: 'Unprocessable Entity', 429: 'Too Many Requests', 500: 'Internal Server Error', 502: 'Bad Gateway', 503: 'Service Unavailable', 504: 'Gateway Timeout' };
+
+/**
+ * Angular HttpErrorResponse for a failed request made with `api`, as passed to
+ * subscribe error callbacks: `error` is the parsed body (null when empty, the
+ * raw text when it is not JSON); `message` is
+ * "Http failure response for <url>: <status> <statusText>".
+ * DEV-F07: the token in that URL (?token=<JWT>) is shown as "token=…".
+ */
+export function httpErrorResponse(res) {
+  const status = res?.status ?? 0;
+  let url = '(unknown url)';
+  if (res?.url) {
+    const u = new URL(res.url);
+    url = `${API_DISPLAY_BASE}${u.pathname.replace(/^\/bff/, '')}${u.search}`.replace(/([?&]token=)[^&]*/, '$1…');
+  }
+  return {
+    status,
+    error: res?.json ? (res.data === '' ? null : res.data) : (res?.data ?? null),
+    message: `Http failure response for ${url}: ${status} ${STATUS_TEXT[status] ?? 'Unknown Error'}`,
+  };
+}
 
 function bffUrl(path, params) {
   const url = new URL(`/bff${path.startsWith('/') ? path : `/${path}`}`, window.location.origin);
@@ -35,7 +59,7 @@ async function request(method, path, { params, body } = {}) {
   } catch {
     /* plain-text responses (e.g. "Unauthorized.") */
   }
-  return { status: res.status, ok: res.ok, data, json };
+  return { status: res.status, ok: res.ok, data, json, url: url.toString() };
 }
 
 /**
