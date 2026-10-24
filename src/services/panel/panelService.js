@@ -15,6 +15,7 @@ import { hashPassword } from '../auth/authService.js';
 import { logActivity } from '../../repositories/activityRepository.js';
 import { nameOrEmail, userTransformer } from '../stock/transformers.js';
 import { nowSql } from '../../utils/time.js';
+import { navbar as announcementsNavbar } from './announcementsPanel.js';
 
 const ok = (body, status = 200) => ({ status, body });
 
@@ -79,6 +80,7 @@ export async function context(req, ctx) {
     role: role ?? null,
     permissions,
     impersonating: Boolean(ctx.payload.imp),
+    announcements: await announcementsNavbar(req, ctx.user),
     settings: {
       app_name: setting('app_name'),
       remember_me: setting('remember_me'),

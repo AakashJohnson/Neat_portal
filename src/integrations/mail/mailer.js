@@ -35,6 +35,7 @@ export async function sendMail({ mailable, ...message }) {
   const info = await getTransport().sendMail({ from, ...message });
   if (env.MAIL_TRANSPORT !== 'smtp') {
     outbox.push({ mailable, ...message });
+    if (outbox.length > 1000) outbox.splice(0, outbox.length - 1000);
     logger.debug({ mailable, to: message.to }, 'mail captured (json transport)');
   }
   return info;
