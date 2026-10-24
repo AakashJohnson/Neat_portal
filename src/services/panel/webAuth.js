@@ -28,6 +28,18 @@ import { nowSql } from '../../utils/time.js';
 const ok = (body, status = 200) => ({ status, body });
 const errors = (...messages) => ok({ message: messages[0], errors: { general: messages } }, 422);
 
+// ---------------------------------------------------------- guest settings
+
+/** setting(...) values the guest views (login/register/reset) read. */
+export const publicSettings = () =>
+  ok({
+    app_name: setting('app_name'),
+    remember_me: setting('remember_me'),
+    forgot_password: setting('forgot_password'),
+    reg_enabled: setting('reg_enabled'),
+    tos: setting('tos'),
+  });
+
 // ------------------------------------------------------------------ login
 
 /** ThrottlesLogins (RateLimiter in the cache): key → { attempts, lockedUntil }. */

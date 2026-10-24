@@ -6,3 +6,6 @@ coverage/
 *.log
 evidence-local/
 .scratch/
+
+# runtime settings copy (SETTINGS_PATH)
+storage/

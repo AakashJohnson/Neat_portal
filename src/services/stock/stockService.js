@@ -81,19 +81,36 @@ async function deleteAvatarIfUploaded(user) {
   if (isUploadedAvatar(user.avatar)) await unlink(publicPath(AVATAR_DIR, path.basename(user.avatar))).catch(() => {});
 }
 
-/** UserAvatarManager::uploadAndCropAvatar(): centred 160×160 crop; null on failure. */
-async function uploadAndCropAvatar(file) {
+/** Crop points from the web form (points[x1] … points[y2]) or a nested object; null when absent. */
+export function cropPoints(body) {
+  const p = body?.points && typeof body.points === 'object' ? body.points : { x1: body?.['points[x1]'], y1: body?.['points[y1]'], x2: body?.['points[x2]'], y2: body?.['points[y2]'] };
+  return ['x1', 'y1', 'x2', 'y2'].every((k) => p[k] !== undefined && p[k] !== null && p[k] !== '') ? p : null;
+}
+
+/**
+ * UserAvatarManager::uploadAndCropAvatar(): with crop points (the web form's
+ * Croppie selection) a floor(x2 - x1) square at (x1, y1) resized to 160×160,
+ * otherwise a centred 160×160 crop; null on failure.
+ */
+async function uploadAndCropAvatar(file, points = null) {
   try {
     const image = sharp(file.path);
     const meta = await image.metadata();
-    const w = Math.min(160, meta.width);
-    const h = Math.min(160, meta.height);
-    const left = Math.max(0, Math.floor((meta.width - w) / 2));
-    const top = Math.max(0, Math.floor((meta.height - h) / 2));
+    let pipeline;
+    if (points) {
+      const size = Math.floor(Number(points.x2) - Number(points.x1));
+      pipeline = image.extract({ left: Math.trunc(Number(points.x1)), top: Math.trunc(Number(points.y1)), width: size, height: size }).resize(160, 160);
+    } else {
+      const w = Math.min(160, meta.width);
+      const h = Math.min(160, meta.height);
+      const left = Math.max(0, Math.floor((meta.width - w) / 2));
+      const top = Math.max(0, Math.floor((meta.height - h) / 2));
+      pipeline = image.extract({ left, top, width: w, height: h });
+    }
     const ext = { jpeg: 'jpeg', png: 'png', gif: 'gif', webp: 'webp' }[meta.format] ?? 'png';
     const name = `${randomBytes(20).toString('hex')}.${ext}`;
     await mkdir(publicPath(AVATAR_DIR), { recursive: true });
-    await writeFile(publicPath(AVATAR_DIR, name), await image.extract({ left, top, width: w, height: h }).toFormat(meta.format ?? 'png', { quality: 100 }).toBuffer());
+    await writeFile(publicPath(AVATAR_DIR, name), await pipeline.toFormat(meta.format ?? 'png', { quality: 100 }).toBuffer());
     return name;
   } catch {
     return null;
@@ -109,7 +126,7 @@ export async function updateMyAvatar(req, ctx) {
     await unlink(req.file.path).catch(() => {});
     throw new HttpError(422, { message: 'The given data was invalid.', errors: { file: ['The file must be an image.'] } });
   }
-  const name = await uploadAndCropAvatar(req.file);
+  const name = await uploadAndCropAvatar(req.file, cropPoints(req.body));
   await updateUser(ctx.user.id, { avatar: name });
   await log(ctx, 'Updated profile avatar.');
   return ok(userTransformer(req, await users().where('id', ctx.user.id).first()));
@@ -275,7 +292,7 @@ export async function adminAvatar(req, ctx, id, mode, input) {
   const target = await findOr404('users', id);
   if (mode === 'upload') {
     if (!req.file) throw new HttpError(422, { message: 'The given data was invalid.', errors: { file: ['The file field is required.'] } });
-    const name = await uploadAndCropAvatar(req.file);
+    const name = await uploadAndCropAvatar(req.file, cropPoints(req.body));
     await updateUser(target.id, { avatar: name });
   } else if (mode === 'external') {
     await validateOrFail(input, { url: 'required' });

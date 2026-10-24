@@ -20,6 +20,7 @@ const admin = [requireAuth, requirePermission('users.manage')];
 panelRouter.get('/panel/context', requireAuth, h((req) => panel.context(req, ctx(req))));
 
 // WebAuth controllers (guest pages of the panel) and e-mail verification.
+panelRouter.get('/panel/settings/public', h(() => webAuth.publicSettings()));
 panelRouter.post('/panel/login', h((req) => webAuth.login(requestAll(req), tokenCtx(req))));
 panelRouter.post('/panel/register', h((req) => webAuth.register(requestAll(req), tokenCtx(req))));
 panelRouter.post('/panel/password/reset', h((req) => webAuth.resetPassword(requestAll(req), tokenCtx(req))));
