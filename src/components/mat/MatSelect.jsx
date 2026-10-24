@@ -38,14 +38,21 @@ const textOf = (node) => {
   return '';
 };
 
-function collectOptions(children, out = []) {
+/**
+ * MatOption children → options. Plain HTML elements (e.g. a stray <option>)
+ * are projected into the panel as-is by Material (ng-content) but are not
+ * options: they are kept as `extras` with their position.
+ */
+function collectOptions(children, out = [], extras = []) {
   Children.forEach(children, (child) => {
     if (!isValidElement(child)) return;
     if (child.type === MatOption) {
       out.push({ value: child.props.value, disabled: !!child.props.disabled, content: child.props.children, viewValue: textOf(child.props.children).trim() });
-    } else if (child.props?.children) collectOptions(child.props.children, out);
+    } else if (typeof child.type === 'string') {
+      extras.push({ before: out.length, tag: child.type, attrs: child.props, text: textOf(child.props.children) });
+    } else if (child.props?.children) collectOptions(child.props.children, out, extras);
   });
-  return out;
+  return Object.assign(out, { extras });
 }
 
 const hasModifierKey = (e) => e.altKey || e.shiftKey || e.ctrlKey || e.metaKey;
@@ -275,6 +282,23 @@ export function MatSelect({
     setPlacement({ left: `${left}px`, ...vertical, transform });
   }, [open, geometry, placement]);
 
+  const extrasKey = JSON.stringify(options.extras.map((e) => [e.before, e.tag, e.text]));
+  // Projected non-option content (inserted through the DOM: React would reject
+  // e.g. <option> inside a <div>).
+  useLayoutEffect(() => {
+    const panel = panelRef.current;
+    if (!open || !panel || !options.extras.length) return;
+    const nodes = options.extras.map(({ before, tag, attrs, text }) => {
+      const el = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) if (k !== 'children' && typeof v !== 'function' && typeof v !== 'object') el.setAttribute(k === 'className' ? 'class' : k, String(v));
+      el.textContent = text;
+      panel.insertBefore(el, panel.querySelectorAll(':scope > mat-option')[before] ?? null);
+      return el;
+    });
+    return () => nodes.forEach((n) => n.remove());
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by content
+  }, [open, extrasKey]);
+
   // Panel scroll position, then the showing animation.
   useLayoutEffect(() => {
     if (!open || !placement || !panelRef.current) return;
@@ -422,7 +446,7 @@ export function MatSelect({
                         role="option"
                         tabindex={option.disabled ? '-1' : '0'}
                         id={`mat-option-${uid}-${i}`}
-                        aria-selected={String(i === selectedIndex)}
+                        aria-selected={i === selectedIndex ? 'true' : undefined}
                         aria-disabled={String(option.disabled)}
                         onClick={() => {
                           if (option.disabled) return;

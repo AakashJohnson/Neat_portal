@@ -27,6 +27,11 @@ async function fixtureEmail(role) {
   }
 }
 
+/** Username/password of the fixture user of `role` (for UI login tests; never logged). */
+export async function fixtureCredentials(role) {
+  return { username: await fixtureEmail(role), password: env.FIXTURE_PASSWORD };
+}
+
 /** POST /api/login on Express for the fixture user of `role`; returns the JWT. */
 export async function fixtureToken(role) {
   const res = await fetch(`${API}/api/login`, {

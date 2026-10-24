@@ -75,7 +75,8 @@ function Toast({ toast }) {
     >
       {toast.title && (
         <div className="toast-title" aria-label={toast.title}>
-          {toast.title}
+          {/* template: "{{ title }} <ng-container …>" — trailing space kept */}
+          {`${toast.title} `}
         </div>
       )}
       {toast.message && (

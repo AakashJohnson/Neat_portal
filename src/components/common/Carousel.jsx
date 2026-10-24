@@ -28,7 +28,7 @@ export default function Carousel({ id, slides, indicators = 0, controls = false,
       {indicators > 0 && (
         <ol className="carousel-indicators">
           {Array.from({ length: indicators }, (_, i) => (
-            <li key={i} className={i === index ? 'active' : undefined} onClick={() => go(i)} />
+            <li key={i} data-target={`#${id}`} data-slide-to={i} className={i === index ? 'active' : undefined} onClick={() => go(i)} />
           ))}
         </ol>
       )}

@@ -38,7 +38,7 @@ export function SessionProvider({ children }) {
   const login = useCallback(async (username, password) => {
     const res = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
     const data = await res.json().catch(() => ({}));
-    if (res.ok) {
+    if (res.ok && data.stored) {
       setClaims(data.claims);
       setLegacyDecodable(data.legacyDecodable ?? true);
     }

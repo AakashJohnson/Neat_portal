@@ -51,7 +51,11 @@ async function request(method, path, { params, body } = {}) {
 export async function subscribe(request, next, error) {
   const res = await request.catch((e) => ({ ok: false, status: 0, data: null, json: false, networkError: e }));
   if (!res.ok || !res.json) {
-    error?.(res);
+    try {
+      error?.(res);
+    } catch (e) {
+      console.error(e); // an exception in the error callback, as in Angular
+    }
     return;
   }
   try {

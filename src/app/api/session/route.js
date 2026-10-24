@@ -26,8 +26,14 @@ export async function POST(request) {
   const data = await res.json().catch(() => ({}));
   if (!res.ok || !data.token) return NextResponse.json(data, { status: res.status });
 
-  const response = NextResponse.json({ claims: publicClaims(decodeJwt(data.token)), legacyDecodable: legacyDecodable(data.token) });
-  response.cookies.set(TOKEN_COOKIE, data.token, cookieOptions());
+  // LoginComponent.handleResponse stored the token only if its inline atob()
+  // decode worked and email_verified_at was set; otherwise the user stayed
+  // logged out ("Kindly verify email first!" / an uncaught decode error).
+  const claims = decodeJwt(data.token);
+  const decodable = legacyDecodable(data.token);
+  const stored = decodable && claims.email_verified_at != null;
+  const response = NextResponse.json({ claims: publicClaims(claims), legacyDecodable: decodable, stored });
+  if (stored) response.cookies.set(TOKEN_COOKIE, data.token, cookieOptions());
   return response;
 }
 
