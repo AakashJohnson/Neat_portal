@@ -48,6 +48,24 @@ const SETTING_GROUPS = {
  * POST /api/panel/settings/{group} — Setting::set() for every posted key, then
  * Setting::save() and "Updated website settings." in the activity log.
  */
+/**
+ * GET /api/panel/settings/{group} — what settings/{general,auth,notifications}
+ * .blade.php read through setting(), plus whether the Authy and reCAPTCHA keys
+ * are configured (the partials show an info alert instead of the toggle).
+ */
+export async function readSettings(ctx, group) {
+  const permission = SETTING_GROUPS[group];
+  if (!permission) throw httpException(404, '');
+  if (!(await hasPermissions(ctx.user, [permission]))) throw httpException(403, 'Forbidden.');
+  let data = {};
+  try {
+    data = JSON.parse(readFileSync(path.resolve(env.SETTINGS_PATH), 'utf8'));
+  } catch {
+    // missing settings file: every setting() falls back to its default
+  }
+  return ok({ settings: data, two_factor_configured: Boolean(env.AUTHY_KEY), captcha_configured: Boolean(env.RECAPTCHA_SITEKEY && env.RECAPTCHA_SECRETKEY) });
+}
+
 export async function updateSettings(ctx, group, input) {
   const permission = SETTING_GROUPS[group];
   if (!permission) throw httpException(404, '');

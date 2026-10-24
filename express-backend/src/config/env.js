@@ -52,6 +52,10 @@ const schema = z.object({
   // External NEAT EoI system that receives uploaded MoU documents.
   EOI_API_URL: z.string().default('https://neatphase2eoiapi.aicte-india.org/api/saveDocument'),
   SETTINGS_PATH: z.string().optional(),
+  // Integrations the settings pages only report on (2FA / reCAPTCHA stay BLOCKED until keys exist).
+  AUTHY_KEY: z.string().optional(),
+  RECAPTCHA_SITEKEY: z.string().optional(),
+  RECAPTCHA_SECRETKEY: z.string().optional(),
 });
 
 const parsed = schema.safeParse(process.env);

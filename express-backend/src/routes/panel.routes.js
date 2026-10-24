@@ -23,6 +23,7 @@ panelRouter.get('/panel/context', requireAuth, h((req) => panel.context(req, ctx
 panelRouter.get('/panel/settings/public', h(() => webAuth.publicSettings()));
 panelRouter.post('/panel/login', h((req) => webAuth.login(requestAll(req), tokenCtx(req))));
 panelRouter.post('/panel/register', h((req) => webAuth.register(requestAll(req), tokenCtx(req))));
+panelRouter.post('/panel/password/remind', h((req) => webAuth.remindPassword(requestAll(req), tokenCtx(req))));
 panelRouter.post('/panel/password/reset', h((req) => webAuth.resetPassword(requestAll(req), tokenCtx(req))));
 panelRouter.post('/panel/email/resend', requireAuth, h((req) => webAuth.resendVerification(ctx(req))));
 panelRouter.post('/panel/email/verify', requireAuth, h((req) => webAuth.verifyEmail(ctx(req), requestAll(req))));
@@ -44,6 +45,7 @@ panelRouter.get('/panel/announcements/:id', requireAuth, h((req) => announcement
 panelRouter.put('/panel/announcements/:id', ...manageAnnouncements, h((req) => announcements.update(req, ctx(req), req.params.id, requestAll(req))));
 panelRouter.delete('/panel/announcements/:id', ...manageAnnouncements, h((req) => announcements.destroy(ctx(req), req.params.id)));
 
+panelRouter.get('/panel/settings/:group', requireAuth, h((req) => panel.readSettings(ctx(req), req.params.group)));
 panelRouter.post('/panel/settings/:group', requireAuth, h((req) => panel.updateSettings(ctx(req), req.params.group, requestAll(req))));
 
 panelRouter.post('/panel/impersonate/leave', requireAuth, h((req) => panel.leaveImpersonation(ctx(req), tokenCtx(req))));

@@ -164,7 +164,7 @@ export async function changePassword(input) {
 // ---------------------------------------------------- stock password broker
 
 /** DatabaseTokenRepository::create(): one hashed token per e-mail. */
-async function createBrokerToken(email) {
+export async function createBrokerToken(email) {
   await db(table('password_resets')).where('email', email).delete();
   // hash_hmac('sha256', Str::random(40), APP_KEY): a 64-char hex secret; only its randomness matters.
   const token = randomBytes(32).toString('hex');
