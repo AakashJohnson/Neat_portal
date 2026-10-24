@@ -23,9 +23,24 @@ function walk(dir, out = []) {
 /** Component name = file name without ".component.css" (e.g. "navbar", "admin-dashboard"). */
 export const scopeName = (file) => path.basename(file, '.component.css');
 
+// Material components without content projection: everything inside them comes
+// from their own template, which emulated encapsulation never matches without
+// ::ng-deep (e.g. a component's `.mat-form-field {width:100%}` does not reach
+// the paginator's page-size field).
+const CLOSED_COMPONENTS = ':not(.mat-paginator *, .mat-datepicker-toggle *)';
+const isPseudoElement = (n) => n.type === 'pseudo' && (n.value.startsWith('::') || /^:(before|after|first-line|first-letter)$/i.test(n.value));
+
 function prefixSelector(sel, scope) {
   return selectorParser((root) => {
     root.each((s) => {
+      const ngDeep = s.some((n) => n.type === 'pseudo' && (n.value === '::ng-deep' || n.value === '/deep/'));
+      if (!ngDeep) {
+        let last = s.last;
+        while (last && isPseudoElement(last)) last = last.prev();
+        const exclusion = selectorParser.pseudo({ value: CLOSED_COMPONENTS });
+        if (last && last.type !== 'combinator') s.insertAfter(last, exclusion);
+        else if (!last) s.prepend(exclusion);
+      }
       // :host / :host(.x) → the scope element itself.
       let hostHandled = false;
       s.walkPseudos((p) => {

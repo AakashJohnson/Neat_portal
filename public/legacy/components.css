@@ -2,7 +2,7 @@
 
 /* ---- components/admin/admin-courses-offered/admin-courses-offered.component.css ---- */
 /* Container to hold the search input and button */
-.ngc-admin-courses-offered .prdctLstHdng {
+.ngc-admin-courses-offered .prdctLstHdng:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: flex;               /* Use flexbox to align items */
     justify-content: space-between;  /* Push the button to the right */
     align-items: center;         /* Vertically center the items */
@@ -10,7 +10,7 @@
   }
   
   /* Style the search input */
-  .ngc-admin-courses-offered .search-input {
+  .ngc-admin-courses-offered .search-input:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 8px;
     font-size: 14px;
     width: 250px;                /* Set a width for the search input */
@@ -20,7 +20,7 @@
   }
   
   /* Style the search button */
-  .ngc-admin-courses-offered .search-btn {
+  .ngc-admin-courses-offered .search-btn:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 8px 16px;
     background-color: #007bff;
     color: white;
@@ -29,45 +29,45 @@
     cursor: pointer;
   }
   
-  .ngc-admin-courses-offered .search-btn i {
+  .ngc-admin-courses-offered .search-btn i:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-left: 5px;            /* Add space between icon and text */
   }
   
   /* Optional: add a hover effect for the button */
-  .ngc-admin-courses-offered .search-btn:hover {
+  .ngc-admin-courses-offered .search-btn:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: #0056b3;
   }
   
 
 /* ---- components/admin/admin-mom-management/admin-mom-management.component.css ---- */
-.ngc-admin-mom-management .btn-model{
+.ngc-admin-mom-management .btn-model:not(.mat-paginator *, .mat-datepicker-toggle *){
 font-size: 12px !important;
 float: right;
 text-align: right;
 margin-left: 20px !important;}
 
-.ngc-admin-mom-management i.zmdi.zmdi-close.zmdi-hc-2x {
+.ngc-admin-mom-management i.zmdi.zmdi-close.zmdi-hc-2x:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #f00;
 }
 
-.ngc-admin-mom-management i.zmdi.zmdi-check.zmdi-hc-2x {
+.ngc-admin-mom-management i.zmdi.zmdi-check.zmdi-hc-2x:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #28a745;
 }
-.ngc-admin-mom-management .comp_dd {
+.ngc-admin-mom-management .comp_dd:not(.mat-paginator *, .mat-datepicker-toggle *) {
     border: 1px solid;
     height: 40px;
     padding: 10px;
 }
-.ngc-admin-mom-management .col-md-4.mb-3.upload_class {
+.ngc-admin-mom-management .col-md-4.mb-3.upload_class:not(.mat-paginator *, .mat-datepicker-toggle *) {
     float: left;
 }
-.ngc-admin-mom-management button.pickfile_button {
+.ngc-admin-mom-management button.pickfile_button:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 6px;
     font-weight: bold;
     width: 100px;
     cursor: pointer;
 }
-.ngc-admin-mom-management button.uploadmou_button {
+.ngc-admin-mom-management button.uploadmou_button:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 8px;
     background: #F00;
     border: none;
@@ -76,11 +76,11 @@ margin-left: 20px !important;}
     width: 120px;
     cursor: pointer;
 }
-.ngc-admin-mom-management .col-md-2.mb-3.upload_class {
+.ngc-admin-mom-management .col-md-2.mb-3.upload_class:not(.mat-paginator *, .mat-datepicker-toggle *) {
     float: left;
 }
 /* Header */
-.ngc-admin-mom-management .header-cell {
+.ngc-admin-mom-management .header-cell:not(.mat-paginator *, .mat-datepicker-toggle *) {
   font-weight: 600;
   font-size: 14px;
  /* background: #f5f7fa;
@@ -88,39 +88,39 @@ margin-left: 20px !important;}
 }
 
 /* Alignment */
-.ngc-admin-mom-management .text-left {
+.ngc-admin-mom-management .text-left:not(.mat-paginator *, .mat-datepicker-toggle *) {
   text-align: left;
 }
 
-.ngc-admin-mom-management .text-center {
+.ngc-admin-mom-management .text-center:not(.mat-paginator *, .mat-datepicker-toggle *) {
   text-align: center;
 }
 
 /* Status */
-.ngc-admin-mom-management .status-yes {
+.ngc-admin-mom-management .status-yes:not(.mat-paginator *, .mat-datepicker-toggle *) {
   color: #2e7d32;
   font-weight: 500;
 }
 
-.ngc-admin-mom-management .status-no {
+.ngc-admin-mom-management .status-no:not(.mat-paginator *, .mat-datepicker-toggle *) {
   color: #c62828;
   font-weight: 500;
 }
 
 /* Download icon */
-.ngc-admin-mom-management .download-btn mat-icon {
+.ngc-admin-mom-management .download-btn mat-icon:not(.mat-paginator *, .mat-datepicker-toggle *) {
   color: #1976d2;
   cursor: pointer;
 }
 
 /* Action column */
-.ngc-admin-mom-management .action-wrapper {
+.ngc-admin-mom-management .action-wrapper:not(.mat-paginator *, .mat-datepicker-toggle *) {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.ngc-admin-mom-management .action-edit {
+.ngc-admin-mom-management .action-edit:not(.mat-paginator *, .mat-datepicker-toggle *) {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -128,68 +128,68 @@ margin-left: 20px !important;}
 }
 
 /* Date field */
-.ngc-admin-mom-management .date-field {
+.ngc-admin-mom-management .date-field:not(.mat-paginator *, .mat-datepicker-toggle *) {
   width: 150px;
 }
 
 /* Buttons */
-.ngc-admin-mom-management .btn-save {
+.ngc-admin-mom-management .btn-save:not(.mat-paginator *, .mat-datepicker-toggle *) {
   height: 36px;
 }
 
-.ngc-admin-mom-management .btn-cancel {
+.ngc-admin-mom-management .btn-cancel:not(.mat-paginator *, .mat-datepicker-toggle *) {
   height: 36px;
 }
 
 /* Table spacing */
-.ngc-admin-mom-management .table td,.ngc-admin-mom-management  .table th {
+.ngc-admin-mom-management .table td:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-admin-mom-management  .table th:not(.mat-paginator *, .mat-datepicker-toggle *) {
   vertical-align: middle;
 }
 
-.ngc-admin-mom-management .headerBG {
+.ngc-admin-mom-management .headerBG:not(.mat-paginator *, .mat-datepicker-toggle *) {
   /*background-color: #2c3e50 !important; /* your old color */
   /*color: #fff !important;*/
   font-weight: 800;
 } 
 
-.ngc-admin-mom-management .text-left {
+.ngc-admin-mom-management .text-left:not(.mat-paginator *, .mat-datepicker-toggle *) {
   text-align: left;
 }
 
-.ngc-admin-mom-management .text-center {
+.ngc-admin-mom-management .text-center:not(.mat-paginator *, .mat-datepicker-toggle *) {
   text-align: center;
 }
 
-.ngc-admin-mom-management .edit-btn mat-icon {
+.ngc-admin-mom-management .edit-btn mat-icon:not(.mat-paginator *, .mat-datepicker-toggle *) {
   font-size: 16px;
   color: #6c757d;
 }
 
-.ngc-admin-mom-management .edit-btn:hover mat-icon {
+.ngc-admin-mom-management .edit-btn:hover mat-icon:not(.mat-paginator *, .mat-datepicker-toggle *) {
   color: #000;
 }
 
-.ngc-admin-mom-management .gap-2 {
+.ngc-admin-mom-management .gap-2:not(.mat-paginator *, .mat-datepicker-toggle *) {
   gap: 8px;
 }
 
-.ngc-admin-mom-management .text-truncate {
+.ngc-admin-mom-management .text-truncate:not(.mat-paginator *, .mat-datepicker-toggle *) {
   max-width: 480px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.ngc-admin-mom-management .file-status {
+.ngc-admin-mom-management .file-status:not(.mat-paginator *, .mat-datepicker-toggle *) {
   border-left: 3px solid #28a745; /* subtle green border */
   padding-left: 10px;
   font-family: 'Roboto', sans-serif;
 }
 
-.ngc-admin-mom-management .file-status .text-success {
+.ngc-admin-mom-management .file-status .text-success:not(.mat-paginator *, .mat-datepicker-toggle *) {
   color: #28a745;
 }
 
-.ngc-admin-mom-management .file-status .text-info {
+.ngc-admin-mom-management .file-status .text-info:not(.mat-paginator *, .mat-datepicker-toggle *) {
   color: #17a2b8;
 }
 
@@ -197,115 +197,115 @@ margin-left: 20px !important;}
 /* ---- components/admin/admin-products-management/admin-products-management.component.css ---- */
 
 
-  .ngc-admin-products-management .example-container {
+  .ngc-admin-products-management .example-container:not(.mat-paginator *, .mat-datepicker-toggle *) {
     width: 100%;
     max-height: 500px;
     overflow-x: auto;
     overflow-y: auto;
 }
 
-.ngc-admin-products-management table {
+.ngc-admin-products-management table:not(.mat-paginator *, .mat-datepicker-toggle *) {
     width: 100%;
     min-width: 1000px;
 }
 
-.ngc-admin-products-management .mat-header-row {
+.ngc-admin-products-management .mat-header-row:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: sticky;
     top: 0;
     z-index: 10;
 }
 
-.ngc-admin-products-management .mat-header-cell {
+.ngc-admin-products-management .mat-header-cell:not(.mat-paginator *, .mat-datepicker-toggle *) {
     white-space: nowrap;
 }
 
-.ngc-admin-products-management .mat-cell {
+.ngc-admin-products-management .mat-cell:not(.mat-paginator *, .mat-datepicker-toggle *) {
     white-space: nowrap;
 }
 
 /* ---- components/admin/admin-registered-company/admin-registered-company.component.css ---- */
-.ngc-admin-registered-company table {
+.ngc-admin-registered-company table:not(.mat-paginator *, .mat-datepicker-toggle *) {
     width: 100%;
 }
 
-.ngc-admin-registered-company .mat-form-field {
+.ngc-admin-registered-company .mat-form-field:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-size: 14px;
     width: 100%;
 }
 
-.ngc-admin-registered-company td,.ngc-admin-registered-company 
-th {
+.ngc-admin-registered-company td:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-admin-registered-company 
+th:not(.mat-paginator *, .mat-datepicker-toggle *) {
     border-color: #dee2e6;
     vertical-align: middle;
 }
 
-.ngc-admin-registered-company .no-records-found {
+.ngc-admin-registered-company .no-records-found:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-style: italic;
     text-align: center;
 }
 
 /* ---- components/admin/admin-registered-institute/admin-registered-institute.component.css ---- */
-.ngc-admin-registered-institute table {
+.ngc-admin-registered-institute table:not(.mat-paginator *, .mat-datepicker-toggle *) {
     width: 100%;
   }
   
-  .ngc-admin-registered-institute .mat-form-field {
+  .ngc-admin-registered-institute .mat-form-field:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-size: 14px;
     width: 100%;
   }
   
-  .ngc-admin-registered-institute td,.ngc-admin-registered-institute  th {
+  .ngc-admin-registered-institute td:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-admin-registered-institute  th:not(.mat-paginator *, .mat-datepicker-toggle *) {
     vertical-align: middle;
   }
   
-  .ngc-admin-registered-institute .no-records-found{
+  .ngc-admin-registered-institute .no-records-found:not(.mat-paginator *, .mat-datepicker-toggle *){
     font-style: italic;
     text-align: center;
   }
   
 
 /* ---- components/admin/admin-registered-student/admin-registered-student.component.css ---- */
-.ngc-admin-registered-student table {
+.ngc-admin-registered-student table:not(.mat-paginator *, .mat-datepicker-toggle *) {
     width: 100%;
   }
   
-  .ngc-admin-registered-student .mat-form-field {
+  .ngc-admin-registered-student .mat-form-field:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-size: 14px;
     width: 100%;
   }
   
-  .ngc-admin-registered-student td,.ngc-admin-registered-student  th {
+  .ngc-admin-registered-student td:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-admin-registered-student  th:not(.mat-paginator *, .mat-datepicker-toggle *) {
     vertical-align: middle;
   }
   
-  .ngc-admin-registered-student .no-records-found{
+  .ngc-admin-registered-student .no-records-found:not(.mat-paginator *, .mat-datepicker-toggle *){
     font-style: italic;
     text-align: center;
   }
   
 
 /* ---- components/admin/free-seat-allocation/free-seat-allocation.component.css ---- */
-.ngc-free-seat-allocation table {
+.ngc-free-seat-allocation table:not(.mat-paginator *, .mat-datepicker-toggle *) {
   width: 100%;
 }
 
-.ngc-free-seat-allocation .mat-form-field {
+.ngc-free-seat-allocation .mat-form-field:not(.mat-paginator *, .mat-datepicker-toggle *) {
   font-size: 14px;
   width: 100%;
 }
 
-.ngc-free-seat-allocation td,.ngc-free-seat-allocation 
-th {
+.ngc-free-seat-allocation td:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-free-seat-allocation 
+th:not(.mat-paginator *, .mat-datepicker-toggle *) {
   border-color: #dee2e6;
   vertical-align: middle;
 }
 
-.ngc-free-seat-allocation .no-records-found {
+.ngc-free-seat-allocation .no-records-found:not(.mat-paginator *, .mat-datepicker-toggle *) {
   font-style: italic;
   text-align: center;
 }
 
-.ngc-free-seat-allocation .headerBG {
+.ngc-free-seat-allocation .headerBG:not(.mat-paginator *, .mat-datepicker-toggle *) {
   color: #fff;
   background-color: #E67E22;
   font-family: montserratlight;
@@ -318,27 +318,27 @@ th {
   padding: .75rem;
 }
 
-.ngc-free-seat-allocation .tableData {
+.ngc-free-seat-allocation .tableData:not(.mat-paginator *, .mat-datepicker-toggle *) {
   font-family: montserratlight;
   padding: .75rem;
   vertical-align: top;
 }
 
 /* ---- components/admin/free-seat-applications/free-seat-applications.component.css ---- */
-.ngc-free-seat-applications table {
+.ngc-free-seat-applications table:not(.mat-paginator *, .mat-datepicker-toggle *) {
     width: 100%;
   }
   
-  .ngc-free-seat-applications .mat-form-field {
+  .ngc-free-seat-applications .mat-form-field:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-size: 14px;
     width: 100%;
   }
   
-  .ngc-free-seat-applications td,.ngc-free-seat-applications  th {
+  .ngc-free-seat-applications td:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-free-seat-applications  th:not(.mat-paginator *, .mat-datepicker-toggle *) {
     vertical-align: middle;
   }
   
-  .ngc-free-seat-applications .no-records-found{
+  .ngc-free-seat-applications .no-records-found:not(.mat-paginator *, .mat-datepicker-toggle *){
     font-style: italic;
     text-align: center;
   }
@@ -347,40 +347,40 @@ th {
 /* ---- components/pages/about-us/about-us.component.css ---- */
 @media only screen and (max-width: 767px)
 {
-	.ngc-about-us .imggap
+	.ngc-about-us .imggap:not(.mat-paginator *, .mat-datepicker-toggle *)
 	{
 		bottom:0px;
 	}
 }
 @media only screen and (min-width: 768px)
 {
-	.ngc-about-us .imggap
+	.ngc-about-us .imggap:not(.mat-paginator *, .mat-datepicker-toggle *)
 	{
 		bottom:-20px;
 	}
 }
 
 /* ---- components/pages/announcement/announcement.component.css ---- */
-.ngc-announcement body {
+.ngc-announcement body:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-family: Verdana, sans-serif;
     margin: 0;
 }
 
-.ngc-announcement * {
+.ngc-announcement *:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-sizing: border-box;
 }
 
-.ngc-announcement .row>.column {
+.ngc-announcement .row>.column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 0 8px;
 }
 
-.ngc-announcement .row:after {
+.ngc-announcement .row:not(.mat-paginator *, .mat-datepicker-toggle *):after {
     content: "";
     display: table;
     clear: both;
 }
 
-.ngc-announcement .column {
+.ngc-announcement .column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     float: left;
     width: 25%;
 }
@@ -388,7 +388,7 @@ th {
 
 /* The Modal (background) */
 
-.ngc-announcement .modal {
+.ngc-announcement .modal:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
     position: fixed;
     z-index: 1045;
@@ -401,7 +401,7 @@ th {
 
 /* Modal Content */
 
-.ngc-announcement .modal-content {
+.ngc-announcement .modal-content:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: relative;
     background-color: rgba(255, 255, 255, 0);
     width: 100%;
@@ -411,7 +411,7 @@ th {
 
 /* The Close Button */
 
-.ngc-announcement .close {
+.ngc-announcement .close:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: white !important;
     z-index: 1045;
     position: absolute;
@@ -420,26 +420,26 @@ th {
     font-size: 50px;
 }
 
-.ngc-announcement .close:hover,.ngc-announcement 
-.close:focus {
+.ngc-announcement .close:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-announcement 
+.close:focus:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #999;
     text-decoration: none;
     cursor: pointer;
 }
 
-.ngc-announcement .mySlides {
+.ngc-announcement .mySlides:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
 }
 
-.ngc-announcement .cursor {
+.ngc-announcement .cursor:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
 }
 
 
 /* Next & previous buttons */
 
-.ngc-announcement .prev,.ngc-announcement 
-.next {
+.ngc-announcement .prev:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-announcement 
+.next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
     position: absolute;
     top: 50%;
@@ -458,7 +458,7 @@ th {
 
 /* Position the "next button" to the right */
 
-.ngc-announcement .next {
+.ngc-announcement .next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     right: 0;
     border-radius: 3px 0 0 3px;
 }
@@ -466,15 +466,15 @@ th {
 
 /* On hover, add a black background color with a little bit see-through */
 
-.ngc-announcement .prev:hover,.ngc-announcement 
-.next:hover {
+.ngc-announcement .prev:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-announcement 
+.next:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: rgba(255, 255, 255, 0);
 }
 
 
 /* Number text (1/3 etc) */
 
-.ngc-announcement .numbertext {
+.ngc-announcement .numbertext:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #f2f2f2;
     font-size: 12px;
     padding: 8px 12px;
@@ -482,35 +482,35 @@ th {
     top: 0;
 }
 
-.ngc-announcement img {
+.ngc-announcement img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-bottom: -4px;
 }
 
-.ngc-announcement .caption-container {
+.ngc-announcement .caption-container:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: center;
     background-color: black;
     padding: 2px 16px;
     color: white;
 }
 
-.ngc-announcement .demo {
+.ngc-announcement .demo:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 0.6;
 }
 
-.ngc-announcement .active,.ngc-announcement 
-.demo:hover {
+.ngc-announcement .active:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-announcement 
+.demo:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 1;
 }
 
-.ngc-announcement img.hover-shadow {
+.ngc-announcement img.hover-shadow:not(.mat-paginator *, .mat-datepicker-toggle *) {
     transition: 0.3s;
 }
 
-.ngc-announcement .hover-shadow:hover {
+.ngc-announcement .hover-shadow:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.ngc-announcement .frame-square3 {
+.ngc-announcement .frame-square3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: inline-block;
     vertical-align: center;
     MAX-width: 100%;
@@ -518,13 +518,13 @@ th {
     text-align: center;
 }
 
-.ngc-announcement .crop3 {
+.ngc-announcement .crop3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     height: 100%;
     /* overflow: hidden; */
     position: relative;
 }
 
-.ngc-announcement .crop3 img {
+.ngc-announcement .crop3 img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: block;
     max-width: 100%;
     max-height: 100%;
@@ -536,12 +536,12 @@ th {
     left: -100%;
 }
 
-.ngc-announcement .titlelist
+.ngc-announcement .titlelist:not(.mat-paginator *, .mat-datepicker-toggle *)
 {
     margin-bottom:14px
 }
 
-.ngc-announcement .titlelist a
+.ngc-announcement .titlelist a:not(.mat-paginator *, .mat-datepicker-toggle *)
 {
     font-family: "poppins", sans-serif;
     font-size: 17px;
@@ -550,7 +550,7 @@ th {
 
 /* ---- components/pages/b2b-course/b2b-course.component.css ---- */
 /* Container to hold the search input and button */
-.ngc-b2b-course .prdctLstHdng {
+.ngc-b2b-course .prdctLstHdng:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: flex;               /* Use flexbox to align items */
     justify-content: space-between;  /* Push the button to the right */
     align-items: center;         /* Vertically center the items */
@@ -558,7 +558,7 @@ th {
   }
   
   /* Style the search input */
-  .ngc-b2b-course .search-input {
+  .ngc-b2b-course .search-input:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 8px;
     font-size: 14px;
     width: 250px;                /* Set a width for the search input */
@@ -568,7 +568,7 @@ th {
   }
   
   /* Style the search button */
-  .ngc-b2b-course .search-btn {
+  .ngc-b2b-course .search-btn:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 8px 16px;
     background-color: #007bff;
     color: white;
@@ -577,29 +577,29 @@ th {
     cursor: pointer;
   }
   
-  .ngc-b2b-course .search-btn i {
+  .ngc-b2b-course .search-btn i:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-left: 5px;            /* Add space between icon and text */
   }
   
   /* Optional: add a hover effect for the button */
-  .ngc-b2b-course .search-btn:hover {
+  .ngc-b2b-course .search-btn:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: #0056b3;
   }
   
 
 /* ---- components/pages/b2b-course-details/b2b-course-details.component.css ---- */
-.ngc-b2b-course-details .prdctCntDetl
+.ngc-b2b-course-details .prdctCntDetl:not(.mat-paginator *, .mat-datepicker-toggle *)
 {
 	text-align: justify;
 }
-.ngc-b2b-course-details .prdctCntDetl p
+.ngc-b2b-course-details .prdctCntDetl p:not(.mat-paginator *, .mat-datepicker-toggle *)
 {
 	text-align: justify;
 }
 
 /* ---- components/pages/course/course.component.css ---- */
 /* Container to hold the search input and button */
-.ngc-course .prdctLstHdng {
+.ngc-course .prdctLstHdng:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: flex;               /* Use flexbox to align items */
     justify-content: space-between;  /* Push the button to the right */
     align-items: center;         /* Vertically center the items */
@@ -607,7 +607,7 @@ th {
   }
   
   /* Style the search input */
-  .ngc-course .search-input {
+  .ngc-course .search-input:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 8px;
     font-size: 14px;
     width: 250px;                /* Set a width for the search input */
@@ -617,7 +617,7 @@ th {
   }
   
   /* Style the search button */
-  .ngc-course .search-btn {
+  .ngc-course .search-btn:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 8px 16px;
     background-color: #007bff;
     color: white;
@@ -626,18 +626,18 @@ th {
     cursor: pointer;
   }
   
-  .ngc-course .search-btn i {
+  .ngc-course .search-btn i:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-left: 5px;            /* Add space between icon and text */
   }
   
   /* Optional: add a hover effect for the button */
-  .ngc-course .search-btn:hover {
+  .ngc-course .search-btn:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: #0056b3;
   }
   
 
 /* ---- components/pages/course-details/course-details.component.css ---- */
-    .ngc-course-details .add-comment-button {
+    .ngc-course-details .add-comment-button:not(.mat-paginator *, .mat-datepicker-toggle *) {
         margin-right: 10px;
         float: right !important;
         border-radius: 50% !important;
@@ -649,7 +649,7 @@ th {
         box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
     }
     
-    .ngc-course-details .submit-comment-button {
+    .ngc-course-details .submit-comment-button:not(.mat-paginator *, .mat-datepicker-toggle *) {
         position: relative;
         /* margin-right: 10px; */
         bottom: 40px !important;
@@ -663,7 +663,7 @@ th {
         box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
     }
     
-    .ngc-course-details .cancle-comment-button {
+    .ngc-course-details .cancle-comment-button:not(.mat-paginator *, .mat-datepicker-toggle *) {
         position: relative;
         bottom: 152px !important;
         margin-right: 10px;
@@ -677,11 +677,11 @@ th {
         box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
     }
     
-    .ngc-course-details .new-comment-box {
+    .ngc-course-details .new-comment-box:not(.mat-paginator *, .mat-datepicker-toggle *) {
         margin-bottom: 20px;
     }
     
-    .ngc-course-details .read-more>a {
+    .ngc-course-details .read-more>a:not(.mat-paginator *, .mat-datepicker-toggle *) {
         float: right !important;
         font-family: "montserratregular";
         line-height: 22px;
@@ -689,14 +689,14 @@ th {
         cursor: pointer;
     }
     
-    .ngc-course-details .read-less>a {
+    .ngc-course-details .read-less>a:not(.mat-paginator *, .mat-datepicker-toggle *) {
         font-family: "montserratregular";
         line-height: 22px;
         color: #E67E22 !important;
         cursor: pointer;
     }
     
-    .ngc-course-details .frame-square1 {
+    .ngc-course-details .frame-square1:not(.mat-paginator *, .mat-datepicker-toggle *) {
         background: #fff;
         display: inline-block;
         vertical-align: center;
@@ -705,13 +705,13 @@ th {
         height: 250px;
     }
     
-    .ngc-course-details .crop1 {
+    .ngc-course-details .crop1:not(.mat-paginator *, .mat-datepicker-toggle *) {
         height: 100%;
         /* overflow: hidden; */
         position: relative;
     }
     
-    .ngc-course-details .crop1 img {
+    .ngc-course-details .crop1 img:not(.mat-paginator *, .mat-datepicker-toggle *) {
         display: block;
         max-width: 100%;
         max-height: 100%;
@@ -723,7 +723,7 @@ th {
         left: -130%;
     }
     
-    .ngc-course-details .frame-square2 {
+    .ngc-course-details .frame-square2:not(.mat-paginator *, .mat-datepicker-toggle *) {
         background: #fff;
         display: inline-block;
         vertical-align: center;
@@ -735,13 +735,13 @@ th {
         margin-bottom: .3em;
     }
     
-    .ngc-course-details .crop2 {
+    .ngc-course-details .crop2:not(.mat-paginator *, .mat-datepicker-toggle *) {
         height: 100%;
         /* overflow: hidden; */
         position: relative;
     }
     
-    .ngc-course-details .crop2 img {
+    .ngc-course-details .crop2 img:not(.mat-paginator *, .mat-datepicker-toggle *) {
         display: block;
         max-width: 100%;
         max-height: 100%;
@@ -753,58 +753,58 @@ th {
         left: -100%;
     }
     
-    .ngc-course-details .opac {
+    .ngc-course-details .opac:not(.mat-paginator *, .mat-datepicker-toggle *) {
         opacity: 0.7;
     }
     
-    .ngc-course-details .opac:hover {
+    .ngc-course-details .opac:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
         opacity: 1;
     }
-.ngc-course-details .course-text-content p {
+.ngc-course-details .course-text-content p:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: justify;
 }
-.ngc-course-details .custom-list li {
+.ngc-course-details .custom-list li:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: justify;
 }
-.ngc-course-details .course-details p {
+.ngc-course-details .course-details p:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: justify;
 }
-.ngc-course-details .single-item-text h4 {
+.ngc-course-details .single-item-text h4:not(.mat-paginator *, .mat-datepicker-toggle *) {
     white-space: inherit;
 }
-.ngc-course-details .table-bordered td,.ngc-course-details  .table-bordered th {
+.ngc-course-details .table-bordered td:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-course-details  .table-bordered th:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: justify;
 }
-.ngc-course-details .card-body {
+.ngc-course-details .card-body:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: justify;
 }
 
-.ngc-course-details .prdctCntDetl
+.ngc-course-details .prdctCntDetl:not(.mat-paginator *, .mat-datepicker-toggle *)
 {
 	text-align: justify;
 }
-.ngc-course-details .prdctCntDetl p
+.ngc-course-details .prdctCntDetl p:not(.mat-paginator *, .mat-datepicker-toggle *)
 {
 	text-align: justify;
 }
 
 /* ---- components/pages/custom-pagination/custom-pagination.component.css ---- */
-.ngc-custom-pagination .ngx-pagination {
+.ngc-custom-pagination .ngx-pagination:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-left: 0;
     margin-bottom: 1rem;
 }
 
-.ngc-custom-pagination .ngx-pagination::before,.ngc-custom-pagination 
-.ngx-pagination::after {
+.ngc-custom-pagination .ngx-pagination:not(.mat-paginator *, .mat-datepicker-toggle *)::before,.ngc-custom-pagination 
+.ngx-pagination:not(.mat-paginator *, .mat-datepicker-toggle *)::after {
     content: ' ';
     display: table;
 }
 
-.ngc-custom-pagination .ngx-pagination::after {
+.ngc-custom-pagination .ngx-pagination:not(.mat-paginator *, .mat-datepicker-toggle *)::after {
     clear: both;
 }
 
-.ngc-custom-pagination .ngx-pagination li {
+.ngc-custom-pagination .ngx-pagination li:not(.mat-paginator *, .mat-datepicker-toggle *) {
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
@@ -812,66 +812,66 @@ th {
     border-radius: 0;
 }
 
-.ngc-custom-pagination .ngx-pagination li {
+.ngc-custom-pagination .ngx-pagination li:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: inline-block;
 }
 
-.ngc-custom-pagination .ngx-pagination a,.ngc-custom-pagination 
-.ngx-pagination button {
+.ngc-custom-pagination .ngx-pagination a:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-custom-pagination 
+.ngx-pagination button:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #0a0a0a;
     display: block;
     padding: 0.1875rem 0.625rem;
     border-radius: 0;
 }
 
-.ngc-custom-pagination .ngx-pagination a:hover,.ngc-custom-pagination 
-.ngx-pagination button:hover {
+.ngc-custom-pagination .ngx-pagination a:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-custom-pagination 
+.ngx-pagination button:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background: #e6e6e6;
 }
 
-.ngc-custom-pagination .ngx-pagination .current {
+.ngc-custom-pagination .ngx-pagination .current:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 0.1875rem 0.625rem;
     background: #2199e8;
     color: #fefefe;
     cursor: default;
 }
 
-.ngc-custom-pagination .ngx-pagination .disabled {
+.ngc-custom-pagination .ngx-pagination .disabled:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 0.1875rem 0.625rem;
     color: #cacaca;
     cursor: default;
 }
 
-.ngc-custom-pagination .ngx-pagination .disabled:hover {
+.ngc-custom-pagination .ngx-pagination .disabled:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background: transparent;
 }
 
-.ngc-custom-pagination .ngx-pagination .ellipsis::after {
+.ngc-custom-pagination .ngx-pagination .ellipsis:not(.mat-paginator *, .mat-datepicker-toggle *)::after {
     content: '…';
     padding: 0.1875rem 0.625rem;
     color: #0a0a0a;
 }
 
-.ngc-custom-pagination .ngx-pagination a,.ngc-custom-pagination 
-.ngx-pagination button {
+.ngc-custom-pagination .ngx-pagination a:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-custom-pagination 
+.ngx-pagination button:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
 }
 
-.ngc-custom-pagination .ngx-pagination .pagination-previous a::before,.ngc-custom-pagination 
-.ngx-pagination .pagination-previous.disabled::before {
+.ngc-custom-pagination .ngx-pagination .pagination-previous a:not(.mat-paginator *, .mat-datepicker-toggle *)::before,.ngc-custom-pagination 
+.ngx-pagination .pagination-previous.disabled:not(.mat-paginator *, .mat-datepicker-toggle *)::before {
     content: '«';
     display: inline-block;
     margin-right: 0.5rem;
 }
 
-.ngc-custom-pagination .ngx-pagination .pagination-next a::after,.ngc-custom-pagination 
-.ngx-pagination .pagination-next.disabled::after {
+.ngc-custom-pagination .ngx-pagination .pagination-next a:not(.mat-paginator *, .mat-datepicker-toggle *)::after,.ngc-custom-pagination 
+.ngx-pagination .pagination-next.disabled:not(.mat-paginator *, .mat-datepicker-toggle *)::after {
     content: '»';
     display: inline-block;
     margin-left: 0.5rem;
 }
 
-.ngc-custom-pagination .ngx-pagination .show-for-sr {
+.ngc-custom-pagination .ngx-pagination .show-for-sr:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: absolute !important;
     width: 1px;
     height: 1px;
@@ -882,26 +882,26 @@ th {
 ;
 
 /* ---- components/pages/download-gallery/download-gallery.component.css ---- */
-.ngc-download-gallery body {
+.ngc-download-gallery body:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-family: Verdana, sans-serif;
     margin: 0;
 }
 
-.ngc-download-gallery * {
+.ngc-download-gallery *:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-sizing: border-box;
 }
 
-.ngc-download-gallery .row>.column {
+.ngc-download-gallery .row>.column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 0 8px;
 }
 
-.ngc-download-gallery .row:after {
+.ngc-download-gallery .row:not(.mat-paginator *, .mat-datepicker-toggle *):after {
     content: "";
     display: table;
     clear: both;
 }
 
-.ngc-download-gallery .column {
+.ngc-download-gallery .column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     float: left;
     width: 25%;
 }
@@ -909,7 +909,7 @@ th {
 
 /* The Modal (background) */
 
-.ngc-download-gallery .modal {
+.ngc-download-gallery .modal:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
     position: fixed;
     z-index: 1045;
@@ -922,7 +922,7 @@ th {
 
 /* Modal Content */
 
-.ngc-download-gallery .modal-content {
+.ngc-download-gallery .modal-content:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: relative;
     background-color: rgba(255, 255, 255, 0);
     width: 100%;
@@ -932,7 +932,7 @@ th {
 
 /* The Close Button */
 
-.ngc-download-gallery .close {
+.ngc-download-gallery .close:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: white !important;
     z-index: 1045;
     position: absolute;
@@ -941,26 +941,26 @@ th {
     font-size: 50px;
 }
 
-.ngc-download-gallery .close:hover,.ngc-download-gallery 
-.close:focus {
+.ngc-download-gallery .close:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-download-gallery 
+.close:focus:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #999;
     text-decoration: none;
     cursor: pointer;
 }
 
-.ngc-download-gallery .mySlides {
+.ngc-download-gallery .mySlides:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
 }
 
-.ngc-download-gallery .cursor {
+.ngc-download-gallery .cursor:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
 }
 
 
 /* Next & previous buttons */
 
-.ngc-download-gallery .prev,.ngc-download-gallery 
-.next {
+.ngc-download-gallery .prev:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-download-gallery 
+.next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
     position: absolute;
     top: 50%;
@@ -979,7 +979,7 @@ th {
 
 /* Position the "next button" to the right */
 
-.ngc-download-gallery .next {
+.ngc-download-gallery .next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     right: 0;
     border-radius: 3px 0 0 3px;
 }
@@ -987,15 +987,15 @@ th {
 
 /* On hover, add a black background color with a little bit see-through */
 
-.ngc-download-gallery .prev:hover,.ngc-download-gallery 
-.next:hover {
+.ngc-download-gallery .prev:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-download-gallery 
+.next:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: rgba(255, 255, 255, 0);
 }
 
 
 /* Number text (1/3 etc) */
 
-.ngc-download-gallery .numbertext {
+.ngc-download-gallery .numbertext:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #f2f2f2;
     font-size: 12px;
     padding: 8px 12px;
@@ -1003,35 +1003,35 @@ th {
     top: 0;
 }
 
-.ngc-download-gallery img {
+.ngc-download-gallery img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-bottom: -4px;
 }
 
-.ngc-download-gallery .caption-container {
+.ngc-download-gallery .caption-container:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: center;
     background-color: black;
     padding: 2px 16px;
     color: white;
 }
 
-.ngc-download-gallery .demo {
+.ngc-download-gallery .demo:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 0.6;
 }
 
-.ngc-download-gallery .active,.ngc-download-gallery 
-.demo:hover {
+.ngc-download-gallery .active:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-download-gallery 
+.demo:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 1;
 }
 
-.ngc-download-gallery img.hover-shadow {
+.ngc-download-gallery img.hover-shadow:not(.mat-paginator *, .mat-datepicker-toggle *) {
     transition: 0.3s;
 }
 
-.ngc-download-gallery .hover-shadow:hover {
+.ngc-download-gallery .hover-shadow:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.ngc-download-gallery .frame-square3 {
+.ngc-download-gallery .frame-square3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: inline-block;
     vertical-align: center;
     MAX-width: 100%;
@@ -1039,13 +1039,13 @@ th {
     text-align: center;
 }
 
-.ngc-download-gallery .crop3 {
+.ngc-download-gallery .crop3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     height: 100%;
     /* overflow: hidden; */
     position: relative;
 }
 
-.ngc-download-gallery .crop3 img {
+.ngc-download-gallery .crop3 img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: block;
     max-width: 100%;
     max-height: 100%;
@@ -1058,26 +1058,26 @@ th {
 }
 
 /* ---- components/pages/downloads/downloads.component.css ---- */
-.ngc-downloads body {
+.ngc-downloads body:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-family: Verdana, sans-serif;
     margin: 0;
 }
 
-.ngc-downloads * {
+.ngc-downloads *:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-sizing: border-box;
 }
 
-.ngc-downloads .row>.column {
+.ngc-downloads .row>.column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 0 8px;
 }
 
-.ngc-downloads .row:after {
+.ngc-downloads .row:not(.mat-paginator *, .mat-datepicker-toggle *):after {
     content: "";
     display: table;
     clear: both;
 }
 
-.ngc-downloads .column {
+.ngc-downloads .column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     float: left;
     width: 25%;
 }
@@ -1085,7 +1085,7 @@ th {
 
 /* The Modal (background) */
 
-.ngc-downloads .modal {
+.ngc-downloads .modal:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
     position: fixed;
     z-index: 1045;
@@ -1098,7 +1098,7 @@ th {
 
 /* Modal Content */
 
-.ngc-downloads .modal-content {
+.ngc-downloads .modal-content:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: relative;
     background-color: rgba(255, 255, 255, 0);
     width: 100%;
@@ -1108,7 +1108,7 @@ th {
 
 /* The Close Button */
 
-.ngc-downloads .close {
+.ngc-downloads .close:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: white !important;
     z-index: 1045;
     position: absolute;
@@ -1117,26 +1117,26 @@ th {
     font-size: 50px;
 }
 
-.ngc-downloads .close:hover,.ngc-downloads 
-.close:focus {
+.ngc-downloads .close:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-downloads 
+.close:focus:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #999;
     text-decoration: none;
     cursor: pointer;
 }
 
-.ngc-downloads .mySlides {
+.ngc-downloads .mySlides:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
 }
 
-.ngc-downloads .cursor {
+.ngc-downloads .cursor:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
 }
 
 
 /* Next & previous buttons */
 
-.ngc-downloads .prev,.ngc-downloads 
-.next {
+.ngc-downloads .prev:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-downloads 
+.next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
     position: absolute;
     top: 50%;
@@ -1155,7 +1155,7 @@ th {
 
 /* Position the "next button" to the right */
 
-.ngc-downloads .next {
+.ngc-downloads .next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     right: 0;
     border-radius: 3px 0 0 3px;
 }
@@ -1163,15 +1163,15 @@ th {
 
 /* On hover, add a black background color with a little bit see-through */
 
-.ngc-downloads .prev:hover,.ngc-downloads 
-.next:hover {
+.ngc-downloads .prev:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-downloads 
+.next:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: rgba(255, 255, 255, 0);
 }
 
 
 /* Number text (1/3 etc) */
 
-.ngc-downloads .numbertext {
+.ngc-downloads .numbertext:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #f2f2f2;
     font-size: 12px;
     padding: 8px 12px;
@@ -1179,57 +1179,57 @@ th {
     top: 0;
 }
 
-.ngc-downloads img {
+.ngc-downloads img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-bottom: -4px;
 }
 
-.ngc-downloads .caption-container {
+.ngc-downloads .caption-container:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: center;
     background-color: black;
     padding: 2px 16px;
     color: white;
 }
 
-.ngc-downloads .demo {
+.ngc-downloads .demo:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 0.6;
 }
 
-.ngc-downloads .active,.ngc-downloads 
-.demo:hover {
+.ngc-downloads .active:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-downloads 
+.demo:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 1;
 }
 
-.ngc-downloads img.hover-shadow {
+.ngc-downloads img.hover-shadow:not(.mat-paginator *, .mat-datepicker-toggle *) {
     transition: 0.3s;
 }
 
-.ngc-downloads .hover-shadow:hover {
+.ngc-downloads .hover-shadow:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
-.ngc-downloads .success-section{ min-height: 350px;}
-.ngc-downloads .boder2{ border: 2px solid #000;}
+.ngc-downloads .success-section:not(.mat-paginator *, .mat-datepicker-toggle *){ min-height: 350px;}
+.ngc-downloads .boder2:not(.mat-paginator *, .mat-datepicker-toggle *){ border: 2px solid #000;}
 
 /* ---- components/pages/gallery-photo/gallery-photo.component.css ---- */
-.ngc-gallery-photo body {
+.ngc-gallery-photo body:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-family: Verdana, sans-serif;
     margin: 0;
 }
 
-.ngc-gallery-photo * {
+.ngc-gallery-photo *:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-sizing: border-box;
 }
 
-.ngc-gallery-photo .row>.column {
+.ngc-gallery-photo .row>.column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 0 8px;
 }
 
-.ngc-gallery-photo .row:after {
+.ngc-gallery-photo .row:not(.mat-paginator *, .mat-datepicker-toggle *):after {
     content: "";
     display: table;
     clear: both;
 }
 
-.ngc-gallery-photo .column {
+.ngc-gallery-photo .column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     float: left;
     width: 25%;
 }
@@ -1237,7 +1237,7 @@ th {
 
 /* The Modal (background) */
 
-.ngc-gallery-photo .modal {
+.ngc-gallery-photo .modal:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
     position: fixed;
     z-index: 1045;
@@ -1250,7 +1250,7 @@ th {
 
 /* Modal Content */
 
-.ngc-gallery-photo .modal-content {
+.ngc-gallery-photo .modal-content:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: relative;
     background-color: rgba(255, 255, 255, 0);
     width: 100%;
@@ -1260,7 +1260,7 @@ th {
 
 /* The Close Button */
 
-.ngc-gallery-photo .close {
+.ngc-gallery-photo .close:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: white !important;
     z-index: 1045;
     position: absolute;
@@ -1269,26 +1269,26 @@ th {
     font-size: 50px;
 }
 
-.ngc-gallery-photo .close:hover,.ngc-gallery-photo 
-.close:focus {
+.ngc-gallery-photo .close:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-gallery-photo 
+.close:focus:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #999;
     text-decoration: none;
     cursor: pointer;
 }
 
-.ngc-gallery-photo .mySlides {
+.ngc-gallery-photo .mySlides:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
 }
 
-.ngc-gallery-photo .cursor {
+.ngc-gallery-photo .cursor:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
 }
 
 
 /* Next & previous buttons */
 
-.ngc-gallery-photo .prev,.ngc-gallery-photo 
-.next {
+.ngc-gallery-photo .prev:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-gallery-photo 
+.next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
     position: absolute;
     top: 50%;
@@ -1307,7 +1307,7 @@ th {
 
 /* Position the "next button" to the right */
 
-.ngc-gallery-photo .next {
+.ngc-gallery-photo .next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     right: 0;
     border-radius: 3px 0 0 3px;
 }
@@ -1315,15 +1315,15 @@ th {
 
 /* On hover, add a black background color with a little bit see-through */
 
-.ngc-gallery-photo .prev:hover,.ngc-gallery-photo 
-.next:hover {
+.ngc-gallery-photo .prev:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-gallery-photo 
+.next:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: rgba(255, 255, 255, 0);
 }
 
 
 /* Number text (1/3 etc) */
 
-.ngc-gallery-photo .numbertext {
+.ngc-gallery-photo .numbertext:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #f2f2f2;
     font-size: 12px;
     padding: 8px 12px;
@@ -1331,35 +1331,35 @@ th {
     top: 0;
 }
 
-.ngc-gallery-photo img {
+.ngc-gallery-photo img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-bottom: -4px;
 }
 
-.ngc-gallery-photo .caption-container {
+.ngc-gallery-photo .caption-container:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: center;
     background-color: black;
     padding: 2px 16px;
     color: white;
 }
 
-.ngc-gallery-photo .demo {
+.ngc-gallery-photo .demo:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 0.6;
 }
 
-.ngc-gallery-photo .active,.ngc-gallery-photo 
-.demo:hover {
+.ngc-gallery-photo .active:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-gallery-photo 
+.demo:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 1;
 }
 
-.ngc-gallery-photo img.hover-shadow {
+.ngc-gallery-photo img.hover-shadow:not(.mat-paginator *, .mat-datepicker-toggle *) {
     transition: 0.3s;
 }
 
-.ngc-gallery-photo .hover-shadow:hover {
+.ngc-gallery-photo .hover-shadow:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.ngc-gallery-photo .frame-square3 {
+.ngc-gallery-photo .frame-square3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: inline-block;
     vertical-align: center;
     MAX-width: 100%;
@@ -1367,13 +1367,13 @@ th {
     text-align: center;
 }
 
-.ngc-gallery-photo .crop3 {
+.ngc-gallery-photo .crop3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     height: 100%;
     /* overflow: hidden; */
     position: relative;
 }
 
-.ngc-gallery-photo .crop3 img {
+.ngc-gallery-photo .crop3 img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: block;
     max-width: 100%;
     max-height: 100%;
@@ -1387,7 +1387,7 @@ th {
 
 /* ---- components/pages/highlights/highlights.component.css ---- */
 /* Container to hold the search input and button */
-.ngc-highlights .prdctLstHdng {
+.ngc-highlights .prdctLstHdng:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: flex;               /* Use flexbox to align items */
     justify-content: space-between;  /* Push the button to the right */
     align-items: center;         /* Vertically center the items */
@@ -1395,7 +1395,7 @@ th {
   }
   
   /* Style the search input */
-  .ngc-highlights .search-input {
+  .ngc-highlights .search-input:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 8px;
     font-size: 14px;
     width: 250px;                /* Set a width for the search input */
@@ -1405,7 +1405,7 @@ th {
   }
   
   /* Style the search button */
-  .ngc-highlights .search-btn {
+  .ngc-highlights .search-btn:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 8px 16px;
     background-color: #007bff;
     color: white;
@@ -1415,12 +1415,12 @@ th {
     margin-right: 90px;
   }
   
-  .ngc-highlights .search-btn i {
+  .ngc-highlights .search-btn i:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-left: 5px;            /* Add space between icon and text */
   }
   
   /* Optional: add a hover effect for the button */
-  .ngc-highlights .search-btn:hover {
+  .ngc-highlights .search-btn:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: #0056b3;
   }
   
@@ -1429,84 +1429,84 @@ th {
 
 /* Main row */
 /* Keep both columns aligned */
-.ngc-highlights .mainCntLstSecIn > .row {
+.ngc-highlights .mainCntLstSecIn > .row:not(.mat-paginator *, .mat-datepicker-toggle *) {
   display: flex;
   align-items: flex-start;
 }
 
 /* Left panel */
-.ngc-highlights .browsLst {
+.ngc-highlights .browsLst:not(.mat-paginator *, .mat-datepicker-toggle *) {
   display: flex;
   flex-direction: column;
 }
 
-.ngc-highlights .browsLstIn {
+.ngc-highlights .browsLstIn:not(.mat-paginator *, .mat-datepicker-toggle *) {
   height: auto;
 }
 
 /* Left category scrollbar */
-.ngc-highlights .browsLstCnt {
+.ngc-highlights .browsLstCnt:not(.mat-paginator *, .mat-datepicker-toggle *) {
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 /* Right panel */
-.ngc-highlights .browsRgt {
+.ngc-highlights .browsRgt:not(.mat-paginator *, .mat-datepicker-toggle *) {
   display: flex;
   flex-direction: column;
   min-height: 0;
 }
 
 /* Right course scrollbar */
-.ngc-highlights .topmainLstPrdct {
+.ngc-highlights .topmainLstPrdct:not(.mat-paginator *, .mat-datepicker-toggle *) {
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
 }
 
 /* Optional scrollbar styling */
-.ngc-highlights .browsLstCnt::-webkit-scrollbar,.ngc-highlights 
-.topmainLstPrdct::-webkit-scrollbar {
+.ngc-highlights .browsLstCnt:not(.mat-paginator *, .mat-datepicker-toggle *)::-webkit-scrollbar,.ngc-highlights 
+.topmainLstPrdct:not(.mat-paginator *, .mat-datepicker-toggle *)::-webkit-scrollbar {
   width: 6px;
 }
 
-.ngc-highlights .browsLstCnt::-webkit-scrollbar-track,.ngc-highlights 
-.topmainLstPrdct::-webkit-scrollbar-track {
+.ngc-highlights .browsLstCnt:not(.mat-paginator *, .mat-datepicker-toggle *)::-webkit-scrollbar-track,.ngc-highlights 
+.topmainLstPrdct:not(.mat-paginator *, .mat-datepicker-toggle *)::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
 
-.ngc-highlights .browsLstCnt::-webkit-scrollbar-thumb,.ngc-highlights 
-.topmainLstPrdct::-webkit-scrollbar-thumb {
+.ngc-highlights .browsLstCnt:not(.mat-paginator *, .mat-datepicker-toggle *)::-webkit-scrollbar-thumb,.ngc-highlights 
+.topmainLstPrdct:not(.mat-paginator *, .mat-datepicker-toggle *)::-webkit-scrollbar-thumb {
   background: #999;
   border-radius: 5px;
 }
 
-.ngc-highlights .browsLstCnt::-webkit-scrollbar-thumb:hover,.ngc-highlights 
-.topmainLstPrdct::-webkit-scrollbar-thumb:hover {
+.ngc-highlights .browsLstCnt::-webkit-scrollbar-thumb:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-highlights 
+.topmainLstPrdct::-webkit-scrollbar-thumb:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
   background: #666;
 }
 
 /* ---- components/pages/institution-gallery/institution-gallery.component.css ---- */
-.ngc-institution-gallery body {
+.ngc-institution-gallery body:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-family: Verdana, sans-serif;
     margin: 0;
 }
 
-.ngc-institution-gallery * {
+.ngc-institution-gallery *:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-sizing: border-box;
 }
 
-.ngc-institution-gallery .row>.column {
+.ngc-institution-gallery .row>.column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 0 8px;
 }
 
-.ngc-institution-gallery .row:after {
+.ngc-institution-gallery .row:not(.mat-paginator *, .mat-datepicker-toggle *):after {
     content: "";
     display: table;
     clear: both;
 }
 
-.ngc-institution-gallery .column {
+.ngc-institution-gallery .column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     float: left;
     width: 25%;
 }
@@ -1514,7 +1514,7 @@ th {
 
 /* The Modal (background) */
 
-.ngc-institution-gallery .modal {
+.ngc-institution-gallery .modal:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
     position: fixed;
     z-index: 1045;
@@ -1527,7 +1527,7 @@ th {
 
 /* Modal Content */
 
-.ngc-institution-gallery .modal-content {
+.ngc-institution-gallery .modal-content:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: relative;
     background-color: rgba(255, 255, 255, 0);
     width: 100%;
@@ -1537,7 +1537,7 @@ th {
 
 /* The Close Button */
 
-.ngc-institution-gallery .close {
+.ngc-institution-gallery .close:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: white !important;
     z-index: 1045;
     position: absolute;
@@ -1546,26 +1546,26 @@ th {
     font-size: 50px;
 }
 
-.ngc-institution-gallery .close:hover,.ngc-institution-gallery 
-.close:focus {
+.ngc-institution-gallery .close:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-institution-gallery 
+.close:focus:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #999;
     text-decoration: none;
     cursor: pointer;
 }
 
-.ngc-institution-gallery .mySlides {
+.ngc-institution-gallery .mySlides:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
 }
 
-.ngc-institution-gallery .cursor {
+.ngc-institution-gallery .cursor:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
 }
 
 
 /* Next & previous buttons */
 
-.ngc-institution-gallery .prev,.ngc-institution-gallery 
-.next {
+.ngc-institution-gallery .prev:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-institution-gallery 
+.next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
     position: absolute;
     top: 50%;
@@ -1584,7 +1584,7 @@ th {
 
 /* Position the "next button" to the right */
 
-.ngc-institution-gallery .next {
+.ngc-institution-gallery .next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     right: 0;
     border-radius: 3px 0 0 3px;
 }
@@ -1592,15 +1592,15 @@ th {
 
 /* On hover, add a black background color with a little bit see-through */
 
-.ngc-institution-gallery .prev:hover,.ngc-institution-gallery 
-.next:hover {
+.ngc-institution-gallery .prev:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-institution-gallery 
+.next:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: rgba(255, 255, 255, 0);
 }
 
 
 /* Number text (1/3 etc) */
 
-.ngc-institution-gallery .numbertext {
+.ngc-institution-gallery .numbertext:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #f2f2f2;
     font-size: 12px;
     padding: 8px 12px;
@@ -1608,35 +1608,35 @@ th {
     top: 0;
 }
 
-.ngc-institution-gallery img {
+.ngc-institution-gallery img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-bottom: -4px;
 }
 
-.ngc-institution-gallery .caption-container {
+.ngc-institution-gallery .caption-container:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: center;
     background-color: black;
     padding: 2px 16px;
     color: white;
 }
 
-.ngc-institution-gallery .demo {
+.ngc-institution-gallery .demo:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 0.6;
 }
 
-.ngc-institution-gallery .active,.ngc-institution-gallery 
-.demo:hover {
+.ngc-institution-gallery .active:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-institution-gallery 
+.demo:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 1;
 }
 
-.ngc-institution-gallery img.hover-shadow {
+.ngc-institution-gallery img.hover-shadow:not(.mat-paginator *, .mat-datepicker-toggle *) {
     transition: 0.3s;
 }
 
-.ngc-institution-gallery .hover-shadow:hover {
+.ngc-institution-gallery .hover-shadow:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.ngc-institution-gallery .frame-square3 {
+.ngc-institution-gallery .frame-square3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: inline-block;
     vertical-align: center;
     MAX-width: 100%;
@@ -1644,13 +1644,13 @@ th {
     text-align: center;
 }
 
-.ngc-institution-gallery .crop3 {
+.ngc-institution-gallery .crop3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     height: 100%;
     /* overflow: hidden; */
     position: relative;
 }
 
-.ngc-institution-gallery .crop3 img {
+.ngc-institution-gallery .crop3 img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: block;
     max-width: 100%;
     max-height: 100%;
@@ -1663,26 +1663,26 @@ th {
 }
 
 /* ---- components/pages/student-learners-gallery/student-learners-gallery.component.css ---- */
-.ngc-student-learners-gallery body {
+.ngc-student-learners-gallery body:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-family: Verdana, sans-serif;
     margin: 0;
 }
 
-.ngc-student-learners-gallery * {
+.ngc-student-learners-gallery *:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-sizing: border-box;
 }
 
-.ngc-student-learners-gallery .row>.column {
+.ngc-student-learners-gallery .row>.column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 0 8px;
 }
 
-.ngc-student-learners-gallery .row:after {
+.ngc-student-learners-gallery .row:not(.mat-paginator *, .mat-datepicker-toggle *):after {
     content: "";
     display: table;
     clear: both;
 }
 
-.ngc-student-learners-gallery .column {
+.ngc-student-learners-gallery .column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     float: left;
     width: 25%;
 }
@@ -1690,7 +1690,7 @@ th {
 
 /* The Modal (background) */
 
-.ngc-student-learners-gallery .modal {
+.ngc-student-learners-gallery .modal:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
     position: fixed;
     z-index: 1045;
@@ -1703,7 +1703,7 @@ th {
 
 /* Modal Content */
 
-.ngc-student-learners-gallery .modal-content {
+.ngc-student-learners-gallery .modal-content:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: relative;
     background-color: rgba(255, 255, 255, 0);
     width: 100%;
@@ -1713,7 +1713,7 @@ th {
 
 /* The Close Button */
 
-.ngc-student-learners-gallery .close {
+.ngc-student-learners-gallery .close:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: white !important;
     z-index: 1045;
     position: absolute;
@@ -1722,26 +1722,26 @@ th {
     font-size: 50px;
 }
 
-.ngc-student-learners-gallery .close:hover,.ngc-student-learners-gallery 
-.close:focus {
+.ngc-student-learners-gallery .close:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-student-learners-gallery 
+.close:focus:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #999;
     text-decoration: none;
     cursor: pointer;
 }
 
-.ngc-student-learners-gallery .mySlides {
+.ngc-student-learners-gallery .mySlides:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
 }
 
-.ngc-student-learners-gallery .cursor {
+.ngc-student-learners-gallery .cursor:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
 }
 
 
 /* Next & previous buttons */
 
-.ngc-student-learners-gallery .prev,.ngc-student-learners-gallery 
-.next {
+.ngc-student-learners-gallery .prev:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-student-learners-gallery 
+.next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
     position: absolute;
     top: 50%;
@@ -1760,7 +1760,7 @@ th {
 
 /* Position the "next button" to the right */
 
-.ngc-student-learners-gallery .next {
+.ngc-student-learners-gallery .next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     right: 0;
     border-radius: 3px 0 0 3px;
 }
@@ -1768,15 +1768,15 @@ th {
 
 /* On hover, add a black background color with a little bit see-through */
 
-.ngc-student-learners-gallery .prev:hover,.ngc-student-learners-gallery 
-.next:hover {
+.ngc-student-learners-gallery .prev:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-student-learners-gallery 
+.next:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: rgba(255, 255, 255, 0);
 }
 
 
 /* Number text (1/3 etc) */
 
-.ngc-student-learners-gallery .numbertext {
+.ngc-student-learners-gallery .numbertext:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #f2f2f2;
     font-size: 12px;
     padding: 8px 12px;
@@ -1784,35 +1784,35 @@ th {
     top: 0;
 }
 
-.ngc-student-learners-gallery img {
+.ngc-student-learners-gallery img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-bottom: -4px;
 }
 
-.ngc-student-learners-gallery .caption-container {
+.ngc-student-learners-gallery .caption-container:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: center;
     background-color: black;
     padding: 2px 16px;
     color: white;
 }
 
-.ngc-student-learners-gallery .demo {
+.ngc-student-learners-gallery .demo:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 0.6;
 }
 
-.ngc-student-learners-gallery .active,.ngc-student-learners-gallery 
-.demo:hover {
+.ngc-student-learners-gallery .active:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-student-learners-gallery 
+.demo:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 1;
 }
 
-.ngc-student-learners-gallery img.hover-shadow {
+.ngc-student-learners-gallery img.hover-shadow:not(.mat-paginator *, .mat-datepicker-toggle *) {
     transition: 0.3s;
 }
 
-.ngc-student-learners-gallery .hover-shadow:hover {
+.ngc-student-learners-gallery .hover-shadow:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.ngc-student-learners-gallery .frame-square3 {
+.ngc-student-learners-gallery .frame-square3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: inline-block;
     vertical-align: center;
     MAX-width: 100%;
@@ -1820,13 +1820,13 @@ th {
     text-align: center;
 }
 
-.ngc-student-learners-gallery .crop3 {
+.ngc-student-learners-gallery .crop3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     height: 100%;
     /* overflow: hidden; */
     position: relative;
 }
 
-.ngc-student-learners-gallery .crop3 img {
+.ngc-student-learners-gallery .crop3 img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: block;
     max-width: 100%;
     max-height: 100%;
@@ -1839,37 +1839,37 @@ th {
 }
 
 /* ---- components/pages/team/team.component.css ---- */
-.ngc-team .one
+.ngc-team .one:not(.mat-paginator *, .mat-datepicker-toggle *)
 {
 	margin: 50px 0;
 }
 
-.ngc-team .one > li h3 em
+.ngc-team .one > li h3 em:not(.mat-paginator *, .mat-datepicker-toggle *)
 {
 	text-transform: capitalize;
 }
 
 /* ---- components/pages/user-manual-gallery/user-manual-gallery.component.css ---- */
-.ngc-user-manual-gallery body {
+.ngc-user-manual-gallery body:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-family: Verdana, sans-serif;
     margin: 0;
 }
 
-.ngc-user-manual-gallery * {
+.ngc-user-manual-gallery *:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-sizing: border-box;
 }
 
-.ngc-user-manual-gallery .row>.column {
+.ngc-user-manual-gallery .row>.column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 0 8px;
 }
 
-.ngc-user-manual-gallery .row:after {
+.ngc-user-manual-gallery .row:not(.mat-paginator *, .mat-datepicker-toggle *):after {
     content: "";
     display: table;
     clear: both;
 }
 
-.ngc-user-manual-gallery .column {
+.ngc-user-manual-gallery .column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     float: left;
     width: 25%;
 }
@@ -1877,7 +1877,7 @@ th {
 
 /* The Modal (background) */
 
-.ngc-user-manual-gallery .modal {
+.ngc-user-manual-gallery .modal:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
     position: fixed;
     z-index: 1045;
@@ -1890,7 +1890,7 @@ th {
 
 /* Modal Content */
 
-.ngc-user-manual-gallery .modal-content {
+.ngc-user-manual-gallery .modal-content:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: relative;
     background-color: rgba(255, 255, 255, 0);
     width: 100%;
@@ -1900,7 +1900,7 @@ th {
 
 /* The Close Button */
 
-.ngc-user-manual-gallery .close {
+.ngc-user-manual-gallery .close:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: white !important;
     z-index: 1045;
     position: absolute;
@@ -1909,26 +1909,26 @@ th {
     font-size: 50px;
 }
 
-.ngc-user-manual-gallery .close:hover,.ngc-user-manual-gallery 
-.close:focus {
+.ngc-user-manual-gallery .close:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-user-manual-gallery 
+.close:focus:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #999;
     text-decoration: none;
     cursor: pointer;
 }
 
-.ngc-user-manual-gallery .mySlides {
+.ngc-user-manual-gallery .mySlides:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
 }
 
-.ngc-user-manual-gallery .cursor {
+.ngc-user-manual-gallery .cursor:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
 }
 
 
 /* Next & previous buttons */
 
-.ngc-user-manual-gallery .prev,.ngc-user-manual-gallery 
-.next {
+.ngc-user-manual-gallery .prev:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-user-manual-gallery 
+.next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
     position: absolute;
     top: 50%;
@@ -1947,7 +1947,7 @@ th {
 
 /* Position the "next button" to the right */
 
-.ngc-user-manual-gallery .next {
+.ngc-user-manual-gallery .next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     right: 0;
     border-radius: 3px 0 0 3px;
 }
@@ -1955,15 +1955,15 @@ th {
 
 /* On hover, add a black background color with a little bit see-through */
 
-.ngc-user-manual-gallery .prev:hover,.ngc-user-manual-gallery 
-.next:hover {
+.ngc-user-manual-gallery .prev:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-user-manual-gallery 
+.next:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: rgba(255, 255, 255, 0);
 }
 
 
 /* Number text (1/3 etc) */
 
-.ngc-user-manual-gallery .numbertext {
+.ngc-user-manual-gallery .numbertext:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #f2f2f2;
     font-size: 12px;
     padding: 8px 12px;
@@ -1971,35 +1971,35 @@ th {
     top: 0;
 }
 
-.ngc-user-manual-gallery img {
+.ngc-user-manual-gallery img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-bottom: -4px;
 }
 
-.ngc-user-manual-gallery .caption-container {
+.ngc-user-manual-gallery .caption-container:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: center;
     background-color: black;
     padding: 2px 16px;
     color: white;
 }
 
-.ngc-user-manual-gallery .demo {
+.ngc-user-manual-gallery .demo:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 0.6;
 }
 
-.ngc-user-manual-gallery .active,.ngc-user-manual-gallery 
-.demo:hover {
+.ngc-user-manual-gallery .active:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-user-manual-gallery 
+.demo:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 1;
 }
 
-.ngc-user-manual-gallery img.hover-shadow {
+.ngc-user-manual-gallery img.hover-shadow:not(.mat-paginator *, .mat-datepicker-toggle *) {
     transition: 0.3s;
 }
 
-.ngc-user-manual-gallery .hover-shadow:hover {
+.ngc-user-manual-gallery .hover-shadow:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.ngc-user-manual-gallery .frame-square3 {
+.ngc-user-manual-gallery .frame-square3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: inline-block;
     vertical-align: center;
     MAX-width: 100%;
@@ -2007,13 +2007,13 @@ th {
     text-align: center;
 }
 
-.ngc-user-manual-gallery .crop3 {
+.ngc-user-manual-gallery .crop3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     height: 100%;
     /* overflow: hidden; */
     position: relative;
 }
 
-.ngc-user-manual-gallery .crop3 img {
+.ngc-user-manual-gallery .crop3 img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: block;
     max-width: 100%;
     max-height: 100%;
@@ -2026,26 +2026,26 @@ th {
 }
 
 /* ---- components/pages/woman-empowerment-downloads/woman-empowerment-downloads.component.css ---- */
-.ngc-woman-empowerment-downloads body {
+.ngc-woman-empowerment-downloads body:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-family: Verdana, sans-serif;
     margin: 0;
 }
 
-.ngc-woman-empowerment-downloads * {
+.ngc-woman-empowerment-downloads *:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-sizing: border-box;
 }
 
-.ngc-woman-empowerment-downloads .row>.column {
+.ngc-woman-empowerment-downloads .row>.column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: 0 8px;
 }
 
-.ngc-woman-empowerment-downloads .row:after {
+.ngc-woman-empowerment-downloads .row:not(.mat-paginator *, .mat-datepicker-toggle *):after {
     content: "";
     display: table;
     clear: both;
 }
 
-.ngc-woman-empowerment-downloads .column {
+.ngc-woman-empowerment-downloads .column:not(.mat-paginator *, .mat-datepicker-toggle *) {
     float: left;
     width: 25%;
 }
@@ -2053,7 +2053,7 @@ th {
 
 /* The Modal (background) */
 
-.ngc-woman-empowerment-downloads .modal {
+.ngc-woman-empowerment-downloads .modal:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
     position: fixed;
     z-index: 1045;
@@ -2066,7 +2066,7 @@ th {
 
 /* Modal Content */
 
-.ngc-woman-empowerment-downloads .modal-content {
+.ngc-woman-empowerment-downloads .modal-content:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: relative;
     background-color: rgba(255, 255, 255, 0);
     width: 100%;
@@ -2076,7 +2076,7 @@ th {
 
 /* The Close Button */
 
-.ngc-woman-empowerment-downloads .close {
+.ngc-woman-empowerment-downloads .close:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: white !important;
     z-index: 1045;
     position: absolute;
@@ -2085,26 +2085,26 @@ th {
     font-size: 50px;
 }
 
-.ngc-woman-empowerment-downloads .close:hover,.ngc-woman-empowerment-downloads 
-.close:focus {
+.ngc-woman-empowerment-downloads .close:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-woman-empowerment-downloads 
+.close:focus:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #999;
     text-decoration: none;
     cursor: pointer;
 }
 
-.ngc-woman-empowerment-downloads .mySlides {
+.ngc-woman-empowerment-downloads .mySlides:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: none;
 }
 
-.ngc-woman-empowerment-downloads .cursor {
+.ngc-woman-empowerment-downloads .cursor:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
 }
 
 
 /* Next & previous buttons */
 
-.ngc-woman-empowerment-downloads .prev,.ngc-woman-empowerment-downloads 
-.next {
+.ngc-woman-empowerment-downloads .prev:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-woman-empowerment-downloads 
+.next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     cursor: pointer;
     position: absolute;
     top: 50%;
@@ -2123,7 +2123,7 @@ th {
 
 /* Position the "next button" to the right */
 
-.ngc-woman-empowerment-downloads .next {
+.ngc-woman-empowerment-downloads .next:not(.mat-paginator *, .mat-datepicker-toggle *) {
     right: 0;
     border-radius: 3px 0 0 3px;
 }
@@ -2131,15 +2131,15 @@ th {
 
 /* On hover, add a black background color with a little bit see-through */
 
-.ngc-woman-empowerment-downloads .prev:hover,.ngc-woman-empowerment-downloads 
-.next:hover {
+.ngc-woman-empowerment-downloads .prev:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-woman-empowerment-downloads 
+.next:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: rgba(255, 255, 255, 0);
 }
 
 
 /* Number text (1/3 etc) */
 
-.ngc-woman-empowerment-downloads .numbertext {
+.ngc-woman-empowerment-downloads .numbertext:not(.mat-paginator *, .mat-datepicker-toggle *) {
     color: #f2f2f2;
     font-size: 12px;
     padding: 8px 12px;
@@ -2147,35 +2147,35 @@ th {
     top: 0;
 }
 
-.ngc-woman-empowerment-downloads img {
+.ngc-woman-empowerment-downloads img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin-bottom: -4px;
 }
 
-.ngc-woman-empowerment-downloads .caption-container {
+.ngc-woman-empowerment-downloads .caption-container:not(.mat-paginator *, .mat-datepicker-toggle *) {
     text-align: center;
     background-color: black;
     padding: 2px 16px;
     color: white;
 }
 
-.ngc-woman-empowerment-downloads .demo {
+.ngc-woman-empowerment-downloads .demo:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 0.6;
 }
 
-.ngc-woman-empowerment-downloads .active,.ngc-woman-empowerment-downloads 
-.demo:hover {
+.ngc-woman-empowerment-downloads .active:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-woman-empowerment-downloads 
+.demo:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     opacity: 1;
 }
 
-.ngc-woman-empowerment-downloads img.hover-shadow {
+.ngc-woman-empowerment-downloads img.hover-shadow:not(.mat-paginator *, .mat-datepicker-toggle *) {
     transition: 0.3s;
 }
 
-.ngc-woman-empowerment-downloads .hover-shadow:hover {
+.ngc-woman-empowerment-downloads .hover-shadow:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.ngc-woman-empowerment-downloads .frame-square3 {
+.ngc-woman-empowerment-downloads .frame-square3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: inline-block;
     vertical-align: center;
     MAX-width: 100%;
@@ -2183,13 +2183,13 @@ th {
     text-align: center;
 }
 
-.ngc-woman-empowerment-downloads .crop3 {
+.ngc-woman-empowerment-downloads .crop3:not(.mat-paginator *, .mat-datepicker-toggle *) {
     height: 100%;
     /* overflow: hidden; */
     position: relative;
 }
 
-.ngc-woman-empowerment-downloads .crop3 img {
+.ngc-woman-empowerment-downloads .crop3 img:not(.mat-paginator *, .mat-datepicker-toggle *) {
     display: block;
     max-width: 100%;
     max-height: 100%;
@@ -2202,7 +2202,7 @@ th {
 }
 
 /* ---- components/shared/footer/footer.component.css ---- */
-.ngc-footer .blink {
+.ngc-footer .blink:not(.mat-paginator *, .mat-datepicker-toggle *) {
     animation: blink-animation 1s steps(5, start) infinite;
     -webkit-animation: blink-animation 1s steps(5, start) infinite;
   }
@@ -2226,50 +2226,50 @@ th {
 	}
 
 /* ---- components/shared/navbar/navbar.component.css ---- */
-.ngc-navbar .header-top:before,.ngc-navbar 
-.about-area:before,.ngc-navbar 
-.newsletter-area:before,.ngc-navbar 
-.mainmenu ul#nav>li>a:after,.ngc-navbar 
-.mainmenu ul#nav.menu-white>li>a:after,.ngc-navbar 
-.search-menu,.ngc-navbar 
-.button-default:hover,.ngc-navbar 
-.button-green,.ngc-navbar 
-.about-area .button-default,.ngc-navbar 
-.single-item .button-default,.ngc-navbar 
-.button-large.button-default,.ngc-navbar 
-.single-latest-item .button-default,.ngc-navbar 
-.single-product-text .button-default,.ngc-navbar 
-.single-event-item .button-default,.ngc-navbar 
-.subscribe-form>button,.ngc-navbar 
-.social-icons>a:hover,.ngc-navbar 
-.footer-area,.ngc-navbar 
-.newsletter-two,.ngc-navbar 
-.pagination-content.number .pagination li a:hover,.ngc-navbar 
-.pagination-content.number .pagination li.current a,.ngc-navbar 
-.pagination-content.number .pagination li:first-child a,.ngc-navbar 
-.pagination-content.number .pagination li:last-child a,.ngc-navbar 
-.product-details-content .button-default,.ngc-navbar 
-.product-details-content .social-links a:hover,.ngc-navbar 
-.duration-title,.ngc-navbar 
-h4.title:after,.ngc-navbar 
-.tution-fee,.ngc-navbar 
-.single-sidebar-widget .social-links a:hover,.ngc-navbar 
-.single-sidebar-widget .tags li a:hover,.ngc-navbar 
-.pagination-content .pagination,.ngc-navbar 
-.news-details-content .social-links a:hover,.ngc-navbar 
-.contact-form-area .button-default,.ngc-navbar 
-.skill-bar-item .progress-bar,.ngc-navbar 
-#scrollUp,.ngc-navbar 
-.bg-green,.ngc-navbar 
-.bg-blue:hover,.ngc-navbar 
-.preview-2 .nivo-directionNav a.nivo-prevNav:hover::before,.ngc-navbar 
-.preview-2 .nivo-directionNav a.nivo-nextNav:hover::before,.ngc-navbar 
-.slider-three .preview-2 .nivo-controlNav a,.ngc-navbar 
-.footer-widget-area.footer-widget-four {
+.ngc-navbar .header-top:not(.mat-paginator *, .mat-datepicker-toggle *):before,.ngc-navbar 
+.about-area:not(.mat-paginator *, .mat-datepicker-toggle *):before,.ngc-navbar 
+.newsletter-area:not(.mat-paginator *, .mat-datepicker-toggle *):before,.ngc-navbar 
+.mainmenu ul#nav>li>a:not(.mat-paginator *, .mat-datepicker-toggle *):after,.ngc-navbar 
+.mainmenu ul#nav.menu-white>li>a:not(.mat-paginator *, .mat-datepicker-toggle *):after,.ngc-navbar 
+.search-menu:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.button-default:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.button-green:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.about-area .button-default:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.single-item .button-default:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.button-large.button-default:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.single-latest-item .button-default:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.single-product-text .button-default:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.single-event-item .button-default:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.subscribe-form>button:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.social-icons>a:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.footer-area:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.newsletter-two:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.pagination-content.number .pagination li a:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.pagination-content.number .pagination li.current a:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.pagination-content.number .pagination li:first-child a:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.pagination-content.number .pagination li:last-child a:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.product-details-content .button-default:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.product-details-content .social-links a:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.duration-title:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+h4.title:not(.mat-paginator *, .mat-datepicker-toggle *):after,.ngc-navbar 
+.tution-fee:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.single-sidebar-widget .social-links a:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.single-sidebar-widget .tags li a:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.pagination-content .pagination:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.news-details-content .social-links a:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.contact-form-area .button-default:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.skill-bar-item .progress-bar:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+#scrollUp:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.bg-green:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.bg-blue:hover:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.preview-2 .nivo-directionNav a.nivo-prevNav:hover:not(.mat-paginator *, .mat-datepicker-toggle *)::before,.ngc-navbar 
+.preview-2 .nivo-directionNav a.nivo-nextNav:hover:not(.mat-paginator *, .mat-datepicker-toggle *)::before,.ngc-navbar 
+.slider-three .preview-2 .nivo-controlNav a:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-navbar 
+.footer-widget-area.footer-widget-four:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background: #e67e22;
 }
 
-.ngc-navbar .sticky {
+.ngc-navbar .sticky:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: fixed;
     top: -10px;
     overflow: hidden;
@@ -2277,27 +2277,27 @@ h4.title:after,.ngc-navbar
     width: 100%;
 }
 
-.ngc-navbar option {
+.ngc-navbar option:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-size: 20px;
 }
 
-.ngc-navbar .mat-tooltip {
+.ngc-navbar .mat-tooltip:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-size: 14px;
     z-index: 1 !important;
 }
 
-.ngc-navbar .form-control {
+.ngc-navbar .form-control:not(.mat-paginator *, .mat-datepicker-toggle *) {
     padding: .575rem .75rem !important;
 }
 
-.ngc-navbar .hdhs {
+.ngc-navbar .hdhs:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: black !important;
     padding-right: 5px;
     padding-bottom: -2px;
     height: 30px;
 }
 
-.ngc-navbar #CaptchaDiv {
+.ngc-navbar #CaptchaDiv:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font: bold 17px verdana, arial, sans-serif;
     font-style: italic;
     color: #fff;
@@ -2309,12 +2309,12 @@ h4.title:after,.ngc-navbar
     border-radius: 4px;
 }
 
-.ngc-navbar #CaptchaInput {
+.ngc-navbar #CaptchaInput:not(.mat-paginator *, .mat-datepicker-toggle *) {
     margin: 1px 0px 1px 0px;
     width: 135px;
 }
 
-.ngc-navbar .blink {
+.ngc-navbar .blink:not(.mat-paginator *, .mat-datepicker-toggle *) {
     animation: blink-animation 1s steps(5, start) infinite;
     -webkit-animation: blink-animation 1s steps(5, start) infinite;
   }
@@ -2339,7 +2339,7 @@ h4.title:after,.ngc-navbar
 
 @media (min-width: 576px)
 {	
-	.ngc-navbar .team_dialog 
+	.ngc-navbar .team_dialog:not(.mat-paginator *, .mat-datepicker-toggle *) 
 	{
 		max-width: 800px !important;
 	}
@@ -2347,24 +2347,24 @@ h4.title:after,.ngc-navbar
 
 
 /* ---- components/users/company/company-form/company-form.component.css ---- */
-.ngc-company-form .button-submit {
+.ngc-company-form .button-submit:not(.mat-paginator *, .mat-datepicker-toggle *) {
     border-radius: 25px;
     font-size: 18px;
     padding: 8px 18px;
 }
 
-.ngc-company-form .fontt {
+.ngc-company-form .fontt:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-size: 15px;
 }
 
-.ngc-company-form .mat-tooltip {
+.ngc-company-form .mat-tooltip:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-size: 15px;
 }
 
 
 /* Absolute Center Spinner */
 
-.ngc-company-form .loading-indicator {
+.ngc-company-form .loading-indicator:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: fixed;
     z-index: 999;
     height: 2em;
@@ -2380,7 +2380,7 @@ h4.title:after,.ngc-navbar
 
 /* Transparent Overlay */
 
-.ngc-company-form .loading-indicator:before {
+.ngc-company-form .loading-indicator:not(.mat-paginator *, .mat-datepicker-toggle *):before {
     content: '';
     display: block;
     position: fixed;
@@ -2395,7 +2395,7 @@ h4.title:after,.ngc-navbar
 
 /* ---- components/users/company/company-products/company-products.component.css ---- */
 /* Absolute Center Spinner */
-.ngc-company-products .loading-indicator {
+.ngc-company-products .loading-indicator:not(.mat-paginator *, .mat-datepicker-toggle *) {
     position: fixed;
     z-index: 999;
     height: 2em;
@@ -2409,7 +2409,7 @@ h4.title:after,.ngc-navbar
   }
   
   /* Transparent Overlay */
-  .ngc-company-products .loading-indicator:before {
+  .ngc-company-products .loading-indicator:not(.mat-paginator *, .mat-datepicker-toggle *):before {
     content: '';
     display: block;
     position: fixed;
@@ -2421,43 +2421,43 @@ h4.title:after,.ngc-navbar
   }
 
 
-.ngc-company-products .Light{
+.ngc-company-products .Light:not(.mat-paginator *, .mat-datepicker-toggle *){
   color: black;
 }
 
-.ngc-company-products .Dark{
+.ngc-company-products .Dark:not(.mat-paginator *, .mat-datepicker-toggle *){
   background-color: #333;
   color: #333;
 }
 
-.ngc-company-products .custom:hover{
+.ngc-company-products .custom:hover:not(.mat-paginator *, .mat-datepicker-toggle *){
   cursor: pointer;
 }
 
 /* ---- components/users/company/company.component.css ---- */
-.ngc-company mat-sidenav-content {
+.ngc-company mat-sidenav-content:not(.mat-paginator *, .mat-datepicker-toggle *) {
     height: 100vh;
   }
 
-  .ngc-company mat-nav-list a{
+  .ngc-company mat-nav-list a:not(.mat-paginator *, .mat-datepicker-toggle *){
     padding: 10px
   }
 
 /* ---- components/users/company/id-verification/id-verification.component.css ---- */
-.ngc-id-verification table {
+.ngc-id-verification table:not(.mat-paginator *, .mat-datepicker-toggle *) {
     width: 100%;
   }
   
-  .ngc-id-verification .mat-form-field {
+  .ngc-id-verification .mat-form-field:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-size: 14px;
     width: 100%;
   }
   
-  .ngc-id-verification td,.ngc-id-verification  th {
+  .ngc-id-verification td:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-id-verification  th:not(.mat-paginator *, .mat-datepicker-toggle *) {
     vertical-align: middle;
   }
   
-  .ngc-id-verification .no-records-found{
+  .ngc-id-verification .no-records-found:not(.mat-paginator *, .mat-datepicker-toggle *){
     font-style: italic;
     text-align: center;
   }
@@ -2469,7 +2469,7 @@ h4.title:after,.ngc-navbar
   }
 
 /* ---- components/users/institute/institute-file-upload/institute-file-upload.component.css ---- */
-.ngc-institute-file-upload .upload {
+.ngc-institute-file-upload .upload:not(.mat-paginator *, .mat-datepicker-toggle *) {
     border: 0 none;
     font-family: "montserratlight";
     padding: 8px 40px;
@@ -2481,11 +2481,11 @@ h4.title:after,.ngc-navbar
     background-color: #E67E22;
 }
 
-.ngc-institute-file-upload .upload:hover {
+.ngc-institute-file-upload .upload:hover:not(.mat-paginator *, .mat-datepicker-toggle *) {
     background-color: #2d3e50;
 }
 
-.ngc-institute-file-upload .blink_me {
+.ngc-institute-file-upload .blink_me:not(.mat-paginator *, .mat-datepicker-toggle *) {
     animation: blinker 2s linear infinite;
 }
 
@@ -2496,53 +2496,53 @@ h4.title:after,.ngc-navbar
 }
 
 /* ---- components/users/institute/student-details/student-details.component.css ---- */
-.ngc-student-details table {
+.ngc-student-details table:not(.mat-paginator *, .mat-datepicker-toggle *) {
     width: 100%;
   }
   
-  .ngc-student-details .mat-form-field {
+  .ngc-student-details .mat-form-field:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-size: 14px;
     width: 100%;
   }
   
-  .ngc-student-details td,.ngc-student-details  th {
+  .ngc-student-details td:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-student-details  th:not(.mat-paginator *, .mat-datepicker-toggle *) {
     vertical-align: middle;
   }
   
-  .ngc-student-details .no-records-found{
+  .ngc-student-details .no-records-found:not(.mat-paginator *, .mat-datepicker-toggle *){
     font-style: italic;
     text-align: center;
   }
   
 
 /* ---- components/users/learner/learner-profile/learner-profile.component.css ---- */
-.ngc-learner-profile .bold {
+.ngc-learner-profile .bold:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-weight: bold;
     font-size: large;
 }
 
 /* ---- components/users/student/student-applied-courses/student-applied-courses.component.css ---- */
-.ngc-student-applied-courses table {
+.ngc-student-applied-courses table:not(.mat-paginator *, .mat-datepicker-toggle *) {
     width: 100%;
   }
   
-  .ngc-student-applied-courses .mat-form-field {
+  .ngc-student-applied-courses .mat-form-field:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-size: 14px;
     width: 100%;
   }
   
-  .ngc-student-applied-courses td,.ngc-student-applied-courses  th {
+  .ngc-student-applied-courses td:not(.mat-paginator *, .mat-datepicker-toggle *),.ngc-student-applied-courses  th:not(.mat-paginator *, .mat-datepicker-toggle *) {
     vertical-align: middle;
   }
   
-  .ngc-student-applied-courses .no-records-found{
+  .ngc-student-applied-courses .no-records-found:not(.mat-paginator *, .mat-datepicker-toggle *){
     font-style: italic;
     text-align: center;
   }
   
 
 /* ---- components/users/student/student-profile/student-profile.component.css ---- */
-.ngc-student-profile .mat-tooltip {
+.ngc-student-profile .mat-tooltip:not(.mat-paginator *, .mat-datepicker-toggle *) {
     font-size: 15px;
 }
 

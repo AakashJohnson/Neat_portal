@@ -67,6 +67,7 @@ export function MatSelect({
   disabled = false,
   required = false,
   invalid = false, // errorState: control.invalid && (touched || form submitted)
+  onOpenedChange, // (opened) => … — e.g. a surrounding MatFormField (shouldLabelFloat)
   children,
   ...rest
 }) {
@@ -83,7 +84,11 @@ export function MatSelect({
   const panelRef = useRef(null);
   const typeahead = useRef({ text: '', timer: null });
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpenState] = useState(false);
+  const setOpen = (v) => {
+    setOpenState(v);
+    onOpenedChange?.(v);
+  };
   const [activeIndex, setActiveIndex] = useState(-1);
   const [geometry, setGeometry] = useState(null); // computed on open
   const [placement, setPlacement] = useState(null); // pane styles after measuring

@@ -33,7 +33,7 @@ const pick = (rect, x, y) => ({
   y: y === 'top' ? rect.top : y === 'bottom' ? rect.bottom : rect.top + rect.height / 2,
 });
 
-export default function MatTooltip({ message, position = 'below', children }) {
+export default function MatTooltip({ message, position = 'below', disabled = false, children }) {
   const [host, setHost] = useState(null); // callback ref: the host element
   const paneRef = useRef(null);
   const [visibility, setVisibility] = useState('initial'); // initial | visible | hidden
@@ -61,7 +61,7 @@ export default function MatTooltip({ message, position = 'below', children }) {
   }, [message, ids.message]);
 
   const show = () => {
-    if (!message) return;
+    if (disabled || !message) return; // matTooltipDisabled
     if (!attached) {
       setOverlayId(nextOverlayId());
       setStyle(null);
