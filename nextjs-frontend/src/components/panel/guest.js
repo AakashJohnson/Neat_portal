@@ -4,7 +4,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-const DEFAULTS = { app_name: 'Neat', remember_me: true, forgot_password: true, reg_enabled: '1', tos: '1' };
+const DEFAULTS = { loaded: false, app_name: 'Neat', remember_me: true, forgot_password: true, reg_enabled: '1', tos: '1' };
 const on = (v) => !(v === false || v === null || v === undefined || v === '' || v === '0' || v === 0);
 
 export function useGuestPage(title, { guest = true } = {}) {
@@ -19,7 +19,7 @@ export function useGuestPage(title, { guest = true } = {}) {
     let alive = true;
     fetch('/bff/panel/settings/public', { headers: { Accept: 'application/json' } })
       .then((r) => (r.ok ? r.json() : null))
-      .then((s) => alive && s && setSettings({ ...DEFAULTS, ...s }))
+      .then((s) => alive && s && setSettings({ ...DEFAULTS, ...s, loaded: true }))
       .catch(() => {});
     if (guest) {
       fetch('/bff/panel/context?token=', { headers: { Accept: 'application/json' } })
