@@ -120,7 +120,7 @@ export const paymentService = {
 
 export const excelService = {
   getInstitutesWithStudents: () => api.get('/getInstitutesWithStudentsForExcel'),
-  getUsers: (roleId) => api.get('/getUsersExcel', { role_id: roleId }),
+  getUsers: (roleId) => api.getRaw('/getUsersExcel', 'role_id=' + roleId),
 };
 
 export const fileService = {

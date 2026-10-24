@@ -10,7 +10,7 @@
 //     "1 – 5 of 20" / "0 of N", previous/next with tooltips above.
 //   const ds = useMatTableDataSource({ pageSizeOptions: [5, 10, 25, 100] });
 //   ds.setData(rows); ds.applyFilter(text)
-//   <MatTable dataSource={ds} columns={[{ id, header, cell: (row) => … , sortable }]} />
+//   <MatTable dataSource={ds} columns={[{ id, header, cell: (row) => … , sortable, headerClass, cellClass }]} />
 //   <MatPaginator dataSource={ds} />
 import { useMemo, useState } from 'react';
 import MatFormField from './MatFormField';
@@ -169,35 +169,38 @@ function SortHeader({ id, sort, onSort, children }) {
   };
 }
 
-function HeaderCell({ column, dataSource }) {
-  const cls = `mat-header-cell cdk-column-${column.id} mat-column-${column.id}`;
+const STICKY_TOP = { top: '0px', position: 'sticky', zIndex: 100 };
+
+function HeaderCell({ column, dataSource, sticky }) {
+  const cls = `${column.headerClass ? column.headerClass + ' ' : ''}mat-header-cell cdk-column-${column.id} mat-column-${column.id}${sticky ? ' mat-table-sticky' : ''}`;
+  const style = sticky ? STICKY_TOP : undefined;
   if (!column.sortable) {
     return (
-      <th className={cls} mat-header-cell="" role="columnheader">
+      <th className={cls} mat-header-cell="" role="columnheader" style={style}>
         {column.header}
       </th>
     );
   }
-  return <SortableHeaderCell cls={cls} column={column} dataSource={dataSource} />;
+  return <SortableHeaderCell cls={cls} style={style} column={column} dataSource={dataSource} />;
 }
 
-function SortableHeaderCell({ cls, column, dataSource }) {
+function SortableHeaderCell({ cls, style, column, dataSource }) {
   const { thProps, content } = SortHeader({ id: column.sortId ?? column.id, sort: dataSource.sort, onSort: dataSource.sortBy, children: column.header });
   return (
-    <th className={cls} mat-header-cell="" role="columnheader" {...thProps}>
+    <th className={cls} mat-header-cell="" role="columnheader" {...thProps} style={{ ...thProps.style, ...style }}>
       {content}
     </th>
   );
 }
 
 /** <table mat-table matSort [dataSource]> with header row and rows. */
-export function MatTable({ dataSource, columns, sort = true, className = '' }) {
+export function MatTable({ dataSource, columns, sort = true, stickyHeader = false, className = '' }) {
   return (
     <table className={`mat-table ${className}`.trim()} mat-table="" matsort={sort ? '' : undefined} role="grid">
       <thead role="rowgroup">
         <tr className="mat-header-row" mat-header-row="" role="row">
           {columns.map((c) => (
-            <HeaderCell key={c.id} column={{ ...c, sortable: sort && c.sortable !== false }} dataSource={dataSource} />
+            <HeaderCell key={c.id} column={{ ...c, sortable: sort && c.sortable !== false }} dataSource={dataSource} sticky={stickyHeader} />
           ))}
         </tr>
       </thead>
@@ -205,7 +208,7 @@ export function MatTable({ dataSource, columns, sort = true, className = '' }) {
         {dataSource.renderedData.map((row, i) => (
           <tr key={i} className="mat-row" mat-row="" role="row">
             {columns.map((c) => (
-              <td key={c.id} className={`mat-cell cdk-column-${c.id} mat-column-${c.id}`} mat-cell="" role="gridcell">
+              <td key={c.id} className={`${c.cellClass ? c.cellClass + ' ' : ''}mat-cell cdk-column-${c.id} mat-column-${c.id}`} mat-cell="" role="gridcell">
                 {c.cell(row, i)}
               </td>
             ))}
@@ -240,8 +243,22 @@ const navButton = (kind, disabled, onClick) => (
   </MatTooltip>
 );
 
-export function MatPaginator({ dataSource }) {
-  const { length, pageIndex, pageSize, pageSizeOptions } = dataSource;
+/**
+ * <MatPaginator dataSource={ds} /> (client-side data source), or server-side:
+ * <MatPaginator length pageIndex pageSize pageSizeOptions onPage={(e) => …} />
+ * where onPage receives the PageEvent { pageIndex, previousPageIndex, pageSize, length }.
+ */
+export function MatPaginator({ dataSource, length: lengthInput, pageIndex: pageIndexInput, pageSize: pageSizeInput, pageSizeOptions: optionsInput, onPage }) {
+  const ds = dataSource ?? {
+    length: lengthInput,
+    pageIndex: pageIndexInput,
+    pageSize: pageSizeInput,
+    pageSizeOptions: optionsInput ?? [],
+    // _changePageSize(): keep the first item of the current page in view.
+    changePageSize: (size) => onPage?.({ pageIndex: Math.floor((pageIndexInput * pageSizeInput) / size) || 0, previousPageIndex: pageIndexInput, pageSize: size, length: lengthInput }),
+    setPageIndex: (i) => onPage?.({ pageIndex: i, previousPageIndex: pageIndexInput, pageSize: pageSizeInput, length: lengthInput }),
+  };
+  const { length, pageIndex, pageSize, pageSizeOptions } = ds;
   const [selectOpen, setSelectOpen] = useState(false);
   const displayedOptions = [...new Set([...pageSizeOptions, pageSize])].sort((a, b) => a - b);
   let rangeLabel;
@@ -263,7 +280,7 @@ export function MatPaginator({ dataSource }) {
             <div className="mat-paginator-page-size-label">Items per page:</div>
             {displayedOptions.length > 1 && (
               <MatFormField className="mat-paginator-page-size-select" appearance="legacy" controlType="mat-select" empty={false} panelOpen={selectOpen}>
-                <MatSelect value={pageSize} aria-label="Items per page:" onChange={(v) => dataSource.changePageSize(v)} onOpenedChange={setSelectOpen}>
+                <MatSelect value={pageSize} aria-label="Items per page:" onChange={(v) => ds.changePageSize(v)} onOpenedChange={setSelectOpen}>
                   {displayedOptions.map((o) => (
                     <MatOption key={o} value={o}>
                       {o}
@@ -275,8 +292,8 @@ export function MatPaginator({ dataSource }) {
           </div>
           <div className="mat-paginator-range-actions">
             <div className="mat-paginator-range-label">{rangeLabel}</div>
-            {navButton('previous', !hasPrevious, () => dataSource.setPageIndex(pageIndex - 1))}
-            {navButton('next', !hasNext, () => dataSource.setPageIndex(pageIndex + 1))}
+            {navButton('previous', !hasPrevious, () => ds.setPageIndex(pageIndex - 1))}
+            {navButton('next', !hasNext, () => ds.setPageIndex(pageIndex + 1))}
           </div>
         </div>
       </div>

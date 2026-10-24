@@ -16,9 +16,9 @@ const ATTR_MAP = {
   marginwidth: 'marginWidth', marginheight: 'marginHeight', scrolling: 'scrolling', allow: 'allow',
 };
 // Angular Material elements with a ported component (src/components/mat/*).
-const MAT_COMPONENTS = { 'mat-radio-group': 'MatRadioGroup', 'mat-radio-button': 'MatRadioButton', 'mat-select': 'MatSelect', 'mat-option': 'MatOption', 'mat-error': 'MatError' };
-const MAT_MODULE = { MatRadioGroup: 'MatRadio', MatRadioButton: 'MatRadio', MatSelect: 'MatSelect', MatOption: 'MatSelect', MatError: 'MatError', MatInput: 'MatInput' };
-const PASSTHROUGH_TAGS = new Set(['mat-label', 'mat-hint', 'mat-card', 'mat-card-content', 'mat-card-title', 'mat-divider']);
+const MAT_COMPONENTS = { 'mat-radio-group': 'MatRadioGroup', 'mat-radio-button': 'MatRadioButton', 'mat-select': 'MatSelect', 'mat-option': 'MatOption', 'mat-error': 'MatError', 'mat-card': 'MatCard', 'mat-card-header': 'MatCardHeader', 'mat-card-title': 'MatCardTitle', 'mat-card-content': 'MatCardContent', 'mat-progress-spinner': 'MatProgressSpinner' };
+const MAT_MODULE = { MatRadioGroup: 'MatRadio', MatRadioButton: 'MatRadio', MatSelect: 'MatSelect', MatOption: 'MatSelect', MatError: 'MatError', MatInput: 'MatInput', MatCard: 'MatCard', MatCardHeader: 'MatCard', MatCardTitle: 'MatCard', MatCardContent: 'MatCard', MatProgressSpinner: 'MatProgressSpinner' };
+const PASSTHROUGH_TAGS = new Set(['mat-label', 'mat-hint', 'mat-divider']);
 const NO_COMMENTS = process.argv.includes('--no-comments');
 const usedMat = new Set();
 const BOOLEAN_ATTRS = new Set(['allowFullScreen', 'disabled', 'readOnly', 'required', 'checked', 'selected', 'multiple', 'autoFocus', 'noValidate', 'hidden', 'controls', 'autoPlay', 'loop', 'muted', 'defer', 'async', 'open', 'download']);
@@ -254,7 +254,7 @@ if (!pageMode) {
     ...(chrome ? ["import SiteChrome from '@/components/layout/SiteChrome';"] : []),
     ...(scoped ? ["import Scope from '@/components/common/Scope';"] : []),
     ...(usesT ? ["import { useI18n } from '@/components/providers/I18nProvider';"] : []),
-    ...matModules.map((m) => (m === 'MatInput' ? "import MatInput from '@/components/mat/MatInput';" : `import { ${[...usedMat].filter((c) => MAT_MODULE[c] === m).join(', ')} } from '@/components/mat/${m}';`)),
+    ...matModules.map((m) => (m === 'MatInput' || m === 'MatProgressSpinner' ? `import ${m} from '@/components/mat/${m}';` :`import { ${[...usedMat].filter((c) => MAT_MODULE[c] === m).join(', ')} } from '@/components/mat/${m}';`)),
     ...(usesForm ? ["import { useFormGroup, Validators } from '@/lib/forms';"] : []),
     '',
     `export default function ${comp}Page() {`,
