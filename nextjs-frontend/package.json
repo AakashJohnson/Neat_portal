@@ -1,0 +1,56 @@
+{
+  "name": "neat-nextjs-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "check:no-ts": "node scripts/check-no-ts.mjs",
+    "sync:legacy": "node scripts/sync-legacy-assets.mjs && node scripts/extract-material-css.mjs && node scripts/scope-component-css.mjs"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@hookform/resolvers": "^5.9.2",
+    "@mui/icons-material": "^6.5.0",
+    "@mui/material": "^6.5.0",
+    "@tanstack/react-query": "^5.104.5",
+    "@tiptap/extension-image": "3.32.0",
+    "@tiptap/extension-subscript": "3.32.0",
+    "@tiptap/extension-superscript": "3.32.0",
+    "@tiptap/extension-table": "3.32.0",
+    "@tiptap/extension-text-align": "3.32.0",
+    "@tiptap/extension-text-style": "3.32.0",
+    "@tiptap/pm": "^3.32.0",
+    "@tiptap/react": "^3.32.0",
+    "@tiptap/starter-kit": "^3.32.0",
+    "dompurify": "^3.4.17",
+    "file-saver": "^2.0.5",
+    "jose": "^6.2.13",
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-hook-form": "^7.90.0",
+    "server-only": "^0.0.1",
+    "swiper": "^14.3.0",
+    "xlsx": "file:vendor/xlsx-0.20.3.tgz",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.64.1",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.3",
+    "htmlparser2": "^10.1.0",
+    "pixelmatch": "6.0.0",
+    "pngjs": "7.0.0",
+    "postcss": "^8.5.31",
+    "postcss-selector-parser": "^7.1.7"
+  },
+  "description": "NEAT portal web app — Next.js + React (plain JavaScript) port of the Angular frontend",
+  "allowScripts": {
+    "unrs-resolver": false
+  }
+}

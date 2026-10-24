@@ -1,0 +1,95 @@
+{
+    "HOME": {
+        "TITLE1": "Hello Angular",
+        "TEXT": "test",
+        "SELECT": "select language"
+    },
+    "ABOUTUS": {
+        "TITLE": "NEAT",
+        "TEXT": "TEST",
+        "SELECT": "भाषा का चयन करें",
+        "ABOUT_NEAT1": "MoE has announced a National Educational Alliance for Technology (NEAT) as a Public-Private partnership model between the Government (through its implementing agency AICTE) and the Education Technology companies of India. Through an open invitation and screening, companies are invited to showcase their products on a National Portal developed for the learners, who may procure them based on their requirements.",
+        "ABOUT_NEAT2": "The aim of NEAT is to bring the best technological Products in education pedagogy on a single platform for the convenience of learners. Technology Products using Artificial Intelligence for customized learning or e-content in niche areas having highly employable skills would be identified for showcasing on the portal.",
+        "ABOUT_NEAT3": "The scheme also includes free seats for existing students of higher education from Weaker sections of society. The distribution of free seats would be done through the NEAT portal, based on student information shared by Educational Institutions. During the first phase, the portal would be launched as a pilot phase in AICTE approved Government Colleges of India only."
+    },
+    "NAVBAR": {
+        "LOGIN": "Login",
+        "REGISTER": "Register",
+        "HOME": "Home",
+        "NEAT": "NEAT",
+        "PRODUCTS": "Products",
+        "FAQS": "FAQs",
+        "STUDENT/BENEFICIARY": "Student/Beneficiary",
+        "INSTITUTES": "Institutes",
+        "COMPANY": "Company",
+        "COMPANY_DETAILS": "Company Details",
+        "DASHBOARD": "Dashboard",
+        "LOGOUT": "Logout"
+    },
+    "HIGHLIGHTS": {
+        "REGISTER_TO_VIEW": "Register to view available technology solutions.",
+        "EXPLORE_MORE": "Explore More",
+        "VIEW_MHRD_ENDORSED": "View AICTE endorsed partners providing education technolgy solutions.",
+        "VIEW_PRODUCTS": "View Products",
+        "REGISTER_TO_AVAIL": "Register to avail education technology Products."
+    },
+    "MINISTER_QUOTE": {
+        "MINISTER_QUOTE": "Minister's Quote",
+        "APPRENTICESHIP": "The apprenticeship training is one of the sources to develop skilled manpower for industry, by using training facilities available in the establishments without putting extra burden on exchequer to setup training infrastructure.",
+        "POKHRIYAL": "Shri Dr. Ramesh Pokhriyal 'Nishank'",
+        "HONBLE_MINISTER": "Hon'ble Minister of HRD, Government of India"
+    },
+    "ANNOUNCEMENT": {
+        "NEWS": "News",
+        "GOOD_WORKING": "NEAT portal launched on 12th January 2020 by Hon'ble Minister of HRD",
+        "NOVEMBER": "12 January 2020",
+        "ANNOUNCEMENT": "Announcements",
+        "IMG_GALLERY": "Image Gallery",
+        "VIEW_ALL": "View All",
+        "READ_MORE": "Read More"
+    },
+    "DISCLAIMER": {
+        "DISCLAIMER": "Disclaimer",
+        "INITIATIVE": "NEAT is an initiative of MoE (Implementing Agency AICTE) to provide a platform of learning in upcoming and state of art technology areas through online products being offered by industry."
+    },
+    "FOOTER": {
+        "GET_IN_TOUCH": "GET IN TOUCH",
+        "NELSON_MANDELA": "Nelson Mandela Marg, Vasant Kunj, New Delhi-110070",
+        "NEAT": "NEAT",
+        "COURSE_PROVIDER": "Course Provider",
+        "GALLERY_PHOTO": "Gallery Photo",
+        "GALLERY_VIDEO": "Gallery Video",
+        "CONTACT_US": "Contact Us",
+        "DOWNLOADS": "Downloads",
+        "FEEDBACK": "Feedback",
+        "HELPLINE": "Helpline",
+        "GRIEVANCE": "Grievance",
+        "SUUPORT": "Support",
+        "TNC": "Terms & Conditions",
+        "PRIVACY": "Privacy Policy",
+        "MHRD": "MoE",
+        "AICTE": "AICTE",
+        "NCS": "National Career Service",
+        "SWAYAM": "SWAYAM",
+        "UGC": "UGC",
+        "SIH": "SIH",
+        "MHRD_INNOVATION": "MoE's Innovation Cell",
+        "NATS": "NATS"
+    },
+    "PRODUCTS": {
+        "LEARN_MORE": "LEARN MORE"
+    },
+    "FAQ": {
+        "FAQ_FOR": "FAQs for"
+    },
+    "DOWNLOADS": {
+        "TITLE": "Downloads"
+    },
+    "DOWNLOADS-GALLERY": {
+        "TITLE": "Downloads-Gallery"
+    },
+    "IMAGES": {
+        "MHRD_LOGO": "../../../assets/theme/img/logo/mhrd-logo-top.jpg",
+        "BANNER": "../../../assets/img/slider/banner-english.jpg"
+    }
+}

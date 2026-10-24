@@ -1,0 +1,111 @@
+'use client';
+// Browser API client — replaces the 13 Angular services' HttpClient calls.
+// All requests go to the same-origin BFF (/bff/*), which attaches the JWT.
+import { TOKEN_ENDPOINTS } from './tokenEndpoints';
+import { API_DISPLAY_BASE } from './config';
+
+const STATUS_TEXT = { 0: 'Unknown Error', 400: 'Bad Request', 401: 'Unauthorized', 403: 'Forbidden', 404: 'Not Found', 405: 'Method Not Allowed', 422: 'Unprocessable Entity', 429: 'Too Many Requests', 500: 'Internal Server Error', 502: 'Bad Gateway', 503: 'Service Unavailable', 504: 'Gateway Timeout' };
+
+/**
+ * Angular HttpErrorResponse for a failed request made with `api`, as passed to
+ * subscribe error callbacks: `error` is the parsed body (null when empty, the
+ * raw text when it is not JSON); `message` is
+ * "Http failure response for <url>: <status> <statusText>".
+ * DEV-F07: the token in that URL (?token=<JWT>) is shown as "token=…".
+ */
+export function httpErrorResponse(res) {
+  const status = res?.status ?? 0;
+  let url = '(unknown url)';
+  if (res?.url) {
+    const u = new URL(res.url);
+    url = `${API_DISPLAY_BASE}${u.pathname.replace(/^\/bff/, '')}${u.search}`.replace(/([?&]token=)[^&]*/, '$1…');
+  }
+  return {
+    status,
+    error: res?.json ? (res.data === '' ? null : res.data) : (res?.data ?? null),
+    message: `Http failure response for ${url}: ${status} ${STATUS_TEXT[status] ?? 'Unknown Error'}`,
+  };
+}
+
+function bffUrl(path, params) {
+  const url = new URL(`/bff${path.startsWith('/') ? path : `/${path}`}`, window.location.origin);
+  // Angular sent ?token=<localStorage token> on these endpoints only (see tokenEndpoints.js).
+  if (TOKEN_ENDPOINTS.has(path.replace(/^\//, '').split(/[/?]/)[0])) url.searchParams.set('token', '');
+  for (const [k, v] of Object.entries(params ?? {})) if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
+  return url;
+}
+
+/**
+ * Parsed response: JSON when possible, otherwise text ('' for Laravel's empty
+ * 200 responses). Never throws for HTTP status — callers inspect `status`/`data`
+ * exactly like the Angular code inspected `data['message']`.
+ * @returns {Promise<{ status: number, ok: boolean, data: any, json: boolean }>}
+ */
+async function request(method, path, { params, body } = {}) {
+  const url = bffUrl(path, params);
+  const init = { method, headers: { Accept: 'application/json' }, credentials: 'same-origin' };
+  if (body instanceof FormData) init.body = body;
+  else if (body !== undefined) {
+    init.headers['Content-Type'] = 'application/json';
+    init.body = JSON.stringify(body);
+  }
+  const res = await fetch(url, init);
+  const text = await res.text();
+  let data = text;
+  let json = text === '';
+  try {
+    data = text ? JSON.parse(text) : '';
+    json = true;
+  } catch {
+    /* plain-text responses (e.g. "Unauthorized.") */
+  }
+  return { status: res.status, ok: res.ok, data, json, url: url.toString() };
+}
+
+/**
+ * Angular `http.get(...).subscribe(next)` semantics for a request made with `api`:
+ * `next` runs only for a 2xx response whose body parsed as JSON (an empty body
+ * is `null`, as HttpClient delivers it). HTTP errors and unparseable bodies
+ * went to the (absent) error callback, i.e. nothing happened in the UI.
+ * An exception thrown by `next` is logged, like an uncaught error in a subscriber.
+ * @param {Promise<{ ok: boolean, data: any, json: boolean }>} request
+ * @param {(data: any) => void} next
+ * @param {(res: object) => void} [error]  only where the Angular code had an error callback
+ */
+export async function subscribe(request, next, error) {
+  const res = await request.catch((e) => ({ ok: false, status: 0, data: null, json: false, networkError: e }));
+  if (!res.ok || !res.json) {
+    try {
+      error?.(res);
+    } catch (e) {
+      console.error(e); // an exception in the error callback, as in Angular
+    }
+    return;
+  }
+  try {
+    next(res.data === '' ? null : res.data);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export const api = {
+  get: (path, params) => request('GET', path, { params }),
+  /**
+   * GET with a query string concatenated like the Angular services did
+   * (`'?bucket=' + bucket`): no encoding of &, +, =, and undefined/null become
+   * the strings "undefined"/"null". The browser only percent-encodes what it
+   * always encodes (spaces, non-ASCII) and drops a "#fragment".
+   */
+  getRaw: (path, rawQuery) => request('GET', `${path}?${rawQuery}`),
+  post: (path, body, params) => request('POST', path, { body, params }),
+  put: (path, body) => request('PUT', path, { body }),
+  patch: (path, body) => request('PATCH', path, { body }),
+  delete: (path) => request('DELETE', path),
+  /** Binary download (Blob) through the BFF. */
+  async blob(path, params) {
+    const url = bffUrl(path, params);
+    const res = await fetch(url, { credentials: 'same-origin' });
+    return { status: res.status, ok: res.ok, blob: await res.blob() };
+  },
+};
