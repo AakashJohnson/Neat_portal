@@ -11,7 +11,14 @@ import { useCallback, useRef } from 'react';
 
 const EMULATED_END = 600; // emulateTransitionEnd(600)
 
-export function useBsCollapse({ withParent = false } = {}) {
+/**
+ * @param {{ withParent?: boolean, parent?: string }} options
+ *   parent: the trigger's data-parent selector. On the first toggle of this
+ *   target (Collapse instance creation) _getParent() syncs every
+ *   [data-toggle="collapse"][data-parent=…] trigger inside the parent to its
+ *   own target's state, as Bootstrap 4.0 does.
+ */
+export function useBsCollapse({ withParent = false, parent } = {}) {
   const target = useRef(null);
   const trigger = useRef(null);
   const busy = useRef(false);
@@ -74,7 +81,17 @@ export function useBsCollapse({ withParent = false } = {}) {
     if (!initialised.current) {
       initialised.current = true;
       // With data-parent, _getParent() first syncs the trigger to the current state.
-      if (withParent) setTrigger(el.classList.contains('show'));
+      if (parent) {
+        const parentEl = document.querySelector(parent);
+        parentEl?.querySelectorAll(`[data-toggle="collapse"][data-parent="${parent}"]`).forEach((t) => {
+          const sel = t.getAttribute('data-target') || t.getAttribute('href');
+          const tgt = sel && sel.startsWith('#') ? document.querySelector(sel) : null;
+          if (!tgt) return;
+          const shown = tgt.classList.contains('show');
+          t.classList.toggle('collapsed', !shown);
+          t.setAttribute('aria-expanded', String(shown));
+        });
+      } else if (withParent) setTrigger(el.classList.contains('show'));
     }
     if (el.classList.contains('show')) hide(el);
     else show(el);

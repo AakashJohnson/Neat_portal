@@ -61,6 +61,8 @@ async function capture(browser, base, route, width) {
   await page.goto(base + route, { waitUntil: 'load', timeout: 90000 }).catch((e) => errors.push(`goto: ${e.message.split('\n')[0]}`));
   await page.addStyleTag({ content: FREEZE_CSS }).catch(() => {});
   await page.waitForTimeout(3500);
+  // Autoplaying videos: same frame in both captures.
+  await page.evaluate(() => document.querySelectorAll('video').forEach((v) => ((v.muted = true), v.pause(), (v.currentTime = 0)))).catch(() => {});
   // Layout depends on image sizes (galleries load ~20 MB of photos).
   await page.waitForFunction(() => [...document.images].every((img) => img.complete), null, { timeout: 60000 }).catch(() => errors.push('images still loading after 60 s'));
   const text = await page.evaluate(() => {
@@ -100,7 +102,13 @@ function diffPng(a, b, file) {
   return { ratio: +(changed / (width * height)).toFixed(4), heights: [a.height, b.height] };
 }
 
+// Values that change on every load by design (getProductDetails increments view_counter).
+const MASKS = [[/^(Total Views - )\d+$/, '$1N']];
+const mask = (t) => MASKS.reduce((s, [re, by]) => s.replace(re, by), t);
+
 function textDiff(a, b) {
+  a = a.map(mask);
+  b = b.map(mask);
   const max = Math.max(a.length, b.length);
   const out = [];
   for (let i = 0; i < max && out.length < 10; i++) if (a[i] !== b[i]) out.push({ i, angular: a[i] ?? null, next: b[i] ?? null });

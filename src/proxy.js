@@ -1,27 +1,36 @@
-// Route protection (Next.js 16 "proxy", formerly middleware) — replaces the
-// Angular AfterLoginService / BeforeLoginService guards and the role checks in
-// the admin/student/company/institute/learner shell components. This is an
-// optimistic check; the API authorises every call itself.
+// Route protection (Next.js 16 "proxy", formerly middleware), derived from the
+// effective Angular route table (migration-docs/generated/angular-routes-effective.txt):
+//   AfterLoginService on a route or on its parent shell → login required;
+//   BeforeLoginService → only for visitors who are not logged in;
+//   role checks of the admin/student/company/institute/learner shells.
+// Angular matched with backtracking: an unknown child (e.g. /student/xyz) did
+// not hit the guard but fell through to the "**" route (landing page), so only
+// known paths are guarded here. This is an optimistic check; the API authorises
+// every call itself.
+// DEV-F05: a denied guard cancelled the navigation in Angular (on a direct load
+// the app stayed on an empty page at "/"); the port redirects to /login
+// (login required) or / (guest-only page while logged in).
 import { NextResponse } from 'next/server';
 import { jwtVerify, decodeJwt } from 'jose';
 
 const TOKEN_COOKIE = 'neat_token';
 
-// Area → required role_id (Angular shells: admin 1, student 3, company 4,
-// institute 5). The learner shell had no role check; it is enforced here (role 6).
+const p = (s) => new RegExp(`^${s.replace(/:[^/]+/g, '[^/]+')}/?$`);
+
+// Shell → required role_id and its routed children (all under AfterLoginService).
 const AREAS = [
-  ['/admin', 1],
-  ['/student', 3],
-  ['/company', 4],
-  ['/institute', 5],
-  ['/learner', 6],
-];
+  { role: 1, paths: ['/admin', '/admin/dashboard', '/admin/courses', '/admin/registered-student', '/admin/registered-institute', '/admin/registered-company', '/admin/registered-learner', '/admin/mou-management', '/admin/products-management', '/admin/reports', '/admin/free-seat-allocation', '/admin/free-seat-student', '/admin/company-preview/:id'] },
+  { role: 3, paths: ['/student', '/student/profile', '/student/paid-Products-details-checkout', '/student/free-Products-details-checkout', '/student/platform', '/student/free-course-details/:id', '/student/free-seat-verification'] },
+  { role: 4, paths: ['/company', '/company/form/:id', '/company/company-details', '/company/products', '/company/home', '/company/verification'] },
+  { role: 5, paths: ['/institute', '/institute/institute-details', '/institute/file-upload', '/institute/student-details'] },
+  // LearnerComponent had no role check (any logged-in user).
+  { role: null, paths: ['/learner', '/learner/learner-paid-course', '/learner/learner-free-course'] },
+].map((a) => ({ ...a, re: a.paths.map(p) }));
 
-// Pages under BeforeLoginService: only for visitors who are not logged in.
-const GUEST_ONLY = ['/verify-email', '/verify-otp', '/request-password-reset', '/response-password-reset', '/signup'];
-
-// Children of guarded shells that had no guard in Angular.
-const PUBLIC_CHILDREN = ['/student/paid-Products-details-checkout', '/student/free-Products-details-checkout'];
+// AfterLoginService outside the shells.
+const LOGIN_REQUIRED = ['/payment-redirect'].map(p);
+// BeforeLoginService.
+const GUEST_ONLY = ['/verify-email', '/verify-otp', '/request-password-reset', '/response-password-reset', '/signup'].map(p);
 
 async function claimsOf(request) {
   const token = request.cookies.get(TOKEN_COOKIE)?.value;
@@ -39,30 +48,20 @@ async function claimsOf(request) {
 
 export async function proxy(request) {
   const { pathname } = request.nextUrl;
+  const matches = (list) => list.some((re) => re.test(pathname));
+  const area = AREAS.find((a) => matches(a.re));
+  const guest = matches(GUEST_ONLY);
+  if (!area && !guest && !matches(LOGIN_REQUIRED)) return NextResponse.next();
+
   const claims = await claimsOf(request);
-
-  if (GUEST_ONLY.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
-    return claims ? NextResponse.redirect(new URL('/', request.url)) : NextResponse.next();
+  if (guest) return claims ? NextResponse.redirect(new URL('/', request.url)) : NextResponse.next();
+  if (!claims) return NextResponse.redirect(new URL('/login', request.url));
+  if (area && area.role !== null && Number(claims.role_id) !== area.role) {
+    // The shells called logout() on a role mismatch.
+    const res = NextResponse.redirect(new URL('/login', request.url));
+    res.cookies.delete(TOKEN_COOKIE);
+    return res;
   }
-
-  if (PUBLIC_CHILDREN.includes(pathname)) return NextResponse.next();
-
-  const area = AREAS.find(([prefix]) => pathname === prefix || pathname.startsWith(`${prefix}/`));
-  if (area) {
-    if (!claims) {
-      const login = new URL('/login', request.url);
-      return NextResponse.redirect(login);
-    }
-    if (Number(claims.role_id) !== area[1]) {
-      // Angular called logout() on a role mismatch.
-      const res = NextResponse.redirect(new URL('/login', request.url));
-      res.cookies.delete(TOKEN_COOKIE);
-      return res;
-    }
-  }
-  // /payment-redirect required login (AfterLoginService).
-  if (pathname === '/payment-redirect' && !claims) return NextResponse.redirect(new URL('/login', request.url));
-
   return NextResponse.next();
 }
 

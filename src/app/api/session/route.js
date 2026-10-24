@@ -7,7 +7,7 @@
 import { NextResponse } from 'next/server';
 import { decodeJwt } from 'jose';
 import { API_ORIGIN, TOKEN_COOKIE } from '@/lib/config';
-import { cookieOptions, getToken, publicClaims, readClaims } from '@/lib/server/session';
+import { cookieOptions, getToken, legacyDecodable, publicClaims, readClaims } from '@/lib/server/session';
 
 const forwardHeaders = (request) => ({
   Accept: 'application/json',
@@ -26,7 +26,7 @@ export async function POST(request) {
   const data = await res.json().catch(() => ({}));
   if (!res.ok || !data.token) return NextResponse.json(data, { status: res.status });
 
-  const response = NextResponse.json({ claims: publicClaims(decodeJwt(data.token)) });
+  const response = NextResponse.json({ claims: publicClaims(decodeJwt(data.token)), legacyDecodable: legacyDecodable(data.token) });
   response.cookies.set(TOKEN_COOKIE, data.token, cookieOptions());
   return response;
 }
@@ -46,7 +46,7 @@ export async function GET() {
     response.cookies.delete(TOKEN_COOKIE);
     return response;
   }
-  return NextResponse.json({ claims: publicClaims(claims) });
+  return NextResponse.json({ claims: publicClaims(claims), legacyDecodable: legacyDecodable(token) });
 }
 
 export async function DELETE(request) {

@@ -15,6 +15,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        {/* src/index.html <base href="/">: relative URLs (href="null", location.assign('?…'),
+            "assets/…" images) resolve from the site root, as in the Angular app. */}
+        <base href="/" />
         {/* Same font URLs as src/index.html (root layout, so every page gets them). */}
         {/* eslint-disable-next-line @next/next/google-font-display, @next/next/no-page-custom-font */}
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" />

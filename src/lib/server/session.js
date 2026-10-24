@@ -37,6 +37,21 @@ export function publicClaims(claims) {
   return rest;
 }
 
+/**
+ * Whether the Angular pages' inline decode succeeds for this token:
+ *   JSON.parse(atob(token.split('.')[1].replace('-', '+').replace('_', '/')))
+ * (only the first '-' and '_' are replaced; any other makes atob throw and the
+ * rest of that page's ngOnInit does not run). Exposed as a boolean only.
+ */
+export function legacyDecodable(token) {
+  try {
+    JSON.parse(atob(token.split('.')[1].replace('-', '+').replace('_', '/')));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export const cookieOptions = () => ({
   httpOnly: true,
   sameSite: 'lax',

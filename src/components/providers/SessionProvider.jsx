@@ -14,9 +14,12 @@ const fetchSession = () =>
 export function SessionProvider({ children }) {
   const [claims, setClaims] = useState(null);
   const [ready, setReady] = useState(false);
+  // false when the Angular pages' inline atob() decode of this token would throw.
+  const [legacyDecodable, setLegacyDecodable] = useState(true);
 
   const apply = useCallback((data) => {
     setClaims(data.claims ?? null);
+    setLegacyDecodable(data.legacyDecodable ?? true);
     setReady(true);
     return data;
   }, []);
@@ -35,7 +38,10 @@ export function SessionProvider({ children }) {
   const login = useCallback(async (username, password) => {
     const res = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
     const data = await res.json().catch(() => ({}));
-    if (res.ok) setClaims(data.claims);
+    if (res.ok) {
+      setClaims(data.claims);
+      setLegacyDecodable(data.legacyDecodable ?? true);
+    }
     return { status: res.status, data };
   }, []);
 
@@ -50,7 +56,7 @@ export function SessionProvider({ children }) {
     setClaims(null);
   }, []);
 
-  return <SessionContext.Provider value={{ claims, ready, refresh, login, logout }}>{children}</SessionContext.Provider>;
+  return <SessionContext.Provider value={{ claims, ready, legacyDecodable, refresh, login, logout }}>{children}</SessionContext.Provider>;
 }
 
 export const useSession = () => useContext(SessionContext);
