@@ -1,0 +1,1623 @@
+{
+  "routes": [
+    {
+      "id": "API-001",
+      "method": "POST",
+      "path": "/api/login",
+      "handler": "Auth\\AuthController@login",
+      "file": "app/Http/Controllers/Api/Auth/AuthController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "jarwis.login",
+        "token.?"
+      ]
+    },
+    {
+      "id": "API-002",
+      "method": "POST",
+      "path": "/api/login/social",
+      "handler": "Auth\\SocialLoginController@index",
+      "file": "app/Http/Controllers/Api/Auth/SocialLoginController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-003",
+      "method": "POST",
+      "path": "/api/logout",
+      "handler": "Auth\\AuthController@logout",
+      "file": "app/Http/Controllers/Api/Auth/AuthController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-004",
+      "method": "POST",
+      "path": "/api/register",
+      "handler": "Auth\\RegistrationController@index",
+      "file": "app/Http/Controllers/Api/Auth/RegistrationController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "jarwis.signUp"
+      ]
+    },
+    {
+      "id": "API-005",
+      "method": "POST",
+      "path": "/api/register/verify-email/{token}",
+      "handler": "Auth\\RegistrationController@verifyEmail",
+      "file": "app/Http/Controllers/Api/Auth/RegistrationController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-006",
+      "method": "POST",
+      "path": "/api/password/remind",
+      "handler": "Auth\\Password\\RemindController@index",
+      "file": "app/Http/Controllers/Api/Auth/Password/RemindController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-007",
+      "method": "GET",
+      "path": "/api/stats",
+      "handler": "StatsController@index",
+      "file": "app/Http/Controllers/Api/StatsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-008",
+      "method": "GET",
+      "path": "/api/me",
+      "handler": "Profile\\DetailsController@index",
+      "file": "app/Http/Controllers/Api/Profile/DetailsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-009",
+      "method": "PATCH",
+      "path": "/api/me/details",
+      "handler": "Profile\\DetailsController@update",
+      "file": "app/Http/Controllers/Api/Profile/DetailsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-010",
+      "method": "PATCH",
+      "path": "/api/me/details/auth",
+      "handler": "Profile\\AuthDetailsController@update",
+      "file": "app/Http/Controllers/Api/Profile/AuthDetailsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-011",
+      "method": "PUT",
+      "path": "/api/me/avatar",
+      "handler": "Profile\\AvatarController@update",
+      "file": "app/Http/Controllers/Api/Profile/AvatarController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-012",
+      "method": "DELETE",
+      "path": "/api/me/avatar",
+      "handler": "Profile\\AvatarController@destroy",
+      "file": "app/Http/Controllers/Api/Profile/AvatarController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-013",
+      "method": "PUT",
+      "path": "/api/me/avatar/external",
+      "handler": "Profile\\AvatarController@updateExternal",
+      "file": "app/Http/Controllers/Api/Profile/AvatarController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-014",
+      "method": "GET",
+      "path": "/api/me/sessions",
+      "handler": "Profile\\SessionsController@index",
+      "file": "app/Http/Controllers/Api/Profile/SessionsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-015",
+      "method": "PUT",
+      "path": "/api/me/2fa",
+      "handler": "Profile\\TwoFactorController@update",
+      "file": "app/Http/Controllers/Api/Profile/TwoFactorController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-016",
+      "method": "POST",
+      "path": "/api/me/2fa/verify",
+      "handler": "Profile\\TwoFactorController@verify",
+      "file": "app/Http/Controllers/Api/Profile/TwoFactorController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-017",
+      "method": "DELETE",
+      "path": "/api/me/2fa",
+      "handler": "Profile\\TwoFactorController@destroy",
+      "file": "app/Http/Controllers/Api/Profile/TwoFactorController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-018",
+      "method": "PUT",
+      "path": "/api/users/{user}/avatar",
+      "handler": "Users\\AvatarController@update",
+      "file": "app/Http/Controllers/Api/Users/AvatarController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-019",
+      "method": "PUT",
+      "path": "/api/users/{user}/avatar/external",
+      "handler": "Users\\AvatarController@updateExternal",
+      "file": "app/Http/Controllers/Api/Users/AvatarController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-020",
+      "method": "DELETE",
+      "path": "/api/users/{user}/avatar",
+      "handler": "Users\\AvatarController@destroy",
+      "file": "app/Http/Controllers/Api/Users/AvatarController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-021",
+      "method": "PUT",
+      "path": "/api/users/{user}/2fa",
+      "handler": "Users\\TwoFactorController@update",
+      "file": "app/Http/Controllers/Api/Users/TwoFactorController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-022",
+      "method": "POST",
+      "path": "/api/users/{user}/2fa/verify",
+      "handler": "Users\\TwoFactorController@verify",
+      "file": "app/Http/Controllers/Api/Users/TwoFactorController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-023",
+      "method": "DELETE",
+      "path": "/api/users/{user}/2fa",
+      "handler": "Users\\TwoFactorController@destroy",
+      "file": "app/Http/Controllers/Api/Users/TwoFactorController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-024",
+      "method": "GET",
+      "path": "/api/users/{user}/activity",
+      "handler": "Users\\ActivityController@index",
+      "file": "app/Http/Controllers/Api/Users/ActivityController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-025",
+      "method": "GET",
+      "path": "/api/users/{user}/sessions",
+      "handler": "Users\\SessionsController@index",
+      "file": "app/Http/Controllers/Api/Users/SessionsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-026",
+      "method": "GET",
+      "path": "/api/sessions/{session}",
+      "handler": "SessionsController@show",
+      "file": "app/Http/Controllers/Api/SessionsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-027",
+      "method": "DELETE",
+      "path": "/api/sessions/{session}",
+      "handler": "SessionsController@destroy",
+      "file": "app/Http/Controllers/Api/SessionsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-028",
+      "method": "GET",
+      "path": "/api/activity",
+      "handler": "ActivityController@index",
+      "file": null,
+      "actionExists": false,
+      "angularCallers": []
+    },
+    {
+      "id": "API-029",
+      "method": "GET",
+      "path": "/api/roles/{role}/permissions",
+      "handler": "Authorization\\RolePermissionsController@show",
+      "file": "app/Http/Controllers/Api/Authorization/RolePermissionsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-030",
+      "method": "PUT",
+      "path": "/api/roles/{role}/permissions",
+      "handler": "Authorization\\RolePermissionsController@update",
+      "file": "app/Http/Controllers/Api/Authorization/RolePermissionsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-031",
+      "method": "GET",
+      "path": "/api/settings",
+      "handler": "SettingsController@index",
+      "file": "app/Http/Controllers/Api/SettingsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-032",
+      "method": "GET",
+      "path": "/api/countries",
+      "handler": "CountriesController@index",
+      "file": "app/Http/Controllers/Api/CountriesController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-033",
+      "method": "GET",
+      "path": "/api/getAdminCounts",
+      "handler": "AdminController@getAdminCounts",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.getAdminCounts"
+      ]
+    },
+    {
+      "id": "API-034",
+      "method": "GET",
+      "path": "/api/getAdminProducts",
+      "handler": "AdminController@getAdminProducts",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.getAdminProducts"
+      ]
+    },
+    {
+      "id": "API-035",
+      "method": "GET",
+      "path": "/api/getAdminStudents",
+      "handler": "AdminController@getStudents",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.getAdminCounts"
+      ]
+    },
+    {
+      "id": "API-036",
+      "method": "GET",
+      "path": "/api/getCompanies",
+      "handler": "AdminController@getCompanies",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.getCompanies"
+      ]
+    },
+    {
+      "id": "API-037",
+      "method": "GET",
+      "path": "/api/getInstitutes",
+      "handler": "AdminController@getInstitutes",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.getInstitutes"
+      ]
+    },
+    {
+      "id": "API-038",
+      "method": "POST",
+      "path": "/api/getCompanyWiseProduct",
+      "handler": "AdminController@getCompanyWiseProduct",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.getCompanyWiseProduct"
+      ]
+    },
+    {
+      "id": "API-039",
+      "method": "POST",
+      "path": "/api/changeProductStatus",
+      "handler": "AdminController@changeProductStatus",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.changeProductStatus"
+      ]
+    },
+    {
+      "id": "API-040",
+      "method": "GET",
+      "path": "/api/getAdminLearners",
+      "handler": "AdminController@getLearners",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.getAdminCounts"
+      ]
+    },
+    {
+      "id": "API-041",
+      "method": "GET",
+      "path": "/api/getCompanyDetails",
+      "handler": "AdminController@getCompanyDetails",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.getCompanyDetails"
+      ]
+    },
+    {
+      "id": "API-042",
+      "method": "POST",
+      "path": "/api/getCourseWiseProduct",
+      "handler": "AdminController@getCourseWiseProduct",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.getCourseWiseProduct"
+      ]
+    },
+    {
+      "id": "API-043",
+      "method": "POST",
+      "path": "/api/allocateseat",
+      "handler": "ProductController@allocateseat",
+      "file": "app/Http/Controllers/Api/ProductController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "admin.allocateseat"
+      ]
+    },
+    {
+      "id": "API-044",
+      "method": "GET",
+      "path": "/api/allocated-seat",
+      "handler": "ProductController@allotedSeat",
+      "file": "app/Http/Controllers/Api/ProductController.php",
+      "actionExists": false,
+      "angularCallers": []
+    },
+    {
+      "id": "API-045",
+      "method": "GET",
+      "path": "/api/product-management",
+      "handler": "ProductController@productDetails",
+      "file": "app/Http/Controllers/Api/ProductController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.getProductList"
+      ]
+    },
+    {
+      "id": "API-046",
+      "method": "POST",
+      "path": "/api/ecxelUpload",
+      "handler": "InstituteController@ecxelUpload",
+      "file": "app/Http/Controllers/Api/InstituteController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "institute.uploadExcel"
+      ]
+    },
+    {
+      "id": "API-047",
+      "method": "POST",
+      "path": "/api/submitInstituteDetails",
+      "handler": "InstituteController@submitInstituteDetails",
+      "file": "app/Http/Controllers/Api/InstituteController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "institute.submitInstituteDetails"
+      ]
+    },
+    {
+      "id": "API-048",
+      "method": "POST",
+      "path": "/api/submitStudentDetailsFromInstitute",
+      "handler": "InstituteController@submitStudentDetails",
+      "file": "app/Http/Controllers/Api/InstituteController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "institute.submitStudentDetailsFromInstitute"
+      ]
+    },
+    {
+      "id": "API-049",
+      "method": "POST",
+      "path": "/api/getStudents",
+      "handler": "InstituteController@getStudents",
+      "file": "app/Http/Controllers/Api/InstituteController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "institute.getStudents"
+      ]
+    },
+    {
+      "id": "API-050",
+      "method": "GET",
+      "path": "/api/getInstituteDetails",
+      "handler": "InstituteController@getInstituteDetails",
+      "file": "app/Http/Controllers/Api/InstituteController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "institute.getInstituteDetails"
+      ]
+    },
+    {
+      "id": "API-051",
+      "method": "POST",
+      "path": "/api/uploadExcelPaid",
+      "handler": "InstituteController@uploadExcelPaid",
+      "file": "app/Http/Controllers/Api/InstituteController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "institute.uploadExcelPaid"
+      ]
+    },
+    {
+      "id": "API-052",
+      "method": "GET",
+      "path": "/api/editInstituteDetails",
+      "handler": "InstituteController@editInstituteDetails",
+      "file": "app/Http/Controllers/Api/InstituteController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "institute.editInstituteDetails"
+      ]
+    },
+    {
+      "id": "API-053",
+      "method": "POST",
+      "path": "/api/getCounts",
+      "handler": "CompanyController@getCounts",
+      "file": "app/Http/Controllers/Api/CompanyController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "company.getCounts"
+      ]
+    },
+    {
+      "id": "API-054",
+      "method": "POST",
+      "path": "/api/getProducts",
+      "handler": "CompanyController@getProducts",
+      "file": "app/Http/Controllers/Api/CompanyController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getProducts"
+      ]
+    },
+    {
+      "id": "API-055",
+      "method": "POST",
+      "path": "/api/submitProductDetails",
+      "handler": "CompanyController@submitProductDetails",
+      "file": "app/Http/Controllers/Api/CompanyController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.submitProductDetails"
+      ]
+    },
+    {
+      "id": "API-056",
+      "method": "POST",
+      "path": "/api/getProductFlags",
+      "handler": "CompanyController@getProductFlags",
+      "file": "app/Http/Controllers/Api/CompanyController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "company.getProductFlags"
+      ]
+    },
+    {
+      "id": "API-057",
+      "method": "GET",
+      "path": "/api/getStudentTransactionIds",
+      "handler": "CompanyController@getStudentTransactionIds",
+      "file": "app/Http/Controllers/Api/CompanyController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "company.getStudentTransactionIds"
+      ]
+    },
+    {
+      "id": "API-058",
+      "method": "GET",
+      "path": "/api/product-list",
+      "handler": "CompanyController@getcompanyProductList",
+      "file": "app/Http/Controllers/Api/CompanyController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "company.productList"
+      ]
+    },
+    {
+      "id": "API-059",
+      "method": "POST",
+      "path": "/api/submitStudentDetails",
+      "handler": "StudentController@submitStudentDetails",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.submitStudentDetails"
+      ]
+    },
+    {
+      "id": "API-060",
+      "method": "POST",
+      "path": "/api/getPurchasedProducts",
+      "handler": "StudentController@getPurchasedProducts",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.getPurchasedProducts"
+      ]
+    },
+    {
+      "id": "API-061",
+      "method": "POST",
+      "path": "/api/getFreeProducts",
+      "handler": "StudentController@getFreeProducts",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.getFreeProducts"
+      ]
+    },
+    {
+      "id": "API-062",
+      "method": "GET",
+      "path": "/api/getStudentDetails",
+      "handler": "StudentController@getStudentDetails",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.getStudentDetails"
+      ]
+    },
+    {
+      "id": "API-063",
+      "method": "GET",
+      "path": "/api/getStudentEligibility",
+      "handler": "StudentController@getStudentEligibility",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "student.getStudentEligibility"
+      ]
+    },
+    {
+      "id": "API-064",
+      "method": "POST",
+      "path": "/api/getAppliedProducts",
+      "handler": "StudentController@getAppliedProducts",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.getAppliedProducts"
+      ]
+    },
+    {
+      "id": "API-065",
+      "method": "POST",
+      "path": "/api/submitTransactionId",
+      "handler": "StudentController@submitTransactionId",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "student.submitTransactionId"
+      ]
+    },
+    {
+      "id": "API-066",
+      "method": "POST",
+      "path": "/api/sendFreeAllocationMail",
+      "handler": "StudentController@sendFreeAllocationMail",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "student.sendFreeAllocationMail"
+      ]
+    },
+    {
+      "id": "API-067",
+      "method": "POST",
+      "path": "/api/sendFreeSeatVerificationMail",
+      "handler": "StudentController@sendFreeSeatVerificationMail",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.sendFreeSeatVerificationMail"
+      ]
+    },
+    {
+      "id": "API-068",
+      "method": "POST",
+      "path": "/api/checkStudentExists",
+      "handler": "StudentController@checkStudentExists",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.checkStudentExists"
+      ]
+    },
+    {
+      "id": "API-069",
+      "method": "POST",
+      "path": "/api/checkCompanySecretCode",
+      "handler": "StudentController@checkCompanySecretCode",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.checkCompanySecretCode"
+      ]
+    },
+    {
+      "id": "API-070",
+      "method": "POST",
+      "path": "/api/checkStudentSecretCode",
+      "handler": "StudentController@checkStudentSecretCode",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.checkStudentSecretCode"
+      ]
+    },
+    {
+      "id": "API-071",
+      "method": "POST",
+      "path": "/api/getCollegeNames",
+      "handler": "StudentController@getCollegeNames",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.getCollegeNames"
+      ]
+    },
+    {
+      "id": "API-072",
+      "method": "GET",
+      "path": "/api/editStudentDetails",
+      "handler": "StudentController@editStudentDetails",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.editStudentDetails"
+      ]
+    },
+    {
+      "id": "API-073",
+      "method": "GET",
+      "path": "/api/getStates",
+      "handler": "StudentController@getStates",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.getStates"
+      ]
+    },
+    {
+      "id": "API-074",
+      "method": "GET",
+      "path": "/api/checkFileUpload",
+      "handler": "StudentController@checkFileUpload",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.checkFileUpload"
+      ]
+    },
+    {
+      "id": "API-075",
+      "method": "POST",
+      "path": "/api/submitLearnerDetails",
+      "handler": "StudentController@submitLearnerDetails",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.submitLearnerDetails"
+      ]
+    },
+    {
+      "id": "API-076",
+      "method": "GET",
+      "path": "/api/getLearnerDetails",
+      "handler": "StudentController@getLearnerDetails",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.getLearnerDetails"
+      ]
+    },
+    {
+      "id": "API-077",
+      "method": "GET",
+      "path": "/api/editLearnerDetails",
+      "handler": "StudentController@editLearnerDetails",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.editLearnerDetails"
+      ]
+    },
+    {
+      "id": "API-078",
+      "method": "POST",
+      "path": "/api/getFaqs",
+      "handler": "StudentController@getFaqs",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.getFaqs"
+      ]
+    },
+    {
+      "id": "API-079",
+      "method": "POST",
+      "path": "/api/getFaqsHindi",
+      "handler": "StudentController@getFaqsHindi",
+      "file": "app/Http/Controllers/Api/StudentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "student.getFaqsHindi"
+      ]
+    },
+    {
+      "id": "API-080",
+      "method": "GET",
+      "path": "/api/verifyUserLoggedIn",
+      "handler": "UserVerificationController@verifyUserLoggedIn",
+      "file": "app/Http/Controllers/Api/UserVerificationController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "institute.verifyUser"
+      ]
+    },
+    {
+      "id": "API-081",
+      "method": "POST",
+      "path": "/api/emailVerification",
+      "handler": "UserVerificationController@emailVerification",
+      "file": "app/Http/Controllers/Api/UserVerificationController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "jarwis.emailVerification"
+      ]
+    },
+    {
+      "id": "API-082",
+      "method": "POST",
+      "path": "/api/otpVerification",
+      "handler": "UserVerificationController@otpVerification",
+      "file": "app/Http/Controllers/Api/UserVerificationController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "jarwis.otpVerification"
+      ]
+    },
+    {
+      "id": "API-083",
+      "method": "POST",
+      "path": "/api/sendPasswordResetLink",
+      "handler": "ResetPasswordController@sendEmail",
+      "file": "app/Http/Controllers/Api/ResetPasswordController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "jarwis.sendPasswordResetLink"
+      ]
+    },
+    {
+      "id": "API-084",
+      "method": "POST",
+      "path": "/api/resetPassword",
+      "handler": "ChangePasswordController@process",
+      "file": "app/Http/Controllers/Api/ChangePasswordController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "jarwis.changePassword"
+      ]
+    },
+    {
+      "id": "API-085",
+      "method": "POST",
+      "path": "/api/submitGrievance",
+      "handler": "GrievanceController@submitGrievance",
+      "file": "app/Http/Controllers/Api/GrievanceController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "grievance.submitGrievance"
+      ]
+    },
+    {
+      "id": "API-086",
+      "method": "POST",
+      "path": "/api/submitFeedback",
+      "handler": "GrievanceController@submitFeedback",
+      "file": "app/Http/Controllers/Api/GrievanceController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "grievance.submitFeedback"
+      ]
+    },
+    {
+      "id": "API-087",
+      "method": "GET",
+      "path": "/api/getAnnouncements",
+      "handler": "GrievanceController@getAnnouncements",
+      "file": "app/Http/Controllers/Api/GrievanceController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "grievance.getAnnouncements"
+      ]
+    },
+    {
+      "id": "API-088",
+      "method": "GET",
+      "path": "/api/get-details-article",
+      "handler": "GrievanceController@getDetailsArticle",
+      "file": "app/Http/Controllers/Api/GrievanceController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "grievance.getDetailArticle"
+      ]
+    },
+    {
+      "id": "API-089",
+      "method": "POST",
+      "path": "/api/submitContactUs",
+      "handler": "GrievanceController@submitContactUs",
+      "file": "app/Http/Controllers/Api/GrievanceController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "grievance.submitContactUs"
+      ]
+    },
+    {
+      "id": "API-090",
+      "method": "GET",
+      "path": "/api/getProductsLandingPage",
+      "handler": "CourseController@getProductsLandingPage",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getProductsLandingPage"
+      ]
+    },
+    {
+      "id": "API-091",
+      "method": "GET",
+      "path": "/api/getB2CProductsLandingPage",
+      "handler": "CourseController@getB2CProductsLandingPage",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getB2CProductsLandingPage"
+      ]
+    },
+    {
+      "id": "API-092",
+      "method": "GET",
+      "path": "/api/getB2BProductsLandingPage",
+      "handler": "CourseController@getB2BProductsLandingPage",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getB2BProductsLandingPage"
+      ]
+    },
+    {
+      "id": "API-093",
+      "method": "POST",
+      "path": "/api/getProductDetails",
+      "handler": "CourseController@getProductDetails",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "course.getProductDetails"
+      ]
+    },
+    {
+      "id": "API-094",
+      "method": "POST",
+      "path": "/api/applyForFreeCourse",
+      "handler": "CourseController@applyForFreeCourse",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "course.applyForFreeCourse"
+      ]
+    },
+    {
+      "id": "API-095",
+      "method": "POST",
+      "path": "/api/getAppliedStudents",
+      "handler": "CourseController@getAppliedStudents",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-096",
+      "method": "POST",
+      "path": "/api/assignFreeCourse",
+      "handler": "CourseController@assignFreeCourse",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "course.assignFreeCourse"
+      ]
+    },
+    {
+      "id": "API-097",
+      "method": "POST",
+      "path": "/api/assignPaidCourse",
+      "handler": "CourseController@assignPaidCourse",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "course.assignPaidCourse"
+      ]
+    },
+    {
+      "id": "API-098",
+      "method": "POST",
+      "path": "/api/applyForPaidCourse",
+      "handler": "CourseController@applyForPaidCourse",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "course.applyForPaidCourse"
+      ]
+    },
+    {
+      "id": "API-099",
+      "method": "POST",
+      "path": "/api/editProductDetails",
+      "handler": "CourseController@editProductDetails",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.editProductDetails"
+      ]
+    },
+    {
+      "id": "API-100",
+      "method": "POST",
+      "path": "/api/addComment",
+      "handler": "CourseController@addComment",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "course.addComment"
+      ]
+    },
+    {
+      "id": "API-101",
+      "method": "POST",
+      "path": "/api/getComments",
+      "handler": "CourseController@getComments",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "course.getComments"
+      ]
+    },
+    {
+      "id": "API-102",
+      "method": "POST",
+      "path": "/api/addReplyToComment",
+      "handler": "CourseController@addReplyToComment",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "course.addReplyToComment"
+      ]
+    },
+    {
+      "id": "API-103",
+      "method": "POST",
+      "path": "/api/addToCart",
+      "handler": "CourseController@addToCart",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "course.addToCart"
+      ]
+    },
+    {
+      "id": "API-104",
+      "method": "POST",
+      "path": "/api/displayCart",
+      "handler": "CourseController@displayCart",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "course.displayCart"
+      ]
+    },
+    {
+      "id": "API-105",
+      "method": "POST",
+      "path": "/api/displayPaidProducts",
+      "handler": "CourseController@displayPaidProducts",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": false,
+      "angularCallers": []
+    },
+    {
+      "id": "API-106",
+      "method": "POST",
+      "path": "/api/getProductsForAllocation",
+      "handler": "CourseController@getProductsForAllocation",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "course.getProductsForAllocation"
+      ]
+    },
+    {
+      "id": "API-107",
+      "method": "GET",
+      "path": "/api/getProductBuckets",
+      "handler": "CourseController@getProductBuckets",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getProductBuckets"
+      ]
+    },
+    {
+      "id": "API-108",
+      "method": "GET",
+      "path": "/api/getB2CProductBuckets",
+      "handler": "CourseController@getB2CProductBuckets",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getB2CProductBuckets"
+      ]
+    },
+    {
+      "id": "API-109",
+      "method": "GET",
+      "path": "/api/getB2BProductBuckets",
+      "handler": "CourseController@getB2BProductBuckets",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getB2BProductBuckets"
+      ]
+    },
+    {
+      "id": "API-110",
+      "method": "GET",
+      "path": "/api/getBucketWiseProducts",
+      "handler": "CourseController@getBucketWiseProducts",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getBucketWiseProducts"
+      ]
+    },
+    {
+      "id": "API-111",
+      "method": "GET",
+      "path": "/api/getB2BBucketWiseProducts",
+      "handler": "CourseController@getB2BBucketWiseProducts",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getB2BBucketWiseProducts"
+      ]
+    },
+    {
+      "id": "API-112",
+      "method": "GET",
+      "path": "/api/getB2CBucketWiseProducts",
+      "handler": "CourseController@getB2CBucketWiseProducts",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getB2CBucketWiseProducts"
+      ]
+    },
+    {
+      "id": "API-113",
+      "method": "GET",
+      "path": "/api/getBucketWiseSearchProducts",
+      "handler": "CourseController@getBucketWiseSearchProducts",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getBucketWiseSearchProducts"
+      ]
+    },
+    {
+      "id": "API-114",
+      "method": "GET",
+      "path": "/api/getB2BBucketWiseSearchProducts",
+      "handler": "CourseController@getB2BBucketWiseSearchProducts",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getB2BBucketWiseSearchProducts"
+      ]
+    },
+    {
+      "id": "API-115",
+      "method": "GET",
+      "path": "/api/getB2CBucketWiseSearchProducts",
+      "handler": "CourseController@getB2CBucketWiseSearchProducts",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getB2CBucketWiseSearchProducts"
+      ]
+    },
+    {
+      "id": "API-116",
+      "method": "POST",
+      "path": "/api/submitB2BEnquiry",
+      "handler": "CourseController@submitB2BEnquiry",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "course.submitB2BEnquiry"
+      ]
+    },
+    {
+      "id": "API-117",
+      "method": "GET",
+      "path": "/api/getHomePageCounter",
+      "handler": "CourseController@getHomePageCounter",
+      "file": "app/Http/Controllers/Api/CourseController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "company.getHomePageCounter"
+      ]
+    },
+    {
+      "id": "API-118",
+      "method": "POST",
+      "path": "/api/uploadFile",
+      "handler": "FileController@uploadFile",
+      "file": "app/Http/Controllers/Api/FileController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "file.saveFile",
+        "file.validateMouFile"
+      ]
+    },
+    {
+      "id": "API-119",
+      "method": "POST",
+      "path": "/api/deleteFile",
+      "handler": "FileController@deleteFile",
+      "file": "app/Http/Controllers/Api/FileController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "file.deleteFile"
+      ]
+    },
+    {
+      "id": "API-120",
+      "method": "POST",
+      "path": "/api/updateMou",
+      "handler": "FileController@updateMou",
+      "file": "app/Http/Controllers/Api/FileController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-121",
+      "method": "POST",
+      "path": "/api/paymentFailure",
+      "handler": "PaymentController@paymentFailure",
+      "file": "app/Http/Controllers/Api/PaymentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "payment.paymentFailure"
+      ]
+    },
+    {
+      "id": "API-122",
+      "method": "POST",
+      "path": "/api/paymentSuccess",
+      "handler": "PaymentController@paymentSuccess",
+      "file": "app/Http/Controllers/Api/PaymentController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "payment.paymentSuccess"
+      ]
+    },
+    {
+      "id": "API-123",
+      "method": "POST",
+      "path": "/api/paymentRedirect",
+      "handler": "PaymentController@paymentRedirect",
+      "file": "app/Http/Controllers/Api/PaymentController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "payment.paymentRedirect"
+      ]
+    },
+    {
+      "id": "API-124",
+      "method": "GET",
+      "path": "/api/getInstitutesWithStudentsForExcel",
+      "handler": "ExcelController@getInstitutesWithStudents",
+      "file": "app/Http/Controllers/Api/ExcelController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "excel.getInstitutesWithStudents"
+      ]
+    },
+    {
+      "id": "API-125",
+      "method": "GET",
+      "path": "/api/getUsersExcel",
+      "handler": "ExcelController@getUsersExcel",
+      "file": "app/Http/Controllers/Api/ExcelController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "excel.getUsers"
+      ]
+    },
+    {
+      "id": "API-126",
+      "method": "GET",
+      "path": "/api/free-seat-student",
+      "handler": "AdminController@freeSeatStudent",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.getFreeSeatStudent"
+      ]
+    },
+    {
+      "id": "API-127",
+      "method": "GET",
+      "path": "/api/mou-list",
+      "handler": "AdminController@index",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.getMouList"
+      ]
+    },
+    {
+      "id": "API-128",
+      "method": "POST",
+      "path": "/api/update-mou-date",
+      "handler": "AdminController@updateMouDate",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": [
+        "admin.updateMouDate"
+      ]
+    },
+    {
+      "id": "API-129",
+      "method": "POST",
+      "path": "/api/resendEmailVerificationLink",
+      "handler": "ProductController@checkEmailStatus",
+      "file": "app/Http/Controllers/Api/ProductController.php",
+      "actionExists": false,
+      "angularCallers": [
+        "jarwis.resendEmailVerificationLink"
+      ]
+    },
+    {
+      "id": "API-130",
+      "method": "GET",
+      "path": "/api/getAdminCountsForAICTEDashboard",
+      "handler": "AdminController@getAdminCountsForAICTEDashboard",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-131",
+      "method": "GET",
+      "path": "/api/getCompanyAndProductsForAICTEDashboard",
+      "handler": "AdminController@getCompanyAndProductsForAICTEDashboard",
+      "file": "app/Http/Controllers/Api/AdminController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-132",
+      "method": "POST",
+      "path": "/api/mobile/login",
+      "handler": "Auth\\MobileUserAuthController@mobileLogin",
+      "file": "app/Http/Controllers/Api/Auth/MobileUserAuthController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-133",
+      "method": "POST",
+      "path": "/api/mobile/register",
+      "handler": "Auth\\MobileUserAuthController@mobileRegister",
+      "file": "app/Http/Controllers/Api/Auth/MobileUserAuthController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-134",
+      "method": "POST",
+      "path": "/api/mobile/forgot-password",
+      "handler": "Auth\\MobileUserAuthController@mobileForgotPassword",
+      "file": "app/Http/Controllers/Api/Auth/MobileUserAuthController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-135",
+      "method": "GET",
+      "path": "/api/users",
+      "handler": "Users\\UsersController@index",
+      "file": "app/Http/Controllers/Api/Users/UsersController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-136",
+      "method": "POST",
+      "path": "/api/users",
+      "handler": "Users\\UsersController@store",
+      "file": "app/Http/Controllers/Api/Users/UsersController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-137",
+      "method": "GET",
+      "path": "/api/users/{user}",
+      "handler": "Users\\UsersController@show",
+      "file": "app/Http/Controllers/Api/Users/UsersController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-138",
+      "method": "GET",
+      "path": "/api/users/{user}/edit",
+      "handler": "Users\\UsersController@edit",
+      "file": "app/Http/Controllers/Api/Users/UsersController.php",
+      "actionExists": false,
+      "angularCallers": []
+    },
+    {
+      "id": "API-139",
+      "method": "PUT",
+      "path": "/api/users/{user}",
+      "handler": "Users\\UsersController@update",
+      "file": "app/Http/Controllers/Api/Users/UsersController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-140",
+      "method": "PATCH",
+      "path": "/api/users/{user}",
+      "handler": "Users\\UsersController@update",
+      "file": "app/Http/Controllers/Api/Users/UsersController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-141",
+      "method": "DELETE",
+      "path": "/api/users/{user}",
+      "handler": "Users\\UsersController@destroy",
+      "file": "app/Http/Controllers/Api/Users/UsersController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-142",
+      "method": "GET",
+      "path": "/api/roles",
+      "handler": "Authorization\\RolesController@index",
+      "file": "app/Http/Controllers/Api/Authorization/RolesController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-143",
+      "method": "POST",
+      "path": "/api/roles",
+      "handler": "Authorization\\RolesController@store",
+      "file": "app/Http/Controllers/Api/Authorization/RolesController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-144",
+      "method": "GET",
+      "path": "/api/roles/{role}",
+      "handler": "Authorization\\RolesController@show",
+      "file": "app/Http/Controllers/Api/Authorization/RolesController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-145",
+      "method": "GET",
+      "path": "/api/roles/{role}/edit",
+      "handler": "Authorization\\RolesController@edit",
+      "file": "app/Http/Controllers/Api/Authorization/RolesController.php",
+      "actionExists": false,
+      "angularCallers": []
+    },
+    {
+      "id": "API-146",
+      "method": "PUT",
+      "path": "/api/roles/{role}",
+      "handler": "Authorization\\RolesController@update",
+      "file": "app/Http/Controllers/Api/Authorization/RolesController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-147",
+      "method": "PATCH",
+      "path": "/api/roles/{role}",
+      "handler": "Authorization\\RolesController@update",
+      "file": "app/Http/Controllers/Api/Authorization/RolesController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-148",
+      "method": "DELETE",
+      "path": "/api/roles/{role}",
+      "handler": "Authorization\\RolesController@destroy",
+      "file": "app/Http/Controllers/Api/Authorization/RolesController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-149",
+      "method": "GET",
+      "path": "/api/permissions",
+      "handler": "Authorization\\PermissionsController@index",
+      "file": "app/Http/Controllers/Api/Authorization/PermissionsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-150",
+      "method": "POST",
+      "path": "/api/permissions",
+      "handler": "Authorization\\PermissionsController@store",
+      "file": "app/Http/Controllers/Api/Authorization/PermissionsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-151",
+      "method": "GET",
+      "path": "/api/permissions/{permission}",
+      "handler": "Authorization\\PermissionsController@show",
+      "file": "app/Http/Controllers/Api/Authorization/PermissionsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-152",
+      "method": "GET",
+      "path": "/api/permissions/{permission}/edit",
+      "handler": "Authorization\\PermissionsController@edit",
+      "file": "app/Http/Controllers/Api/Authorization/PermissionsController.php",
+      "actionExists": false,
+      "angularCallers": []
+    },
+    {
+      "id": "API-153",
+      "method": "PUT",
+      "path": "/api/permissions/{permission}",
+      "handler": "Authorization\\PermissionsController@update",
+      "file": "app/Http/Controllers/Api/Authorization/PermissionsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-154",
+      "method": "PATCH",
+      "path": "/api/permissions/{permission}",
+      "handler": "Authorization\\PermissionsController@update",
+      "file": "app/Http/Controllers/Api/Authorization/PermissionsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    },
+    {
+      "id": "API-155",
+      "method": "DELETE",
+      "path": "/api/permissions/{permission}",
+      "handler": "Authorization\\PermissionsController@destroy",
+      "file": "app/Http/Controllers/Api/Authorization/PermissionsController.php",
+      "actionExists": true,
+      "angularCallers": []
+    }
+  ],
+  "unroutedFrontendCalls": [
+    {
+      "endpoint": "/getFileFlags",
+      "callers": [
+        "file.updateFileFlags"
+      ]
+    },
+    {
+      "endpoint": "/getFile",
+      "callers": [
+        "file.getFile"
+      ]
+    },
+    {
+      "endpoint": "/getFileExtension",
+      "callers": [
+        "file.getFileExtension"
+      ]
+    },
+    {
+      "endpoint": "/exportAsExcel",
+      "callers": [
+        "file.exportAsExcel"
+      ]
+    },
+    {
+      "endpoint": "/signup",
+      "callers": [
+        "token.?"
+      ]
+    }
+  ]
+}
