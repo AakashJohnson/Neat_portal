@@ -4,11 +4,14 @@
 // web login, redirect to ?to= or the dashboard.
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { useGuestPage } from '@/components/panel/guest';
-import { Messages } from '@/components/panel/ui';
+import SocialButtons from '@/components/panel/SocialButtons';
+import { Messages, useFlash } from '@/components/panel/ui';
 import { useJsValidation } from '@/lib/jsValidation';
 import { validationMessages } from '@/lib/panelApi';
+
+const noopSubscribe = () => () => {};
 
 export default function PanelLoginPage() {
   const router = useRouter();
@@ -16,7 +19,14 @@ export default function PanelLoginPage() {
   const to = params.get('to');
   const v = useJsValidation({ username: 'required', password: 'required' });
   const settings = useGuestPage('Login');
-  const [errors, setErrors] = useState([]);
+  // flashed by register (success) or the social login stub ({ error })
+  // (read after hydration: the server render has no sessionStorage)
+  const isClient = useSyncExternalStore(noopSubscribe, () => true, () => false);
+  const stored = useFlash();
+  const flash = isClient ? stored : null;
+  const [errors, setErrors] = useState(null);
+  const shownErrors = errors ?? (flash?.error ? [flash.error] : []);
+  const success = errors === null && typeof flash === 'string' ? flash : null;
   const [busy, setBusy] = useState(false);
 
   const onSubmit = async (e) => {
@@ -44,7 +54,8 @@ export default function PanelLoginPage() {
         <div className="card-body">
           <h5 className="card-title text-center mt-4 text-uppercase">Login</h5>
           <div className="p-4">
-            <Messages errors={errors} />
+            <SocialButtons />
+            <Messages errors={shownErrors} success={success} />
             <form role="form" action="/panel/login" method="POST" id="login-form" autoComplete="off" className="mt-3" noValidate onSubmit={onSubmit}>
               {to && <input type="hidden" value={to} name="to" />}
               <div className={v.groupClass('username')}>
