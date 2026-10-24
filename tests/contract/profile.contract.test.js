@@ -84,6 +84,7 @@ describe('PRF sessions', () => {
     const byId = new Map(ns.body.map((s) => [s.id, s]));
     for (const s of ls.body) expect(byId.get(s.id)).toEqual(s);
     same(await asLearner('GET', '/api/sessions/does-not-exist'));
+    await db('sessions').whereIn('id', ['contract-session-1', 'contract-session-2']).delete(); // leftovers of an aborted run
     await db('sessions').insert({ id: 'contract-session-1', user_id: 72, ip_address: '127.0.0.1', user_agent: 'node', payload: 'x', last_activity: Math.floor(Date.now() / 1000) });
     same(await asLearner('GET', '/api/sessions/contract-session-1'));
     const nt = await fixtureToken(callNode, learner.email);
@@ -93,6 +94,7 @@ describe('PRF sessions', () => {
 
   it("another user's session is forbidden without users.manage", async ({ skip }) => {
     if (!reference) skip();
+    await db('sessions').where('id', 'contract-session-2').delete();
     await db('sessions').insert({ id: 'contract-session-2', user_id: 1, ip_address: '127.0.0.1', user_agent: 'node', payload: 'x', last_activity: Math.floor(Date.now() / 1000) });
     same(await asLearner('GET', '/api/sessions/contract-session-2'));
     await db('sessions').where('id', 'contract-session-2').delete();

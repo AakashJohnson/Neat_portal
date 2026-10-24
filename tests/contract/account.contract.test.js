@@ -64,6 +64,8 @@ describe('AUTH-06 POST /api/register', () => {
       created.push(lEmail, nEmail);
       const body = (email, phone) => ({ email, username: `Contract ${role}`, password: PASSWORD, password_confirmation: PASSWORD, phone, role_id: role, college_name: 'C', admission_number: 'A1', profession: 'Tester' });
 
+      // application_number is the unix time (UNIQUE, R-19): keep every registration in its own second
+      await new Promise((r) => setTimeout(r, 1100));
       const l = await callLaravel('POST', '/api/register', { body: body(lEmail, `91${String(stamp).padStart(8, '0')}`) });
       clearCapturedMail();
       await new Promise((r) => setTimeout(r, 1100)); // distinct application_number timestamps
