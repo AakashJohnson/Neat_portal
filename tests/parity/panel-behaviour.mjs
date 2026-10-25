@@ -62,41 +62,77 @@ async function login(browser, base) {
   return ctx;
 }
 
-async function snapshot(ctx, url, guest = false) {
-  const page = await (guest ? ctx.browser().newContext({ viewport: { width: 1440, height: 900 } }).then((c) => c.newPage()) : ctx.newPage());
+// Under `artisan serve` here the Blade session only survives the first request
+// after login (R-47), so every Laravel page is reached through its own login
+// with the form's `to` field (LoginController redirects there).
+async function laravelPage(browser, url) {
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await ctx.newPage();
+  // /login?to=… itself fails in the original (R-48: Input facade in the view),
+  // so the `to` field LoginController reads is added to the form directly.
+  await page.goto(`${LARAVEL}/login`, { waitUntil: 'load' });
+  await page.evaluate((to) => {
+    const form = document.querySelector('#login-form');
+    form.querySelectorAll('input[name=to]').forEach((i) => i.remove());
+    const input = Object.assign(document.createElement('input'), { type: 'hidden', name: 'to', value: to });
+    form.append(input);
+  }, url);
+  await page.fill('#username', admin.username);
+  await page.fill('#password', admin.password);
+  await Promise.all([page.waitForURL((u) => !u.pathname.endsWith('/login'), { timeout: 30000 }).catch(() => {}), page.click('#btn-login')]);
+  return page;
+}
+
+async function snapshot(ctx, url, guest = false, opened = null) {
+  const page = opened ?? (await (guest ? ctx.browser().newContext({ viewport: { width: 1440, height: 900 } }).then((c) => c.newPage()) : ctx.newPage()));
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('dialog', (d) => d.dismiss());
-  const res = await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 }).catch((e) => ({ status: () => `goto: ${e.message.split('\n')[0]}` }));
+  const res = opened ? { status: () => 'via login' } : await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 }).catch((e) => ({ status: () => `goto: ${e.message.split('\n')[0]}` }));
+  if (opened) await page.waitForLoadState('networkidle').catch(() => {});
   await page.addStyleTag({ content: FREEZE }).catch(() => {});
   await page.waitForTimeout(1500);
   const shot = await page.evaluate(() => {
+    // Adjacent text nodes of one element are merged (React keeps `{a} ({b})`
+    // as several DOM text nodes where Blade has one; rendering is identical).
     const out = [];
+    let prev = null;
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     for (let n = walker.nextNode(); n; n = walker.nextNode()) {
       const el = n.parentElement;
       if (!el || el.closest('script,style,noscript,nextjs-portal,next-route-announcer')) continue;
       if (!el.getClientRects().length) continue;
-      const t = n.data.replace(/\s+/g, ' ').trim();
-      if (t) out.push(t);
+      let sib = n.previousSibling;
+      while (sib && sib.nodeType === Node.COMMENT_NODE) sib = sib.previousSibling;
+      if (prev && sib === prev) out[out.length - 1] += n.data;
+      else out.push(n.data);
+      prev = n;
     }
-    return { title: document.title, path: location.pathname, text: out.join(' ').replace(/\s+/g, ' ') };
+    const text = out.map((t) => t.replace(/\s+/g, ' ').trim()).filter(Boolean).join(' ');
+    return { title: document.title, path: location.pathname, text };
   });
   const png = PNG.sync.read(await page.screenshot({ fullPage: true }));
   await page.close();
   return { status: typeof res?.status === 'function' ? res.status() : null, ...shot, text: mask(shot.text), errors, png };
 }
 
-async function emptySubmit(ctx, url, form) {
-  const page = await ctx.newPage();
-  await page.goto(url, { waitUntil: 'networkidle' });
+async function emptySubmit(ctx, url, form, opened = null) {
+  const page = opened ?? (await ctx.newPage());
+  if (opened) await page.waitForLoadState('networkidle').catch(() => {});
+  else await page.goto(url, { waitUntil: 'networkidle' });
   await page.waitForTimeout(800);
-  await page.click(`${form} button[type=submit]`);
+  const clicked = await page.click(`${form} button[type=submit]`, { timeout: 10000 }).then(() => true, () => false);
+  if (!clicked) {
+    const r = { path: await page.evaluate(() => location.pathname), errors: ['<form not found>'], hasError: [] };
+    await page.close();
+    return r;
+  }
   await page.waitForTimeout(800);
   const r = await page.evaluate((f) => ({
     path: location.pathname,
-    errors: [...document.querySelectorAll(`${f} .error-help-block, .alert-danger li`)].map((e) => e.textContent.trim()).filter(Boolean),
-    hasError: [...document.querySelectorAll(`${f} .has-error`)].map((e) => e.querySelector('input,textarea,select')?.name ?? ''),
+    errors: [...document.querySelectorAll(`${f} .invalid-feedback, .alert-danger li`)].filter((e) => e.getClientRects().length).map((e) => e.textContent.trim()).filter(Boolean),
+    hasError: [...document.querySelectorAll(`${f} .is-invalid`)].map((e) => e.name ?? ''),
+    focused: document.activeElement?.name ?? null,
   }), form);
   await page.close();
   return r;
@@ -126,12 +162,13 @@ const browser = await chromium.launch();
 const report = [];
 let failed = 0;
 
-// One login per app (each login writes activity and session rows that the
-// activity/session pages show), before any page is captured.
-const lctx = await login(browser, LARAVEL);
+// Next.js logs in once; each Laravel page logs in itself (above). Laravel is
+// captured first so both captures read the same activity/session rows.
 const nctx = await login(browser, NEXT);
 for (const [label, url, guest] of [...GUEST.map((p) => [p, p, true]), ...PAGES.map((p) => [p, p, false])]) {
-  const l = await snapshot(lctx, `${LARAVEL}${url === '/' ? '' : url}`, guest);
+  const lpage = guest ? null : await laravelPage(browser, url);
+  const l = await snapshot(lpage?.context() ?? nctx, `${LARAVEL}${url === '/' ? '' : url}`, guest, lpage);
+  await lpage?.context().close();
   const n = await snapshot(nctx, `${NEXT}${url === '/' ? '' : url}`, guest);
   const slug = (label.replace(/[^\w-]+/g, '_') || 'home').replace(/^_/, '') || 'home';
   writeFileSync(path.join(OUT, `${slug}.laravel.png`), PNG.sync.write(l.png));
@@ -147,9 +184,11 @@ for (const [label, url, guest] of [...GUEST.map((p) => [p, p, true]), ...PAGES.m
 }
 
 for (const [url, form] of FORMS) {
-  const l = await emptySubmit(lctx, `${LARAVEL}${url}`, form);
+  const lpage = await laravelPage(browser, url);
+  const l = await emptySubmit(null, `${LARAVEL}${url}`, form, lpage);
+  await lpage.context().close();
   const n = await emptySubmit(nctx, `${NEXT}${url}`, form);
-  const same = JSON.stringify(l.errors) === JSON.stringify(n.errors) && JSON.stringify(l.hasError) === JSON.stringify(n.hasError);
+  const same = JSON.stringify(l.errors) === JSON.stringify(n.errors) && JSON.stringify(l.hasError) === JSON.stringify(n.hasError) && l.focused === n.focused;
   if (!same) failed++;
   report.push({ form: url, same, laravel: l, next: n });
   console.log(`${same ? 'SAME' : 'DIFF'} empty submit ${url} ${JSON.stringify(l.errors)}${same ? '' : `\n  next ${JSON.stringify(n.errors)} ${JSON.stringify(n.hasError)} vs ${JSON.stringify(l.hasError)}`}`);

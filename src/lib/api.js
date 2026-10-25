@@ -6,6 +6,16 @@ import { API_DISPLAY_BASE } from './config';
 
 const STATUS_TEXT = { 0: 'Unknown Error', 400: 'Bad Request', 401: 'Unauthorized', 403: 'Forbidden', 404: 'Not Found', 405: 'Method Not Allowed', 422: 'Unprocessable Entity', 429: 'Too Many Requests', 500: 'Internal Server Error', 502: 'Bad Gateway', 503: 'Service Unavailable', 504: 'Gateway Timeout' };
 
+export function apiErrorMessage(res) {
+  const data = res?.data;
+  if (data?.errors && typeof data.errors === 'object') return Object.values(data.errors).flat().join(' ');
+  if (typeof data?.reason === 'string') return data.reason;
+  if (typeof data?.error === 'string') return data.error;
+  if (typeof data?.message === 'string' && data.message !== 'Error') return data.message;
+  if (res?.status === 429) return 'Too many requests. Please wait a minute and try again.';
+  return 'Unable to complete the request. Please try again or contact support.';
+}
+
 /**
  * Angular HttpErrorResponse for a failed request made with `api`, as passed to
  * subscribe error callbacks: `error` is the parsed body (null when empty, the

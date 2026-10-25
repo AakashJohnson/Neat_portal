@@ -275,9 +275,13 @@ function Guarded({ children }) {
 
   useEffect(() => {
     if (panel.loading) return;
-    if (!panel.user) router.replace(`/panel/login`);
+    // Only an unauthenticated session goes to the login form (auth middleware);
+    // a 429/5xx keeps the user where they are and shows the error below.
+    if (!panel.user) {
+      if (panel.status === 401) router.replace(`/panel/login`);
+    }
     else if (!panel.user.email_verified_at && pathname !== '/panel/email/verify' && !pathname.startsWith('/panel/email/verify/')) router.replace('/panel/email/verify');
-  }, [panel.loading, panel.user, pathname, router]);
+  }, [panel.loading, panel.user, panel.status, pathname, router]);
 
   // as.updateSidebarSize()
   useEffect(() => {
@@ -290,6 +294,18 @@ function Guarded({ children }) {
     };
   }, []);
 
+  if (!panel.loading && !panel.user && panel.status !== 401) {
+    return (
+      <div className="container">
+        <div className="alert alert-danger mt-5">
+          {panel.status === 429 ? 'Too Many Attempts.' : 'Server Error'}{' '}
+          <a href="" onClick={(e) => (e.preventDefault(), panel.refresh())}>
+            Retry
+          </a>
+        </div>
+      </div>
+    );
+  }
   if (panel.loading || !panel.user) return null;
   return (
     <PageMetaContext.Provider value={metaValue}>

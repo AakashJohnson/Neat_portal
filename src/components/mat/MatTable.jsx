@@ -7,7 +7,7 @@
 //   - sort: asc → desc → '' per column (start 'asc', disableClear false), header
 //     arrow view states (hint on hover/focus, active when sorted);
 //   - paginator: page size = first option unless given, range label
-//     "1 – 5 of 20" / "0 of N", previous/next with tooltips above.
+//     "1 - 5 of 20" (MatPaginatorIntl 7.3.7: hyphen) / "0 of N", previous/next with tooltips above.
 //   const ds = useMatTableDataSource({ pageSizeOptions: [5, 10, 25, 100] });
 //   ds.setData(rows); ds.applyFilter(text)
 //   <MatTable dataSource={ds} columns={[{ id, header, cell: (row) => … , sortable, headerClass, cellClass }]} />
@@ -266,7 +266,7 @@ export function MatPaginator({ dataSource, length: lengthInput, pageIndex: pageI
   else {
     const startIndex = pageIndex * pageSize;
     const endIndex = startIndex < length ? Math.min(startIndex + pageSize, length) : startIndex + pageSize;
-    rangeLabel = `${startIndex + 1} – ${endIndex} of ${length}`;
+    rangeLabel = `${startIndex + 1} - ${endIndex} of ${length}`;
   }
   const maxPageIndex = Math.ceil(length / pageSize) - 1;
   const hasPrevious = pageIndex >= 1 && pageSize != 0;

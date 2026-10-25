@@ -37,15 +37,10 @@ export function publicClaims(claims) {
   return rest;
 }
 
-/**
- * Whether the Angular pages' inline decode succeeds for this token:
- *   JSON.parse(atob(token.split('.')[1].replace('-', '+').replace('_', '/')))
- * (only the first '-' and '_' are replaced; any other makes atob throw and the
- * rest of that page's ngOnInit does not run). Exposed as a boolean only.
- */
+/** Kept for existing consumers; decode all base64url characters and UTF-8. */
 export function legacyDecodable(token) {
   try {
-    JSON.parse(atob(token.split('.')[1].replace('-', '+').replace('_', '/')));
+    decodeJwt(token);
     return true;
   } catch {
     return false;

@@ -10,7 +10,7 @@ import { MatRadioButton, MatRadioGroup } from '@/components/mat/MatRadio';
 import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle, useDatepicker } from '@/components/mat/MatDatepicker';
 import { toastr } from '@/components/common/Toastr';
 import { studentService } from '@/services';
-import { subscribe } from '@/lib/api';
+import { apiErrorMessage, subscribe } from '@/lib/api';
 import { useFormGroup, Validators } from '@/lib/forms';
 import { useNgOnInit } from '@/lib/useNgOnInit';
 
@@ -27,15 +27,18 @@ export default function LearnerProfile() {
   const form = useFormGroup(SPEC);
   const [learnerDetails, setLearnerDetails] = useState(undefined);
   const [isLearnerPresent, setIsLearnerPresent] = useState(undefined);
-  const [learnerPresentStatus, setLearnerPresentStatus] = useState(undefined);
+  const [saving, setSaving] = useState(false);
+  const handleError = (res) => toastr.error(apiErrorMessage(res));
 
   const handleLearnerData = useCallback(
     (data, presentStatus) => {
       const d = data['learner_details'];
-      if (d['age'] == '' || d['date_of_birth'] == '' || d['gender'] == '' || d['profession'] == '') {
-        alert('Please update your profile first!');
-        setIsLearnerPresent(false);
-      } else setIsLearnerPresent(!!presentStatus);
+      if (!d || data.message === 'Error') {
+        toastr.error(apiErrorMessage({ data }));
+        return;
+      }
+      const complete = ['age', 'date_of_birth', 'gender', 'profession'].every(key => d[key] != null && d[key] !== '');
+      setIsLearnerPresent(presentStatus ?? (complete && d.isDetailsSubmitted === 'Yes'));
       setLearnerDetails(d);
       if (d['date_of_birth']) {
         // dd-MM-yyyy → "yyyy-MM-dd" string parsed by Date (as in the original)
@@ -49,19 +52,29 @@ export default function LearnerProfile() {
   // ngOnInit: (new) form group + getLearnerDetails.
   const ngOnInit = (presentStatus) => {
     form.reset();
-    subscribe(studentService.getLearnerDetails(), (data) => handleLearnerData(data, presentStatus));
+    subscribe(studentService.getLearnerDetails(), (data) => handleLearnerData(data, presentStatus), handleError);
   };
-  useNgOnInit(() => ngOnInit(learnerPresentStatus));
+  useNgOnInit(() => ngOnInit());
 
   const onSubmit = () => {
+    if (saving) return;
     const values = { ...form.value };
     const dob = new Date(values['date_of_birth']);
     values['date_of_birth'] = `${dob.getDate()}-${dob.getMonth() + 1}-${dob.getFullYear()}`;
     if (form.valid) {
-      subscribe(studentService.submitLearnerDetails(values), () => ngOnInit(true));
-      setIsLearnerPresent(true);
-      setLearnerPresentStatus(true);
-      alert('Profile successfully updated!');
+      setSaving(true);
+      subscribe(studentService.submitLearnerDetails(values), (data) => {
+        setSaving(false);
+        if (data?.message !== 'Success') {
+          handleError({ data });
+          return;
+        }
+        ngOnInit(true);
+        toastr.success('Profile successfully updated!');
+      }, (res) => {
+        setSaving(false);
+        handleError(res);
+      });
     } else if (['date_of_birth', 'profession', 'age', 'gender'].every((k) => form.control(k).untouched)) {
       toastr.error('Kindly fill all the details!');
     } else {
@@ -74,8 +87,6 @@ export default function LearnerProfile() {
 
   const editLearnerDetails = () => {
     setIsLearnerPresent(false);
-    setLearnerPresentStatus(false);
-    subscribe(studentService.editLearnerDetails(), () => ngOnInit(false));
   };
 
   return (
@@ -155,7 +166,7 @@ export default function LearnerProfile() {
                           <MatInput type="text" className="form-control" {...form.bind('profession')} placeholder="Profession" invalid={form.errorState('profession')} />
                         </div>
                         <div className="col-md-12 aligncenter">
-                          <button type="submit" className="btn btn-login float-right" style={{ background: '#EF7E22', color: '#fff', fontWeight: 600, marginBottom: '40px' }}>
+                          <button type="submit" disabled={saving} className="btn btn-login float-right" style={{ background: '#EF7E22', color: '#fff', fontWeight: 600, marginBottom: '40px' }}>
                             SUBMIT
                           </button>
                           <button type="button" onClick={() => form.reset()} className="btn btn-login float-right reset" style={{ background: '#EF7E22', color: '#fff', fontWeight: 600, marginRight: '10px' }}>

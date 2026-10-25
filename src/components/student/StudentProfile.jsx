@@ -15,7 +15,7 @@ import MatTooltip from '@/components/mat/MatTooltip';
 import { useSession } from '@/components/providers/SessionProvider';
 import { toastr } from '@/components/common/Toastr';
 import { studentService } from '@/services';
-import { httpErrorResponse, subscribe } from '@/lib/api';
+import { apiErrorMessage, httpErrorResponse, subscribe } from '@/lib/api';
 import { useNgOnInit } from '@/lib/useNgOnInit';
 
 const charCode = (evt) => (evt.which ? evt.which : evt.keyCode);
@@ -55,6 +55,7 @@ export default function StudentProfile() {
   const [showMatErrors, setShowMatErrors] = useState(false);
   const [showOtherCollege, setShowOtherCollege] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   /** handleResponse(error): API error message, else the HTTP error text. */
   const handleResponse = (res) => {
@@ -174,6 +175,7 @@ export default function StudentProfile() {
   }, ready);
 
   const onSubmit = () => {
+    if (saving) return;
     setShowMatErrors(true);
     if (form.invalid) {
       form.markAllAsTouched();
@@ -198,9 +200,15 @@ export default function StudentProfile() {
       const date = payload.date_of_birth;
       payload.date_of_birth = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
     }
+    setSaving(true);
     subscribe(
       studentService.submitStudentDetails(payload),
       (response) => {
+        setSaving(false);
+        if (response?.message !== 'Success') {
+          toastr.error(apiErrorMessage({ data: response }));
+          return;
+        }
         toastr.success(response && response['message'] ? response['message'] : 'Student details saved successfully.');
         setShowMatErrors(false);
         subscribe(
@@ -210,7 +218,10 @@ export default function StudentProfile() {
             setIsEditMode(false);
             setShowMatErrors(false);
           },
-          handleResponse,
+          (res) => {
+            setSaving(false);
+            handleResponse(res);
+          },
         );
       },
       handleResponse,
@@ -472,7 +483,7 @@ export default function StudentProfile() {
                         </MatTooltip>
                       </div>
                       <div className="col-md-12 aligncenter">
-                        <button type="submit" className="btn btn-login float-right" style={{ background: "#EF7E22", color: "#fff", fontWeight: "600" }}>
+                        <button type="submit" disabled={saving} className="btn btn-login float-right" style={{ background: "#EF7E22", color: "#fff", fontWeight: "600" }}>
                           SUBMIT
                         </button>
                         <button type="button" onClick={resetForm} className="btn btn-login float-right reset" style={{ background: "#EF7E22", color: "#fff", fontWeight: "600", marginRight: "10px" }}>
@@ -631,4 +642,3 @@ export default function StudentProfile() {
     </Scope>
   );
 }
-

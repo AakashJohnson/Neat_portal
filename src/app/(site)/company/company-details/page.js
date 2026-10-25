@@ -1,22 +1,23 @@
 'use client';
 // Route "company/company-details" → CompanyDetailsComponent: productList()
-// (GET product-list) rows as [name, free, paid]. The Laravel route points to a
-// missing CompanyController method (R-03), so the table stays empty.
+// (GET product-list) rows as [name, free, paid].
 import { useState } from 'react';
 import { companyService } from '@/services';
-import { subscribe } from '@/lib/api';
+import { apiErrorMessage, subscribe } from '@/lib/api';
 import { useNgOnInit } from '@/lib/useNgOnInit';
 
 export default function CompanyDetailsPage() {
   const [dataSource, setDataSource] = useState(undefined);
+  const [error, setError] = useState('');
 
   useNgOnInit(() => {
-    subscribe(companyService.productList(), (data) => setDataSource(data['products']));
+    subscribe(companyService.productList(), (data) => setDataSource(data['products']), res => setError(apiErrorMessage(res)));
   });
 
   return (
     <div className="contact-form-area section-padding">
       <div className="container">
+        {error && <p role="alert">{error}</p>}
         <div className="row">
           <div className="col-md-12">
             <div className="section-title-wrapper">

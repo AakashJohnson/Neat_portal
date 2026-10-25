@@ -1,11 +1,15 @@
 'use client';
-// proengsoft/laravel-jsvalidation (bootstrap template) for the panel forms:
-// the FormRequest's local rules checked in the browser with Laravel's English
-// messages (resources/lang/en/validation.php); empty optional fields are
-// skipped as jquery.validate does. Remote rules (unique / exists) are left to
-// the server: its 422 errors show in the page's error alert (DEV-F09).
+// proengsoft/laravel-jsvalidation for the panel forms, with the app's override
+// of the `bootstrap` view (resources/views/vendor/jsvalidation/bootstrap.php):
+// span.invalid-feedback right after the field; .is-invalid on the <input>
+// itself and never on a textarea/select (closest('.form-group input')); no
+// .is-valid (its success() callback receives the label, not the input); no
+// form-group classes. The FormRequest's local rules are checked with Laravel's
+// English messages (resources/lang/en/validation.php); empty optional fields
+// are skipped as jquery.validate does. Remote rules (unique / exists) are left
+// to the server: its 422 errors show in the page's error alert (DEV-F09).
 //   const v = useJsValidation({ email: 'required|email', password: 'required|min:8|confirmed' });
-//   <input … {...v.field('email')} />{v.error('email')}
+//   <input className="form-control" … {...v.field('email')} />{v.error('email')}
 //   onSubmit: if (!v.validateAll(formElement)) return;
 import { useState } from 'react';
 
@@ -60,16 +64,18 @@ export function validateField(name, rules, values) {
 /** jquery.validate state for one form. */
 export function useJsValidation(rules) {
   const [errors, setErrors] = useState({});
-  const [validated, setValidated] = useState({}); // field → 'error' | 'success'
+  const [inputs, setInputs] = useState({}); // field → highlightable (<input> inside .form-group)
   const [submitted, setSubmitted] = useState(false);
 
   const values = (form) => Object.fromEntries([...new FormData(form).entries()].map(([k, v]) => [k, typeof v === 'string' ? v : v.name]));
+  const highlightable = (el) => el?.tagName === 'INPUT' && !!el.closest('.form-group');
 
   const run = (name, form) => {
-    if (!(name in rules) || !form.elements.namedItem(name)) return null;
+    const el = form.elements.namedItem(name);
+    if (!(name in rules) || !el) return null;
     const msg = validateField(name, rules[name], values(form));
     setErrors((e) => ({ ...e, [name]: msg }));
-    setValidated((s) => ({ ...s, [name]: msg ? 'error' : 'success' }));
+    setInputs((s) => ({ ...s, [name]: highlightable(el) }));
     return msg;
   };
 
@@ -80,18 +86,18 @@ export function useJsValidation(rules) {
       setSubmitted(true);
       const all = values(form);
       const next = {};
-      const state = {};
+      const kinds = {};
       let first = null;
       for (const name of Object.keys(rules)) {
         const el = form.elements.namedItem(name);
         if (!el) continue; // jquery.validate ignores rules without an element
         const msg = validateField(name, rules[name], all);
         next[name] = msg;
-        state[name] = msg ? 'error' : 'success';
+        kinds[name] = highlightable(el);
         if (msg && !first) first = el;
       }
       setErrors(next);
-      setValidated(state);
+      setInputs(kinds);
       if (first) {
         window.scrollTo({ top: first.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
         first.focus?.();
@@ -100,23 +106,38 @@ export function useJsValidation(rules) {
     },
     /** props for an input: re-validates on keyup once invalid / submitted, and on focusout. */
     field(name) {
+      const invalid = !!errors[name];
       return {
         onKeyUp: (e) => (submitted || errors[name]) && run(name, e.currentTarget.form),
         onBlur: (e) => (submitted || !isEmpty(e.currentTarget.value)) && run(name, e.currentTarget.form),
+        // highlight/unhighlight add/remove .is-invalid on the input (the class
+        // attribute is otherwise owned by React, which leaves it untouched);
+        // jquery.validate also maintains aria-invalid / aria-describedby.
+        ref: (el) => {
+          if (!el || !(name in errors)) return;
+          if (highlightable(el)) el.classList.toggle('is-invalid', invalid);
+          el.setAttribute('aria-invalid', String(invalid));
+          el.setAttribute('aria-describedby', `${name}-error`);
+        },
       };
     },
-    /** <span class="help-block error-help-block"> after the input (hidden once valid). */
+    /**
+     * <span class="invalid-feedback"> after the field. Next to an .is-invalid
+     * input the stylesheet shows it as a block; for other fields jQuery's
+     * show() made it display:inline; once valid it is hidden.
+     */
     error(name) {
       if (!(name in errors)) return null;
+      const style = !errors[name] ? { display: 'none' } : inputs[name] ? undefined : { display: 'inline' };
       return (
-        <span id={`${name}-error`} className="help-block error-help-block" style={errors[name] ? undefined : { display: 'none' }}>
+        <span id={`${name}-error`} className="invalid-feedback" style={style}>
           {errors[name] ?? ''}
         </span>
       );
     },
-    /** .form-group has-error / has-success */
+    /** The form group keeps its classes (the override sets none). */
     groupClass(name, base = 'form-group') {
-      return `${base}${validated[name] === 'error' ? ' has-error' : validated[name] === 'success' ? ' has-success' : ''}`;
+      return base;
     },
   };
 }

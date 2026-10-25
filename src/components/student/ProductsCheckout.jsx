@@ -5,19 +5,23 @@
 import { useState } from 'react';
 import { useSession } from '@/components/providers/SessionProvider';
 import { studentService } from '@/services';
-import { subscribe } from '@/lib/api';
+import { apiErrorMessage, subscribe } from '@/lib/api';
 import { useNgOnInit } from '@/lib/useNgOnInit';
 
 export default function ProductsCheckout({ kind }) {
   const { claims, ready, legacyDecodable } = useSession();
   const [products, setProducts] = useState(undefined);
+  const [error, setError] = useState('');
 
   useNgOnInit(() => {
     // token == null → nothing; an undecodable token threw in ngOnInit.
     if (!claims || !legacyDecodable) return;
     const data = { application_number: claims['application_number'] };
     const call = kind === 'paid' ? studentService.getPurchasedProducts : studentService.getFreeProducts;
-    subscribe(call(data), (res) => setProducts(res['products']));
+    subscribe(call(data), (res) => {
+      if (res?.message !== 'Success' || !Array.isArray(res.products)) setError(apiErrorMessage({ data: res }));
+      else setProducts(res.products);
+    }, (res) => setError(apiErrorMessage(res)));
   }, ready);
 
   return (
@@ -25,6 +29,7 @@ export default function ProductsCheckout({ kind }) {
       {/* Course Details Area Start */}
       <div className="course-details-area section-padding">
         <div className="container">
+          {error && <p role="alert">{error}</p>}
           <div className="row">
             <div className="col-md-12">
               <div className="section-title-wrapper">

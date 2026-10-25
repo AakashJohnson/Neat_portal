@@ -1,8 +1,8 @@
 'use client';
 // Port of components/users/institute/institute-details (the institute shell's
 // default child and "institute-details"). The profile form is shown until the
-// details are submitted ('Kindly update your Profile!'); "Edit" only reloads
-// that state (the form is not pre-filled, as in the original). The free-seat
+// details are submitted ('Kindly update your Profile!'). Editing keeps the
+// stored profile until a successful save. The free-seat
 // Excel upload is embedded for Government / Govt aided institutes without
 // student records.
 import { useState } from 'react';
@@ -13,7 +13,7 @@ import { useSession } from '@/components/providers/SessionProvider';
 import { toastr } from '@/components/common/Toastr';
 import InstituteFileUpload from '@/components/institute/InstituteFileUpload';
 import { instituteService, studentService } from '@/services';
-import { subscribe } from '@/lib/api';
+import { apiErrorMessage, subscribe } from '@/lib/api';
 import { emailValidator } from '@/lib/appValidators';
 import { useFormGroup, Validators } from '@/lib/forms';
 import { useNgOnInit } from '@/lib/useNgOnInit';
@@ -47,9 +47,15 @@ export default function InstituteDetails() {
   const [showMatErrors, setShowMatErrors] = useState(undefined);
   const [showExcelUpload, setShowExcelUpload] = useState(false);
   const [instituteDetails, setInstituteDetails] = useState(undefined);
+  const [saving, setSaving] = useState(false);
+  const handleError = (res) => toastr.error(apiErrorMessage(res));
 
   const showHide = () => {
     subscribe(instituteService.getInstituteDetails(), (data) => {
+      if (data?.message !== 'Success') {
+        handleError({ data });
+        return;
+      }
       if (data['institute_type'] == 'Govt aided' || data['institute_type'] == 'Government') {
         setShowExcelUpload(!(data['std_rec'] > 0));
       }
@@ -60,20 +66,21 @@ export default function InstituteDetails() {
         setInstituteDetails(data['institute_details'][0]);
         setInstituteDetailsForm(false);
       }
-    });
+    }, handleError);
   };
 
   // constructor: getStates(); ngOnInit: checkFileUpload + showHide().
   useNgOnInit(() => {
-    subscribe(studentService.getStates(), (data) => setStates(data['states']));
+    subscribe(studentService.getStates(), (data) => setStates(data['states']), handleError);
     // handleFileUpload: `if (data['']) showExcelUpload = false` — data[''] is never set.
     subscribe(studentService.checkFileUpload(), (data) => {
-      if (data['message'] == 'Success' && data['']) setShowExcelUpload(false);
-    });
+      if (data?.['message'] == 'Success' && data['']) setShowExcelUpload(false);
+    }, handleError);
     showHide();
   });
 
   const onSubmit = () => {
+    if (saving) return;
     const values = { ...form.value };
     if (ready && claims) {
       if (!legacyDecodable) return; // inline atob decode threw
@@ -81,16 +88,21 @@ export default function InstituteDetails() {
     }
     if (form.valid) {
       setShowMatErrors(false);
+      setSaving(true);
       subscribe(
         instituteService.submitInstituteDetails(values),
         (data) => {
+          setSaving(false);
           if (data['message'] == 'Success') {
             toastr.success('Details uploaded successfully');
             showHide();
           }
-          if (data['message'] == 'Error') toastr.info(data['reason'], 'Info');
+          if (data['message'] != 'Success') handleError({ data });
         },
-        (res) => console.log(res),
+        (res) => {
+          setSaving(false);
+          handleError(res);
+        },
       );
     } else {
       setShowMatErrors(true);
@@ -176,7 +188,7 @@ export default function InstituteDetails() {
                         {input('institute_students_number', { onKeyPress: numberKeyFilter, name: 'noofstudents', placeholder: 'No. of Students' })}
                       </div>
                       <div className="col-md-12 mb-3 aligncenter">
-                        <button type="submit" className="btn btn-login float-right" style={{ background: '#EF7E22', color: '#fff', fontWeight: 600 }}>
+                        <button type="submit" disabled={saving} className="btn btn-login float-right" style={{ background: '#EF7E22', color: '#fff', fontWeight: 600 }}>
                           SUBMIT
                         </button>
                         <button type="button" onClick={() => form.reset()} className="btn btn-login float-right reset" style={{ background: '#EF7E22', color: '#fff', fontWeight: 600, marginRight: '10px' }}>
@@ -213,7 +225,10 @@ export default function InstituteDetails() {
                   <div className="col-md-12 aligncenter">
                     <button
                       type="button"
-                      onClick={() => subscribe(instituteService.editInstituteDetails(), () => showHide())}
+                      onClick={() => {
+                        form.patchValue(instituteDetails);
+                        setInstituteDetailsForm(true);
+                      }}
                       className="btn btn-login float-right"
                       style={{ background: '#EF7E22', color: '#fff', fontWeight: 600, marginBottom: '40px' }}
                     >

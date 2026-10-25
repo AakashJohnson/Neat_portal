@@ -18,18 +18,34 @@ const forwardHeaders = (request) => ({
 
 export async function POST(request) {
   const body = await request.json().catch(() => ({}));
-  const res = await fetch(`${API_ORIGIN}/api/login`, {
-    method: 'POST',
-    headers: forwardHeaders(request),
-    body: JSON.stringify({ username: body.username, password: body.password }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || !data.token) return NextResponse.json(data, { status: res.status });
+  let res;
+  try {
+    res = await fetch(`${API_ORIGIN}/api/login`, {
+      method: 'POST',
+      headers: forwardHeaders(request),
+      body: JSON.stringify({ username: body.username, password: body.password }),
+      signal: AbortSignal.timeout(15000),
+    });
+  } catch (err) {
+    console.error('Login API unavailable:', err.name);
+    return NextResponse.json({ error: 'Login service is unavailable. Please try again shortly.' }, { status: 503 });
+  }
+  const data = await res.json().catch(() => null);
+  if (!res.ok) return NextResponse.json(data ?? { error: 'Login failed. Please try again.' }, { status: res.status });
+  if (!data?.token) {
+    console.error('Login API returned no token');
+    return NextResponse.json({ error: 'Invalid login response. Please contact support.' }, { status: 502 });
+  }
 
-  // LoginComponent.handleResponse stored the token only if its inline atob()
-  // decode worked and email_verified_at was set; otherwise the user stayed
-  // logged out ("Kindly verify email first!" / an uncaught decode error).
-  const claims = decodeJwt(data.token);
+  // Keep unverified accounts logged out; valid UTF-8/base64url claims must
+  // not be rejected because of the old Angular inline decoder.
+  let claims;
+  try {
+    claims = decodeJwt(data.token);
+  } catch {
+    console.error('Login API returned an invalid token');
+    return NextResponse.json({ error: 'Invalid login response. Please contact support.' }, { status: 502 });
+  }
   const decodable = legacyDecodable(data.token);
   const stored = decodable && claims.email_verified_at != null;
   const response = NextResponse.json({ claims: publicClaims(claims), legacyDecodable: decodable, stored });

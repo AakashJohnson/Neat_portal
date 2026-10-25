@@ -9,7 +9,7 @@ import MatIcon from '@/components/mat/MatIcon';
 import MatInput from '@/components/mat/MatInput';
 import { MatPaginator, MatTable, useMatTableDataSource } from '@/components/mat/MatTable';
 import { instituteService } from '@/services';
-import { subscribe } from '@/lib/api';
+import { apiErrorMessage, subscribe } from '@/lib/api';
 import { useNgOnInit } from '@/lib/useNgOnInit';
 import { useState } from 'react';
 
@@ -25,12 +25,13 @@ const COLUMNS = [
 export default function InstituteStudentDetailsPage() {
   const ds = useMatTableDataSource({ pageSizeOptions: [5, 10, 25, 100] });
   const [search, setSearch] = useState('');
+  const [error, setError] = useState('');
 
   useNgOnInit(() => {
-    subscribe(instituteService.getInstituteDetails(), (data) => {
-      const institute = { permanent_institute_id: data['institute_details']['permanent_institute_id'] };
-      subscribe(instituteService.getStudents(institute), (res) => ds.setData(res['students'] ?? []));
-    });
+    subscribe(instituteService.getStudents({}), (res) => {
+      if (res?.message !== 'Success') setError(apiErrorMessage({ data: res }));
+      else ds.setData(res.students);
+    }, (res) => setError(apiErrorMessage(res)));
   });
 
   const applyFilter = (filterValue) => {
@@ -41,6 +42,7 @@ export default function InstituteStudentDetailsPage() {
   return (
     <Scope name="student-details">
       <div className="container">
+        {error && <p role="alert">{error}</p>}
         <MatFormField className="col-md-3 col-sm-12" appearance="outline" label="Search" empty={!search} suffix={<MatIcon matsuffix="">search</MatIcon>}>
           {(id) => <MatInput id={id} value={search} onChange={(e) => setSearch(e.target.value)} onKeyUp={(e) => applyFilter(e.currentTarget.value)} />}
         </MatFormField>

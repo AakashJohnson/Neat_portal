@@ -157,7 +157,8 @@ export default function PanelDashboardPage() {
               <RegistrationHistory perMonth={stats?.users_per_month} />
             </div>
             <div className="col-md-4">
-              <LatestRegistrations users={stats?.latest_registrations ?? []} />
+              {/* LatestRegistrations widget: users->latest(6) (the API's stats carry 7) */}
+              <LatestRegistrations users={(stats?.latest_registrations ?? []).slice(0, 6)} />
             </div>
           </>
         )}

@@ -1,0 +1,116 @@
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { chromium, expect } from '@playwright/test';
+
+assert.equal(process.env.DB_DATABASE, 'neat_portal_test', 'Use the isolated test database only.');
+assert.ok(process.env.FLOW_NEXT_ORIGIN, 'Set FLOW_NEXT_ORIGIN to the dedicated test frontend.');
+assert.ok(process.env.FLOW_API_ORIGIN, 'Set FLOW_API_ORIGIN to the dedicated test API.');
+process.env.MAIL_TRANSPORT = 'json';
+const base = process.env.FLOW_NEXT_ORIGIN;
+const backend = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'express-backend');
+createRequire(path.join(backend, 'package.json'))('dotenv').config({ path: path.join(backend, '.env'), quiet: true });
+const { createRecoveredFixtures } = await import(pathToFileURL(path.join(backend, 'tests', 'helpers', 'recoveredFixtures.js')));
+const { db } = await import(pathToFileURL(path.join(backend, 'src', 'database', 'knex.js')));
+let f;
+let browser;
+try {
+  f = await createRecoveredFixtures();
+  browser = await chromium.launch();
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  const login = async role => {
+    await context.request.delete(`${base}/api/session`);
+    await page.goto(`${base}/login`);
+    await page.locator('#email').fill(f.users[role].email);
+    await page.locator('#password').fill(f.password);
+    const response = page.waitForResponse(r => r.url().endsWith('/api/session') && r.request().method() === 'POST');
+    await page.locator('button[type=submit]').click();
+    assert.equal((await response).status(), 200);
+    await expect(page).not.toHaveURL(/\/login\/?$/);
+  };
+  const post = async (endpoint, data) => {
+    const r = await context.request.post(`${base}/bff/${endpoint}?token=`, { data });
+    assert.equal(r.status(), 200, `${endpoint} should succeed`);
+    return r.json();
+  };
+
+  await login('student');
+  await post('addToCart', { product_id: f.bulk });
+  assert.equal((await post('displayCart', {})).products[0].code, f.bulk);
+  await post('paymentRedirect', { product_id: f.bulk, quantity: 2 });
+  await post('submitTransactionId', { code: f.bulk, transaction_id: `${f.marker}-transaction` });
+  console.log('PASS buyer BFF flow: cart -> checkout -> transaction ID');
+
+  await login('company');
+  await page.goto(`${base}/company/verification`);
+  await expect(page.getByText(`${f.marker}-transaction`, { exact: true })).toBeVisible();
+  const approved = page.waitForResponse(r => r.url().includes('/assignPaidCourse'));
+  await page.getByRole('button', { name: 'Accept', exact: true }).click();
+  assert.equal((await approved).status(), 200);
+  await expect(page.getByText('No Records Found!', { exact: false })).toBeVisible();
+  assert.equal((await db('product_purchased_audit').where({ code: f.bulk }).first()).status, 'Payment Successful');
+  await page.goto(`${base}/company/company-details`);
+  const row = page.locator('tbody tr').filter({ hasText: f.bulk });
+  await expect(row).toBeVisible();
+  await expect(row.locator('td').first()).toHaveText('2');
+  console.log('PASS company UI: pending transaction -> approve -> refreshed list -> paid seat count');
+
+  await login('student');
+  await page.goto(`${base}/student/paid-Products-details-checkout`);
+  await expect(page.locator('tbody tr').filter({ hasText: f.bulk })).toBeVisible();
+  await post('applyForFreeCourse', { code: f.manual });
+  await login('learner');
+  await post('addToCart', { product_id: f.bulk });
+  await post('paymentRedirect', { product_id: f.bulk, quantity: 1 });
+  await post('submitTransactionId', { code: f.bulk, transaction_id: `${f.marker}-learner` });
+  await page.goto(`${base}/learner/learner-paid-course`);
+  await expect(page.locator('tbody tr').filter({ hasText: f.bulk })).toHaveCount(0);
+  await login('company');
+  await page.goto(`${base}/company/verification`);
+  const learnerRow = page.locator('tr').filter({ hasText: `${f.marker}-learner` });
+  const learnerApproved = page.waitForResponse(r => r.url().includes('/assignPaidCourse'));
+  await learnerRow.getByRole('button', { name: 'Accept', exact: true }).click();
+  assert.equal((await learnerApproved).status(), 200);
+  await login('learner');
+  await page.goto(`${base}/learner/learner-paid-course`);
+  await expect(page.locator('tbody tr').filter({ hasText: f.bulk })).toBeVisible();
+  assert.equal((await db('product_purchased_audit').where({ code: f.bulk, application_number: f.users.learner.application_number }).first()).status, 'Payment Successful');
+  console.log('PASS student/learner: owned paid courses appear only after company approval');
+
+  await login('admin');
+  await page.goto(`${base}/admin/free-seat-allocation`);
+  const search = page.locator('input').first();
+  await search.fill(f.bulk);
+  await search.press('ArrowRight');
+  const product = page.locator('tr').filter({ hasText: f.bulk });
+  await expect(product.getByRole('button', { name: 'Allocate', exact: true })).toBeVisible();
+  page.once('dialog', dialog => dialog.accept());
+  const allocated = page.waitForResponse(r => r.url().includes('/allocateseat'));
+  await product.getByRole('button', { name: 'Allocate', exact: true }).click();
+  const response = await allocated;
+  assert.equal(response.status(), 200);
+  assert.equal((await response.json()).allocated, 8);
+  await expect(page.getByRole('status')).toContainText('8 free seat(s) allocated');
+  await expect(product.getByRole('button', { name: 'Allocate', exact: true })).toBeDisabled();
+  assert.equal((await db('student_free_seat_allocations').where('course_id', f.bulk).count({ n: '*' }))[0].n, 8);
+  console.log('PASS admin UI: confirmation -> allocation -> SQL counts -> disabled exhausted stock');
+  await post('assignFreeCourse', { application_number: f.users.student.application_number, code: f.manual });
+  await login('student');
+  await page.goto(`${base}/student/free-Products-details-checkout`);
+  await expect(page.locator('tbody tr').filter({ hasText: f.manual })).toBeVisible();
+  const allocation = await db('student_free_seat_allocations').where({ student_id: f.users.student.application_number, course_id: f.manual }).first();
+  const rejectedCode = await post('checkCompanySecretCode', { course_id: f.manual, company_secret_code: 'invalid-code' });
+  assert.equal(rejectedCode.message, 'Error');
+  assert.equal((await db('student_free_seat_allocations').where('id', allocation.id).first()).is_course_availed, 'No');
+  assert.equal((await post('checkCompanySecretCode', { course_id: f.manual, company_secret_code: allocation.company_secret_code })).message, 'Success');
+  assert.equal((await db('student_free_seat_allocations').where('id', allocation.id).first()).is_course_availed, 'Yes');
+  console.log('PASS free course: student application -> admin assignment -> owned course UI -> code validation -> SQL redemption');
+  await context.request.delete(`${base}/api/session`);
+  await context.close();
+} finally {
+  await browser?.close();
+  await f?.cleanup();
+  await db.destroy();
+}
