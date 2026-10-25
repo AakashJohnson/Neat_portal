@@ -9,12 +9,18 @@ import { fileUrl } from '@/lib/format';
 import SafeHtml from '@/components/common/SafeHtml';
 import { slideToggle } from '@/lib/jquery';
 import Scope from '@/components/common/Scope';
+import SearchStatus from '@/components/common/SearchStatus';
+import useProductCatalog from '@/components/course/useProductCatalog';
+import { filterProducts } from '@/lib/liveSearch';
+
+const CATALOG = { landing: companyService.getProductsLandingPage, buckets: companyService.getProductBuckets, bucketWise: companyService.getBucketWiseProducts };
 
 export default function Highlights() {
   const router = useRouter();
-  const [products, setProducts] = useState([]);
-  const [buckets, setBuckets] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const catalog = useProductCatalog(CATALOG);
+  const { buckets } = catalog;
+  const products = filterProducts(catalog.products, searchQuery);
   const leftPanel = useRef(null);
   const leftContent = useRef(null);
   const rightContent = useRef(null);
@@ -31,24 +37,12 @@ export default function Highlights() {
     Object.assign(rc.style, { height: `${rightHeight}px`, maxHeight: `${rightHeight}px`, overflowY: 'auto' });
   }, []);
 
-  const handleProducts = useCallback(
-    (res) => {
-      setProducts(res.data?.products ?? []);
-      setTimeout(setEqualPanelHeight, 100);
-    },
-    [setEqualPanelHeight],
-  );
-
   useEffect(() => {
-    companyService.getProductsLandingPage().then(handleProducts);
-    companyService.getProductBuckets().then((res) => {
-      setBuckets(res.data?.buckets ?? []);
-      setTimeout(setEqualPanelHeight, 100);
-    });
-    const onResize = () => setTimeout(setEqualPanelHeight, 100);
+    const timer = setTimeout(setEqualPanelHeight, 100);
+    const onResize = setEqualPanelHeight;
     window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, [handleProducts, setEqualPanelHeight]);
+    return () => { clearTimeout(timer); window.removeEventListener('resize', onResize); };
+  }, [catalog.products, buckets, setEqualPanelHeight]);
 
   const showProductDetails = (code, prodtype) => {
     router.push(prodtype === 'B2C' ? `/course-details/${code}` : `/b2b-course-details/${code}`);
@@ -78,13 +72,13 @@ export default function Highlights() {
                 <div className="browsLstCnt" ref={leftContent}>
                   <ul>
                     <li>
-                      <a href="#" onClick={(e) => { e.preventDefault(); companyService.getBucketWiseProducts('All').then(handleProducts); }}>
+                      <a href="#" onClick={(e) => { e.preventDefault(); catalog.setCategory('All'); }}>
                         All Courses
                       </a>
                     </li>
                     {buckets.map((b, i) => (
                       <li key={i}>
-                        <a href="#" onClick={(e) => { e.preventDefault(); companyService.getBucketWiseProducts(b?.product_bucket).then(handleProducts); }}>
+                        <a href="#" onClick={(e) => { e.preventDefault(); catalog.setCategory(b?.product_bucket); }}>
                           {b?.product_bucket}
                         </a>
                       </li>
@@ -97,8 +91,8 @@ export default function Highlights() {
               <div className="prdctLstHdng">
                 <h2>All Courses </h2>
                 <div className="search-form-container">
-                  <input type="text" placeholder="Search Courses/ Institutes" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="search-input" />
-                  <button onClick={() => companyService.getBucketWiseSearchProducts(searchQuery).then(handleProducts)} className="search-btn">
+                  <input type="search" aria-label="Search Courses/ Institutes" placeholder="Search Courses/ Institutes" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="search-input" />
+                  <button type="button" onClick={catalog.refresh} className="search-btn">
                     <i className="fa fa-search" aria-hidden="true"></i> Search
                   </button>
                 </div>
@@ -108,7 +102,8 @@ export default function Highlights() {
                   </Link>
                 </span>
               </div>
-              <div className="topmainLstPrdct scrollbar" id="style-3" ref={rightContent}>
+              <SearchStatus loading={catalog.loading} error={catalog.error} empty={products.length === 0} />
+              <div className="topmainLstPrdct scrollbar" id="style-3" ref={rightContent} aria-busy={catalog.loading}>
                 <div className="force-overflow">
                   <div className="internshipMainDivHmcar">
                     {products.map((product, i) => (

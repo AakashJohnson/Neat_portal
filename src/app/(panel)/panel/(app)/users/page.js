@@ -4,7 +4,7 @@
 // has the actions dropdown (sessions, view, impersonate), edit and delete.
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { impersonate } from '@/components/panel/actions';
 import { DeleteLink } from '@/components/panel/confirm';
 import Pagination from '@/components/panel/Pagination';
@@ -12,6 +12,8 @@ import { presentName, usePanel } from '@/components/panel/PanelProvider';
 import { Crumb, Messages, PanelPage, Tooltip, setFlash, useDropdown, useFlash } from '@/components/panel/ui';
 import { panelApi, validationMessages } from '@/lib/panelApi';
 import { DATE_FORMAT, formatDate } from '@/lib/carbon';
+import { searchResponse, updateSearchParams, useAsyncSearch } from '@/lib/liveSearch';
+import SearchStatus from '@/components/common/SearchStatus';
 
 const LABEL_CLASS = { Active: 'success', Banned: 'danger' };
 
@@ -89,33 +91,26 @@ function Row({ user, onDeleted }) {
 }
 
 export default function PanelUsersPage() {
-  const router = useRouter();
   const params = useSearchParams();
   const flash = useFlash();
   const search = params.get('search') ?? '';
   const status = params.get('status') ?? '';
   const page = params.get('page') ?? '1';
-  const [result, setResult] = useState(null);
   const [messages, setMessages] = useState({ errors: [], success: flash });
-  const [reload, setReload] = useState(0);
 
-  useEffect(() => {
-    panelApi.get('/users', { search, status, page, per_page: 20 }).then((r) => r.ok && setResult(r.data));
-  }, [search, status, page, reload]);
-
-  const submit = (form) => {
-    const q = new URLSearchParams();
-    const data = new FormData(form);
-    q.set('search', data.get('search') ?? '');
-    q.set('status', data.get('status') ?? '');
-    router.push(`/panel/users?${q.toString()}`);
-  };
+  const load = useCallback(async () => {
+    const result = searchResponse(await panelApi.get('/users', { search, status, page, per_page: 20 }));
+    if (!Array.isArray(result?.data)) throw new Error('Unable to load users. Please try again.');
+    return result;
+  }, [search, status, page]);
+  const query = useAsyncSearch(load);
+  const result = query.data;
 
   const onDeleted = (res) => {
     if (res.ok) {
       setFlash('User deleted successfully.');
       setMessages({ errors: [], success: 'User deleted successfully.' });
-      setReload((n) => n + 1);
+      query.refresh();
     } else setMessages({ errors: res.data?.error ? [res.data.error] : validationMessages(res.data), success: null });
   };
 
@@ -132,27 +127,27 @@ export default function PanelUsersPage() {
             className="pb-2 mb-3 border-bottom-light"
             onSubmit={(e) => {
               e.preventDefault();
-              submit(e.currentTarget);
+              query.refresh();
             }}
           >
             <div className="row my-3 flex-md-row flex-column-reverse">
               <div className="col-md-4 mt-md-0 mt-2">
                 <div className="input-group custom-search-form">
-                  <input type="text" className="form-control input-solid" name="search" defaultValue={search} key={search} placeholder="Search for users..." />
+                  <input type="search" aria-label="Search for users" className="form-control input-solid" name="search" value={search} onChange={e => updateSearchParams('/panel/users', { search: e.target.value })} placeholder="Search for users..." />
                   <span className="input-group-append">
                     {search !== '' && (
-                      <Link href="/panel/users" className="btn btn-light d-flex align-items-center text-muted" role="button">
+                      <button type="button" onClick={() => updateSearchParams('/panel/users', { search: '' })} aria-label="Clear user search" className="btn btn-light d-flex align-items-center text-muted">
                         <i className="fas fa-times"></i>
-                      </Link>
+                      </button>
                     )}
-                    <button className="btn btn-light" type="submit" id="search-users-btn">
+                    <button className="btn btn-light" type="submit" id="search-users-btn" aria-label="Search users">
                       <i className="fas fa-search text-muted"></i>
                     </button>
                   </span>
                 </div>
               </div>
               <div className="col-md-2 mt-2 mt-md-0">
-                <select id="status" className="form-control input-solid" name="status" defaultValue={status} key={status} onChange={(e) => submit(e.currentTarget.form)}>
+                <select id="status" aria-label="User status" className="form-control input-solid" name="status" value={status} onChange={(e) => updateSearchParams('/panel/users', { status: e.target.value })}>
                   <option value="">All</option>
                   <option value="Active">Active</option>
                   <option value="Banned">Banned</option>
@@ -167,7 +162,8 @@ export default function PanelUsersPage() {
               </div>
             </div>
           </form>
-          <div className="table-responsive" id="users-table-wrapper">
+          <SearchStatus loading={query.loading} error={query.error} />
+          <div className="table-responsive" id="users-table-wrapper" aria-busy={query.loading}>
             <table className="table table-borderless table-striped">
               <thead>
                 <tr>

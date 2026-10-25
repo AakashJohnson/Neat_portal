@@ -2,35 +2,41 @@
 // company-profile/index.blade.php (CompanyCreateProfile@index): look up a
 // NEAT ID in neat_eoi, then create the company login. Messages are alert()s,
 // as in the original.
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { panelApi } from '@/lib/panelApi';
+import { searchResponse, useAsyncSearch } from '@/lib/liveSearch';
+import SearchStatus from '@/components/common/SearchStatus';
 
 const EMPTY = { neat_id: '', email: '', company: '', phone: '', password: '' };
 
 export default function CreateCompanyProfilePage() {
-  const [f, setF] = useState(EMPTY);
-  const [canSubmit, setCanSubmit] = useState(false);
-  const bind = (name) => ({ value: f[name], onChange: (e) => setF((x) => ({ ...x, [name]: e.target.value })) });
-
-  const search = async () => {
-    const r = await panelApi.post('/panel/company-profile/fetch-neat-id', { neat_id: f.neat_id });
-    if (r.ok) {
-      setF((x) => ({ ...x, company: r.data.data.company ?? '', email: r.data.data.email ?? '', phone: r.data.data.phone ?? '' }));
-      setCanSubmit(true);
-    } else {
-      window.alert('No record found!');
-      setF((x) => ({ ...x, company: '', email: '', phone: '' }));
-      setCanSubmit(false);
-    }
-  };
+  const [neatId, setNeatId] = useState('');
+  const [edits, setEdits] = useState({});
+  const load = useCallback(async () => {
+    const query = neatId.trim();
+    if (!query) return null;
+    const response = await panelApi.post('/panel/company-profile/fetch-neat-id', { neat_id: query });
+    if (response.status === 404) return { query, record: null };
+    const data = searchResponse(response);
+    if (!data?.data || typeof data.data !== 'object') throw new Error('Unable to load company details. Please try again.');
+    return { query, record: data.data };
+  }, [neatId]);
+  const lookup = useAsyncSearch(load);
+  const record = lookup.data?.query === neatId.trim() ? lookup.data.record : null;
+  const f = { ...EMPTY, ...(record ? { company: record.company ?? '', email: record.email ?? '', phone: record.phone ?? '' } : {}), ...edits, neat_id: neatId };
+  const canSubmit = !!record && !lookup.loading && !lookup.error;
+  const bind = name => ({ value: f[name], onChange: e => {
+    if (name === 'neat_id') { setNeatId(e.target.value); setEdits({}); }
+    else setEdits(values => ({ ...values, [name]: e.target.value }));
+  } });
 
   const submit = async () => {
     const { neat_id, company, email, phone, password } = f;
     const r = await panelApi.post('/panel/company-profile', { neat_id, company, email, phone, password });
     if (r.ok) {
       window.alert(r.data.msg);
-      setF(EMPTY);
-      setCanSubmit(false);
+      setNeatId('');
+      setEdits({});
     } else window.alert('No record found!');
   };
 
@@ -41,14 +47,15 @@ export default function CreateCompanyProfilePage() {
           <div className="container" style={{ alignItems: 'center' }}>
             <h2>Create Company Login </h2>
             <div className="form-group col-md-4" style={{ display: 'inline-block' }}>
-              <label htmlFor="email">NEAT ID </label>
-              <input type="text" className="form-control" id="neat_id" {...bind('neat_id')} />
+              <label htmlFor="neat_id">NEAT ID </label>
+              <input type="search" className="form-control" id="neat_id" {...bind('neat_id')} />
             </div>
             <div className="col-md-2" style={{ display: 'inline-block' }}>
-              <button type="submit" id="searchid" className="btn btn-default" onClick={search}>
-                Submit
+              <button type="button" id="searchid" className="btn btn-default" onClick={lookup.refresh}>
+                Search
               </button>
             </div>
+            <SearchStatus loading={!!neatId && lookup.loading} error={lookup.error} empty={!!neatId.trim() && !record} />
             <div className="form-group col-md-6">
               <label htmlFor="email">Email </label>
               <input type="email" className="form-control" id="email" {...bind('email')} />

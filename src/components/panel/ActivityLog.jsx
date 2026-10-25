@@ -3,29 +3,33 @@
 // user (adminView + user) or of the logged-in user: search on the message,
 // 20 per page, user agent in a focus popover.
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
 import Pagination from '@/components/panel/Pagination';
 import { nameOrEmail, usePanel } from '@/components/panel/PanelProvider';
 import { Crumb, PanelPage, Popover, Tooltip } from '@/components/panel/ui';
 import { panelApi } from '@/lib/panelApi';
 import { DATE_TIME_FORMAT, formatDate } from '@/lib/carbon';
+import { searchResponse, updateSearchParams, useAsyncSearch } from '@/lib/liveSearch';
+import SearchStatus from '@/components/common/SearchStatus';
 
 /** @param {{ mode: 'all' | 'user' | 'own', userId?: string }} props */
 export default function ActivityLog({ mode, userId }) {
-  const router = useRouter();
   const params = useSearchParams();
   const panel = usePanel();
   const search = params.get('search') ?? '';
   const page = params.get('page') ?? '1';
-  const [result, setResult] = useState(null);
   const adminView = mode !== 'own';
   const base = mode === 'all' ? '/panel/activity' : mode === 'user' ? `/panel/activity/user/${userId}/log` : '/panel/profile/activity';
 
-  useEffect(() => {
+  const load = useCallback(async () => {
     const path = mode === 'all' ? '/panel/activity' : mode === 'user' ? `/panel/activity/user/${userId}` : '/panel/profile/activity';
-    panelApi.get(path, { search, page }).then((r) => r.ok && setResult(r.data));
+    const data = searchResponse(await panelApi.get(path, { search, page }));
+    if (!Array.isArray(data?.data)) throw new Error('Unable to load activities. Please try again.');
+    return data;
   }, [mode, userId, search, page]);
+  const query = useAsyncSearch(load);
+  const result = query.data;
 
   const userName = mode === 'user' ? result?.user?.name_or_email ?? '' : mode === 'own' ? nameOrEmail(panel.user) : null;
   const activities = result?.data ?? [];
@@ -54,20 +58,20 @@ export default function ActivityLog({ mode, userId }) {
             className="border-bottom-light mb-3"
             onSubmit={(e) => {
               e.preventDefault();
-              router.push(`${base}?search=${encodeURIComponent(new FormData(e.currentTarget).get('search') ?? '')}`);
+              query.refresh();
             }}
           >
             <div className="row justify-content-between mt-3 mb-4">
               <div className="col-lg-5 col-md-6">
                 <div className="input-group custom-search-form">
-                  <input type="text" className="form-control input-solid" name="search" defaultValue={search} key={search} placeholder="Search for Action" />
+                  <input type="search" aria-label="Search for Action" className="form-control input-solid" name="search" value={search} onChange={e => updateSearchParams(base, { search: e.target.value })} placeholder="Search for Action" />
                   <span className="input-group-append">
                     {search !== '' && (
-                      <Link href={adminView ? '/panel/activity' : '/panel/profile/activity'} className="btn btn-light d-flex align-items-center" role="button">
+                      <button type="button" onClick={() => updateSearchParams(base, { search: '' })} aria-label="Clear activity search" className="btn btn-light d-flex align-items-center">
                         <i className="fas fa-times text-muted"></i>
-                      </Link>
+                      </button>
                     )}
-                    <button className="btn btn-light" type="submit" id="search-activities-btn">
+                    <button className="btn btn-light" type="submit" id="search-activities-btn" aria-label="Search activities">
                       <i className="fas fa-search text-muted"></i>
                     </button>
                   </span>
@@ -75,7 +79,8 @@ export default function ActivityLog({ mode, userId }) {
               </div>
             </div>
           </form>
-          <div className="table-responsive">
+          <SearchStatus loading={query.loading} error={query.error} empty={activities.length === 0} />
+          <div className="table-responsive" aria-busy={query.loading}>
             <table className="table table-borderless table-striped">
               <thead>
                 <tr>

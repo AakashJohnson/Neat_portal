@@ -44,7 +44,7 @@ export default function InstituteStudentDetailsPage() {
       <div className="container">
         {error && <p role="alert">{error}</p>}
         <MatFormField className="col-md-3 col-sm-12" appearance="outline" label="Search" empty={!search} suffix={<MatIcon matsuffix="">search</MatIcon>}>
-          {(id) => <MatInput id={id} value={search} onChange={(e) => setSearch(e.target.value)} onKeyUp={(e) => applyFilter(e.currentTarget.value)} />}
+          {(id) => <MatInput id={id} type="search" value={search} onChange={(e) => { setSearch(e.target.value); applyFilter(e.target.value); }} />}
         </MatFormField>
         <div className="mat-elevation-z8">
           <MatTable dataSource={ds} columns={COLUMNS} />

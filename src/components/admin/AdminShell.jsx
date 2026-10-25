@@ -2,11 +2,12 @@
 // Port of components/admin/admin.component (the admin shell): dashboard navbar,
 // side navbar with routerLinkActive entries and the page footer around the
 // routed child. The role check (role_id 1, else logout) is enforced by
-// proxy.js. #toggle-btn has no handler: the theme's custom-js.js binds it in
-// $(document).ready, before the router renders this shell.
+// proxy.js. Menu state is owned by React on every viewport.
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from '@/components/providers/SessionProvider';
+import { useEffect, useRef, useState } from 'react';
+import styles from './AdminShell.module.css';
 
 const MENU = [
   ['/admin/dashboard', 'zmdi-home', 'Home '],
@@ -29,6 +30,20 @@ export default function AdminShell({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const { removeToken } = useSession();
+  const [toggled, setToggled] = useState(false);
+  const [wide, setWide] = useState(true);
+  const [headerHeight, setHeaderHeight] = useState(70);
+  const header = useRef(null);
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 1200px)');
+    const update = () => setWide(media.matches);
+    update();
+    media.addEventListener('change', update);
+    const element = header.current;
+    const observer = new ResizeObserver(() => setHeaderHeight(element.getBoundingClientRect().height));
+    observer.observe(element);
+    return () => { media.removeEventListener('change', update); observer.disconnect(); };
+  }, []);
 
   const logout = async () => {
     await removeToken();
@@ -36,8 +51,8 @@ export default function AdminShell({ children }) {
   };
 
   return (
-    <div className="page">
-      <header className="header">
+    <div className={`page ${styles.shell}`} style={{ '--admin-header-height': `${headerHeight}px` }}>
+      <header className="header" ref={header}>
         <nav className="navbar dashboard">
           <div className="container-fluid">
             <div className="navbar-holder d-flex align-items-center justify-content-between">
@@ -48,19 +63,24 @@ export default function AdminShell({ children }) {
                   </div>
                   <div className="brand-text d-none d-sm-inline-block d-lg-none"></div>
                 </Link>
-                <a id="toggle-btn" className="menu-btn active">
+                <button type="button" className={`menu-btn ${!toggled ? 'active' : ''} ${styles.toggle}`} aria-label="Toggle admin menu" aria-controls="admin-sidebar-menu" aria-expanded={wide ? !toggled : toggled} onClick={() => setToggled(value => !value)}>
                   <span></span>
                   <span></span>
                   <span></span>
-                </a>
+                </button>
               </div>
-              <ul className="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
+              <ul className={`nav-menu list-unstyled d-flex flex-md-row align-items-md-center ${styles.actions}`}>
                 <li className="nav-item">
-                  <a className="org-button mt-2" style={{ color: 'white' }} onClick={logout}>
+                  <Link href="/" className="org-button mt-2" style={{ color: 'white' }} aria-label="Home">
+                    <i className="fa fa-home" aria-hidden="true"></i><span>Home</span>
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <button type="button" className="org-button mt-2" style={{ color: 'white' }} onClick={logout} aria-label="Logout">
                     {' '}
                     <span className="d-none d-sm-inline">Logout</span>
                     <i className="fa fa-sign-out"></i>
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -68,7 +88,7 @@ export default function AdminShell({ children }) {
         </nav>
       </header>
       <div className="page-content d-flex align-items-stretch">
-        <nav className="side-navbar">
+        <nav className={`side-navbar ${toggled ? 'shrinked' : ''} ${styles.sidebar}`} aria-label="Admin navigation">
           <div className="sidebar-header d-flex align-items-center">
             <div className="avatar">
               <img src="http://neatapi.aicte-india.org/assets/img/icons/company_logo/00000000001.png" alt="..." className="img-fluid rounded-circle" />
@@ -78,10 +98,10 @@ export default function AdminShell({ children }) {
               <p>User Name</p>
             </div>
           </div>
-          <ul className="list-unstyled">
+          <ul id="admin-sidebar-menu" className={`list-unstyled ${styles.menu}`}>
             {MENU.map(([href, icon, label]) => (
-              <li key={href} tabIndex="0" className={isActive(pathname, href) ? 'active' : undefined} onClick={() => router.push(href)}>
-                <Link href={href}>
+              <li key={href} className={isActive(pathname, href) ? 'active' : undefined}>
+                <Link href={href} aria-current={isActive(pathname, href) ? 'page' : undefined}>
                   {' '}
                   <i className={`zmdi ${icon}`}></i>
                   {label}
@@ -90,7 +110,7 @@ export default function AdminShell({ children }) {
             ))}
           </ul>
         </nav>
-        <div className="content-inner">
+        <div className={`content-inner${toggled ? ' active' : ''}`}>
           {children}
           <footer className="main-footer">
             <div className="container-fluid">

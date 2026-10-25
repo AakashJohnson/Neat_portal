@@ -58,11 +58,39 @@ $env:FLOW_API_ORIGIN='http://localhost:4101'
 $env:FLOW_NEXT_ORIGIN='http://localhost:3101'
 npm run test:flows
 npm run test:recovered
+npm run test:navigation-search
 ```
 
 Stop the dedicated test services afterwards. Remove only the generated
 `.scratch\next-flow` directory before running `check:no-ts`, since Next.js
 generates declaration files there. Do not remove the user's active build.
+
+## Admin navigation and live search
+
+- Admin Home sits beside Logout and retains the httpOnly session. The public
+  navigation's Dashboard link returns to the admin area without another login.
+  The management panel also has Home beside its logout/profile controls.
+- Both admin sidebars keep their header/profile actions visible while the menu
+  scrolls independently. The site admin menu toggle is React-controlled.
+- Complete public catalogs and client-side tables filter immediately on input
+  changes, including paste and clear. Course/company matches are partial and
+  case-insensitive; clearing keeps the selected category/company.
+- Server-paginated Student/Learner, panel Users/Activity and exact NEAT-ID
+  lookups debounce for 250 ms and discard outdated responses. Loading, errors
+  and empty results are visible. Searching resets pagination without discarding
+  status or user-scope filters. Lookup typing never submits a creation form.
+
+`test:navigation-search` covers every existing search surface: Home, B2C/B2B
+catalogs, admin products and eight admin tables, MOU autocomplete, company
+verification, institute students, panel users, all three activity views and
+both NEAT-ID tools. It also checks session-preserving Home navigation, logout,
+desktop/tablet/mobile sidebar scrolling, a native touch gesture, pagination,
+debounce timing, late responses, visible errors and recovery.
+
+The suite uses disposable SQL fixtures; only unavailable external Phase-2
+product lookups and deliberate transport-race/error scenarios use controlled
+responses. This is not certification of those external databases. Run details
+and limitations are in the [test plan](../migration-docs/TEST_PLAN.md).
 
 ## Verified scope
 

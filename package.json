@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test:flows": "node tests/registration-enquiry.mjs",
     "test:recovered": "node tests/recovered-flows.mjs",
+    "test:navigation-search": "node tests/navigation-search.mjs",
     "check:no-ts": "node scripts/check-no-ts.mjs",
     "sync:legacy": "node scripts/sync-legacy-assets.mjs && node scripts/extract-material-css.mjs && node scripts/scope-component-css.mjs"
   },

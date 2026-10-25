@@ -1,0 +1,16 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 70px) !important;
+  height: calc(100dvh - 70px) !important;
+  overflow: hidden !important;
+  padding-bottom: 0 !important;
+}
+.sidebar > :first-child { flex: 0 0 auto; }
+.sidebar .menu { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; padding-bottom: 20px; overscroll-behavior: contain; touch-action: pan-y; scrollbar-width: thin; scrollbar-color: #697484 #30353e; }
+.menu::-webkit-scrollbar { width: 6px; }
+.menu::-webkit-scrollbar-thumb { background: #697484; border-radius: 6px; }
+@media (max-height: 550px) {
+  .sidebar > :first-child { padding-top: 12px !important; padding-bottom: 8px !important; }
+  .sidebar > :first-child img { width: 45px; height: 45px; }
+}
