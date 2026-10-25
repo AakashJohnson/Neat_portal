@@ -67,11 +67,11 @@ describe('PNL company profile (admin-only, DEV-15/16)', () => {
     await db('product').where('code', `${NEAT}_PROD_1`).delete();
   });
 
-  it('fetch-neat-id reads neat_eoi; unknown id → 500', async () => {
+  it('fetch-neat-id reads neat_eoi; unknown id → 404 for live lookup', async () => {
     const row = await db('neat_eoi').first('neat_id', 'email', 'company', 'phone');
     const res = await callNode('POST', '/api/panel/company-profile/fetch-neat-id', { query: { token: nt }, body: { neat_id: row.neat_id } });
     expect(res.body).toEqual({ msg: 'succes', data: { email: row.email, company: row.company, phone: row.phone } });
-    expect((await callNode('POST', '/api/panel/company-profile/fetch-neat-id', { query: { token: nt }, body: { neat_id: 'none' } })).status).toBe(500);
+    expect((await callNode('POST', '/api/panel/company-profile/fetch-neat-id', { query: { token: nt }, body: { neat_id: 'none' } })).status).toBe(404);
   });
 
   it('create profile fails like the original (R-28: company_details.mou_date NOT NULL, no default); create product works', async () => {
