@@ -1,7 +1,7 @@
 'use client';
-// user/view.blade.php (UsersController@show passes no activities, so the
-// details card is centred): avatar, name, e-mail, phone, birthday, full
-// address, last login; Impersonate | Edit links.
+// user/view.blade.php: avatar, name, e-mail, phone, birthday, full address,
+// last login; Impersonate | Edit links; plus user-activity::recent-activity,
+// which the activity-log plugin's ShowUserComposer adds (10 latest entries).
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -9,7 +9,7 @@ import { impersonate } from '@/components/panel/actions';
 import { nameOrEmail, presentName, usePanel } from '@/components/panel/PanelProvider';
 import { Crumb, PanelPage, Tooltip } from '@/components/panel/ui';
 import { panelApi } from '@/lib/panelApi';
-import { DATE_FORMAT, diffForHumans, formatDate } from '@/lib/carbon';
+import { DATE_FORMAT, DATE_TIME_FORMAT, diffForHumans, formatDate } from '@/lib/carbon';
 
 export default function PanelUserViewPage() {
   const { id } = useParams();
@@ -17,10 +17,12 @@ export default function PanelUserViewPage() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [countries, setCountries] = useState([]);
+  const [activities, setActivities] = useState([]);
 
   useEffect(() => {
     panelApi.get(`/users/${id}`).then((r) => r.ok && setUser(r.data));
     panelApi.get('/countries').then((r) => r.ok && setCountries(r.data));
+    panelApi.get(`/panel/users/${id}/latest-activity`).then((r) => r.ok && setActivities(r.data));
   }, [id]);
 
   if (!user) return null;
@@ -42,7 +44,7 @@ export default function PanelUserViewPage() {
       }
     >
       <div className="row">
-        <div className="col-lg-5 col-xl-4 mx-auto">
+        <div className="col-lg-5 col-xl-4">
           <div className="card">
             <h6 className="card-header d-flex align-items-center justify-content-between">
               Details
@@ -99,6 +101,46 @@ export default function PanelUserViewPage() {
                   <strong>Last Logged In:</strong> {user.last_login ? diffForHumans(user.last_login) : 'N/A'}
                 </li>
               </ul>
+            </div>
+          </div>
+        </div>
+        <div className="col-lg-7 col-xl-8">
+          <div className="card">
+            <h6 className="card-header d-flex align-items-center justify-content-between">
+              Latest Activity
+              {activities.length > 0 && (
+                <small>
+                  <Tooltip title="Complete Activity Log">
+                    <Link href={`/panel/activity/user/${user.id}/log`} className="edit" data-toggle="tooltip" data-placement="top">
+                      View All
+                    </Link>
+                  </Tooltip>
+                </small>
+              )}
+            </h6>
+            <div className="card-body">
+              {activities.length > 0 ? (
+                <table className="table table-borderless table-striped">
+                  <thead>
+                    <tr>
+                      <th>Action</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activities.map((a) => (
+                      <tr key={a.id}>
+                        <td>{a.description}</td>
+                        <td>{formatDate(a.created_at, DATE_TIME_FORMAT)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="text-muted font-weight-light">
+                  <em>No activity from this user yet.</em>
+                </p>
+              )}
             </div>
           </div>
         </div>

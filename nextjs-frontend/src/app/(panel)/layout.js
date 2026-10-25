@@ -2,6 +2,7 @@
 // resources/views/layouts/{app,auth}.blade.php). Separate from the site's root
 // layout so the panel gets only its own stylesheets (public/panel/assets),
 // not the Angular site's cascade.
+import { Suspense } from 'react';
 import { SessionProvider } from '@/components/providers/SessionProvider';
 
 export const metadata = {
@@ -25,7 +26,10 @@ export default function PanelRootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <SessionProvider>{children}</SessionProvider>
+        {/* useSearchParams() in panel pages: render them on the client below this boundary */}
+        <SessionProvider>
+          <Suspense>{children}</Suspense>
+        </SessionProvider>
       </body>
     </html>
   );

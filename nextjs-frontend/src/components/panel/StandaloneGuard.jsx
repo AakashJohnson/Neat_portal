@@ -15,7 +15,8 @@ export default function StandaloneGuard({ children }) {
     fetch('/bff/panel/context?token=', { headers: { Accept: 'application/json' } })
       .then(async (r) => {
         if (!alive) return;
-        if (!r.ok) return router.replace(`/panel/login?to=${encodeURIComponent(pathname)}`);
+        if (r.status === 401) return router.replace(`/panel/login?to=${encodeURIComponent(pathname)}`);
+        if (!r.ok) return; // 429/5xx: stay (only an unauthenticated session goes to login)
         const ctx = await r.json();
         document.title = ` - ${ctx.settings?.app_name ?? 'Neat'}`;
         setReady(true);

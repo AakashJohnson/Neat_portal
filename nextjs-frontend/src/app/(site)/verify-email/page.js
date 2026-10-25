@@ -1,30 +1,42 @@
 'use client';
 // Port of components/pages/email-verification/email-verification.component.ts
-// (empty template; guest-only route). Sends ?email= and ?token= (absent
+// (guest-only route). Sends ?email= and ?token= (absent
 // parameters are undefined and therefore omitted from the JSON body), then
 // toasts and goes to /login on success.
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { jarwisService } from '@/services';
-import { subscribe } from '@/lib/api';
+import { apiErrorMessage, subscribe } from '@/lib/api';
 import { useNgOnInit } from '@/lib/useNgOnInit';
 import { toastr } from '@/components/common/Toastr';
 
 function EmailVerification() {
   const router = useRouter();
   const params = useSearchParams();
+  const [message, setMessage] = useState('Verifying your email...');
   useNgOnInit(() => {
     const param = (k) => (params.has(k) ? params.get(k) : undefined);
     subscribe(
       jarwisService.emailVerification({ email: param('email'), token: param('token') }),
-      () => {
-        toastr.success('Email verified Successfully');
-        router.push('/login');
+      (data) => {
+        if (data?.message === 'Success') {
+          toastr.success('Email verified Successfully');
+          router.push('/login');
+        } else {
+          const error = data?.reason || 'Email Already Verified or Incorrect token';
+          setMessage(error);
+          toastr.error(error);
+        }
       },
-      () => toastr.error('Email Already Verified or Incorrect token'),
+      (res) => {
+        const error = apiErrorMessage(res);
+        setMessage(error);
+        toastr.error(error);
+      },
     );
   });
-  return null;
+  return <div className="container"><p role="status">{message}</p><Link href="/login">Go to login or resend verification email</Link></div>;
 }
 
 export default function VerifyEmailPage() {

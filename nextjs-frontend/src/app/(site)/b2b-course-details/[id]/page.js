@@ -1,8 +1,6 @@
 'use client';
 // Port of components/pages/b2b-course-details/b2b-course-details.component.{html,ts}
-// (B2B product page): "Send Enquiry" opens #sendEnquiryYourPaidSeat, whose
-// form is submitted without validation (validators commented out in the
-// original; `required` attributes are inert under novalidate). The
+// (B2B product page): "Send Enquiry" opens #sendEnquiryYourPaidSeat. The
 // #bookYourPaidSeat modal is still in the template, with no trigger.
 import { use, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,9 +13,9 @@ import { useSession } from '@/components/providers/SessionProvider';
 import { toastr } from '@/components/common/Toastr';
 import { bsModal, dataToggleModal } from '@/components/bootstrap/bsModal';
 import { courseService } from '@/services';
-import { subscribe } from '@/lib/api';
+import { apiErrorMessage, subscribe } from '@/lib/api';
 import { fileUrl } from '@/lib/format';
-import { useFormGroup } from '@/lib/forms';
+import { useFormGroup, Validators } from '@/lib/forms';
 import { dataService } from '@/lib/dataService';
 import { useNgOnInit } from '@/lib/useNgOnInit';
 
@@ -29,16 +27,18 @@ export default function B2bCourseDetailsPage({ params }) {
   const enquiryModalRef = useRef(null);
 
   const form = useFormGroup({
-    college_name: [''],
-    college_representative_name: [''],
-    designation: [''],
-    no_of_seats: [''],
-    mobile_number: [''],
+    college_name: ['', [Validators.required, Validators.maxLength(255)]],
+    college_representative_name: ['', [Validators.required, Validators.maxLength(255)]],
+    designation: ['', [Validators.required, Validators.maxLength(255)]],
+    no_of_seats: ['', [Validators.required, Validators.pattern(/^\d+$/), Validators.min(1), Validators.max(2147483647)]],
+    mobile_number: ['', [Validators.required, Validators.pattern(/^\d{10,15}$/)]],
     neat_id: [''],
     product_code: [''],
-    message: [''],
-    college_email: [''],
+    message: ['', [Validators.required, Validators.maxLength(10000)]],
+    college_email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [notice, setNotice] = useState('');
   const [products, setProducts] = useState(undefined);
   const [videoUrl, setVideoUrl] = useState(undefined);
   const [videoWait, setVideoWait] = useState(false);
@@ -50,6 +50,10 @@ export default function B2bCourseDetailsPage({ params }) {
     // Angular decoded the token inline; a payload its atob() cannot read threw here.
     if (claims && !legacyDecodable) return;
     subscribe(courseService.getProductDetails({ code: productCode }), (data) => {
+      if (data?.message !== 'Success' || !data.products) {
+        toastr.error('Unable to load this product. Please select a product and try again.');
+        return;
+      }
       // handleProductDetails — statement order kept.
       setProducts(data['products']);
       setVideoUrl(fileUrl(`files/product_video/${data['products'].product_video_file}`));
@@ -61,7 +65,7 @@ export default function B2bCourseDetailsPage({ params }) {
         if (product['product_type'] == 'B2B') router.push('/b2b-course');
         if (product['product_type'] == 'B2C') router.push('/course');
       }
-    });
+    }, (res) => toastr.error(apiErrorMessage(res)));
     subscribe(courseService.getComments({ code: productCode, count: 1 }), () => {});
   }, ready);
 
@@ -88,16 +92,37 @@ export default function B2bCourseDetailsPage({ params }) {
     else router.push('/payment-redirect');
   };
 
-  const onSubmit = (values) => {
-    subscribe(courseService.submitB2BEnquiry(values), (data) => {
-      if (data['message'] == 'Success') toastr.success(data['reason']);
-      else toastr.error(data['reason']);
+  const onSubmit = async (values) => {
+    if (submitting) return;
+    if (!products || !form.valid) {
+      const message = 'Please fill all enquiry details, a valid email, a 10-15 digit mobile number, and a positive whole number of seats.';
+      setNotice(message);
+      toastr.error(message);
+      return;
+    }
+    setSubmitting(true);
+    setNotice('');
+    await subscribe(courseService.submitB2BEnquiry(values), (data) => {
+      if (data?.message === 'Success') {
+        setNotice(`Enquiry ${data.enquiry_no} saved. ${data.reason}`);
+        toastr.success(data.reason);
+        form.patchValue({ college_name: '', college_representative_name: '', designation: '', no_of_seats: '', mobile_number: '', message: '', college_email: '' });
+      } else {
+        const message = apiErrorMessage({ data });
+        setNotice(message);
+        toastr.error(message);
+      }
+    }, (res) => {
+      const message = apiErrorMessage(res);
+      setNotice(message);
+      toastr.error(message);
     });
+    setSubmitting(false);
   };
 
-  const field = (name, placeholder) => (
+  const field = (name, placeholder, type = 'text') => (
     <div className="form-group">
-      <input type="text" className="form-control" {...form.bind(name)} required placeholder={placeholder} />
+      <input type={type} className="form-control" {...form.bind(name)} required placeholder={placeholder} aria-invalid={form.errorState(name)} />
     </div>
   );
 
@@ -205,6 +230,7 @@ export default function B2bCourseDetailsPage({ params }) {
                 </button>
               </div>
               <div className="modal-body">
+                {notice && <p role="status">{notice}</p>}
                 <p>
                   NEAT is an initiative of MoE (Implementing Agency AICTE) to provide a platform of leaning in upcoming and state of art technology areas through online courses being offered by
                   industry. Solutions that Ed-Tech MoE/AICTE doesn&apos;t guarantee any employment.
@@ -221,17 +247,17 @@ export default function B2bCourseDetailsPage({ params }) {
                   {field('college_name', 'College/University Name')}
                   {field('college_representative_name', 'College/University Representative Name')}
                   {field('designation', 'Designation')}
-                  {field('college_email', 'Email')}
-                  {field('no_of_seats', 'No Of Seats Required')}
-                  {field('mobile_number', 'Mobile Number')}
+                  {field('college_email', 'Email', 'email')}
+                  {field('no_of_seats', 'No Of Seats Required', 'number')}
+                  {field('mobile_number', 'Mobile Number', 'tel')}
                   <div className="form-group">
                     <textarea className="form-control textArea" {...form.bind('message')} required placeholder="Message"></textarea>
                   </div>
                   <div className="form-check">
                     <input type="hidden" {...form.bind('product_code')} />
                     <input type="hidden" {...form.bind('neat_id')} />
-                    <button type="submit" className="btn btn-login float-right" style={{ background: '#EF7E22', color: '#fff', fontWeight: 600, fontFamily: 'poppins, sans-serif' }}>
-                      Submit
+                    <button type="submit" disabled={submitting || !products} className="btn btn-login float-right" style={{ background: '#EF7E22', color: '#fff', fontWeight: 600, fontFamily: 'poppins, sans-serif' }}>
+                      {submitting ? 'Submitting...' : 'Submit'}
                     </button>
                   </div>
                 </form>

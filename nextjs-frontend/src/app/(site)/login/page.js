@@ -1,46 +1,74 @@
 'use client';
 // Port of components/pages/login/login.component.{html,ts}.
 // The BFF (POST /api/session) logs in on the API and keeps the JWT in an
-// httpOnly cookie only when LoginComponent would have stored it (decodable and
-// email_verified_at set); navigation by role_id as in the original switch.
+// httpOnly cookie for a verified account; navigation is selected by role_id.
 import Link from 'next/link';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SiteChrome from '@/components/layout/SiteChrome';
 import AuthBanner from '@/components/auth/AuthBanner';
 import { useSession } from '@/components/providers/SessionProvider';
 import { toastr } from '@/components/common/Toastr';
 import { useFormGroup, Validators } from '@/lib/forms';
+import { apiErrorMessage, subscribe } from '@/lib/api';
+import { jarwisService } from '@/services';
 
 const ROLE_HOME = { 1: '/admin', 3: '/student/paid-Products-details-checkout', 4: '/company', 5: '/institute', 6: '/learner/learner-free-course' };
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useSession();
+  const [submitting, setSubmitting] = useState(false);
+  const [resending, setResending] = useState(false);
   const form = useFormGroup({
     username: [null, [Validators.required]],
     password: [null, [Validators.required]],
   });
 
   const onSubmit = async (values) => {
+    if (submitting) return;
     if (!form.valid) {
       toastr.error('Please Fill all the details');
       return;
     }
-    const { status, data } = await login(values.username, values.password);
+    setSubmitting(true);
+    let response;
+    try {
+      response = await login(values.username, values.password);
+    } catch (err) {
+      console.error('Login request failed:', err.name);
+      toastr.error('Unable to reach the login service. Please try again.', 'Error!');
+      return;
+    } finally {
+      setSubmitting(false);
+    }
+    const { status, data } = response;
     if (status >= 200 && status < 300 && data?.claims) {
-      // handleResponse: an undecodable token threw before anything happened.
-      if (!data.legacyDecodable) return;
+      if (!data.legacyDecodable) {
+        toastr.error('Unable to read your session. Please contact support.');
+        return;
+      }
       const user = data.claims;
       if (user.email_verified_at != null) {
-        // switch (user['role_id']) — strict comparison with numbers.
-        router.push(Object.prototype.hasOwnProperty.call(ROLE_HOME, user.role_id) && typeof user.role_id === 'number' ? ROLE_HOME[user.role_id] : '/login/');
+        router.push(ROLE_HOME[user.role_id] ?? '/');
       } else {
         toastr.error('Kindly verify email first!');
       }
     } else {
-      // handleError: error.error.error, title 'Error!'
-      toastr.error(data?.error, 'Error!');
+      toastr.error(apiErrorMessage(response), 'Error!');
     }
+  };
+
+  const resend = async () => {
+    if (!form.value.username || Validators.email(form.value.username)) {
+      toastr.error('Enter your email address above to resend the verification link.');
+      return;
+    }
+    setResending(true);
+    await subscribe(jarwisService.resendEmailVerificationLink({ email: form.value.username }),
+      (data) => toastr.success(data.reason),
+      (res) => toastr.error(apiErrorMessage(res)));
+    setResending(false);
   };
 
   return (
@@ -81,11 +109,14 @@ export default function LoginPage() {
                       Register
                     </Link>
                   </label>
-                  <button type="submit" className="btn btn-login float-right">
-                    Submit
+                  <button type="submit" disabled={submitting} className="btn btn-login float-right">
+                    {submitting ? 'Signing in...' : 'Submit'}
                   </button>
                 </div>
               </form>
+              <button type="button" className="btn btn-link" disabled={resending} onClick={resend}>
+                {resending ? 'Sending...' : 'Resend verification email'}
+              </button>
             </div>
           </div>
         </div>
