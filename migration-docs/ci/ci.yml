@@ -11,6 +11,12 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      DB_DATABASE: neat_portal_test
+      DB_USERNAME: ci
+      JWT_SECRET: ci-only-not-a-production-secret
+      MAIL_TRANSPORT: json
     defaults:
       run:
         working-directory: express-backend

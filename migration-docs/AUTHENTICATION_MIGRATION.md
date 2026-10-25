@@ -33,6 +33,9 @@ Browser ──cookie neat_token (httpOnly, SameSite=Lax, Secure in prod)──�
 | Token storage in the browser | **httpOnly cookie** `neat_token`, `maxAge` = `NEAT_JWT_TTL` minutes (DEV-F03). Page scripts never see the JWT; non-secret claims come from `GET /api/session` (without `jti`/`prv`) |
 | BFF | `app/bff/[...path]/route.js` forwards to Express. Requests the client marks with a `token` parameter (exactly the endpoints Angular called with `?token=`, `lib/tokenEndpoints.js`) get the cookie's token as `?token=` and `Authorization: Bearer`, or `?token=null` when logged out, as Angular sent from an empty `localStorage` |
 | Portal login/logout | `POST /api/session` → Express `/api/login`, sets the cookie; `DELETE` → `/api/logout`, clears it |
+| Portal flow corrections (2026-10-25) | Atomic registration; explicit mail delivery status; functional resend/verification using `email_verification_token`; one token per successful login and none for rejected logins; UTF-8/base64url-safe browser claims. See `DEVIATIONS.md` FIX-FLOWS-01..05 |
+| Verification email delivery (follow-up) | Local SMTP enabled; SendGrid authentication corrected to use the literal username `apikey`. Authentication and one provider-accepted technical message were verified; inbox placement is not asserted. Existing accounts remain subject to verification and were not activated automatically. |
+| Recovered endpoint access | All 16 recovered company/purchase/allocation endpoints validate the current SQL account and role, with company product ownership and buyer identity enforced server-side. These checks apply even when legacy public-endpoint compatibility is enabled. See `DEVIATIONS.md` FIX-RECOVERED. |
 | Panel login | `POST /api/panel/session` → Express `/api/panel/login` (web rules: throttling, Unconfirmed allowed); `PUT` adopts a token issued by `/api/panel/password/reset`; `DELETE` logs out |
 | Route guards | `src/proxy.js` (Next.js 16 proxy) reproduces `AfterLoginService` / `BeforeLoginService` and the shells' role checks from the effective Angular route table. It verifies the signature when `NEAT_JWT_SECRET` is set (else expiry only). The panel guard (`PanelShell`) redirects to `/panel/login` or `/panel/email/verify`. **Express authorises every call itself**; the frontend guard is only for navigation |
 | Panel permissions | `GET /api/panel/context` returns the role's permission names; the sidebar and pages use them, and every `/api/panel/*` and stock endpoint checks them server-side |
@@ -58,7 +61,7 @@ Browser ──cookie neat_token (httpOnly, SameSite=Lax, Secure in prod)──�
 ## 4. Coexistence and cut-over
 
 1. **Shared secret.** Express must use the same `JWT_SECRET` as Laravel, and Next.js uses it as `NEAT_JWT_SECRET`. Tokens then work against either backend, so traffic can move per route or all at once.
-2. **Shared tables.** Both backends write `api_tokens`, `users.unique_uuid`, `last_login` and `activity_log` with the same semantics (R-11). A user logged in through one backend stays logged in through the other.
+2. **Shared tables.** Both backends write `api_tokens`, `users.unique_uuid`, `last_login` and `user_activity`. Express now creates only the token it returns, not Laravel's extra unused token. No schema or existing password changes are required.
 3. **Existing sessions.** Angular users have their token in `localStorage`; after the switch to Next.js they log in once, and the cookie replaces it. No password reset or migration of credentials is needed.
 4. **Panel sessions.** Laravel web sessions (`sessions` table) are not carried over; panel users log in once at `/panel/login`.
 5. **Rotation.** Rotating `JWT_SECRET` invalidates every token on both backends. Do it only with explicit authorisation, and never during the overlap.
@@ -69,4 +72,6 @@ Browser ──cookie neat_token (httpOnly, SameSite=Lax, Secure in prod)──�
 - `express-backend/tests/security/hardening.test.js`: the hardened behaviours above.
 - `nextjs-frontend/tests/parity/login-behaviour.mjs`, `form-behaviour.mjs`: the browser never receives the JWT; requests carry `?token=` exactly where Angular did.
 
-Results of the final run are in `TEST_REPORT.md`.
+The 2026-10-25 targeted repair results are recorded in `TEST_PLAN.md`. A complete final migration test report remains outstanding. Historical cross-runtime results are not a new verification of the currently unavailable Laravel reference.
+
+The follow-up focused run passed 57 tests with 54 reference-dependent skips and no failures. Auth tests now create disposable accounts with known fixture hashes rather than assuming or changing passwords on existing accounts. Both current browser-to-SQL suites passed; the restarted API on port 4000 serves the repaired flows.
