@@ -72,6 +72,21 @@ Run commands and evidence are in [TEST_PLAN.md](migration-docs/TEST_PLAN.md).
 Intentional corrections are documented in
 [DEVIATIONS.md](migration-docs/DEVIATIONS.md).
 
+### Navigation, live search and architecture dashboard
+
+- Admin Home navigation preserves login; both admin menus scroll independently.
+- Every existing search field updates while typing, preserving filters and
+  pagination behavior, with debouncing and stale-response protection for server
+  searches.
+- The search/navigation browser suite, existing recovered-workflow suite, five
+  focused backend tests and frontend production build passed. External Phase-2
+  product lookup responses were simulated because those databases are unavailable
+  locally; other search checks used actual SQL-backed fixtures.
+- The standalone [architecture dashboard](migration-docs/architecture-dashboard/README.md)
+  provides source-derived graphs, API traces, snapshot-based SQL diagrams and
+  development watching without executing application source or connecting to a
+  database. Its 19 tests, lint and build passed.
+
 ## Remaining work
 
 This is a working migration snapshot, **not a full production sign-off**.
