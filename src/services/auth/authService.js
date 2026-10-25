@@ -27,43 +27,27 @@ export async function hashPassword(plain) {
   return hash.replace(/^\$2[ab]\$/, '$2y$');
 }
 
-/** JWTAuth::attempt(): validate credentials, then issue a token for the (fresh) user row. */
-async function attempt(credentials, ctx) {
-  const user = await userRepo.findByCredentials(credentials);
-  if (!user || !(await checkPassword(credentials.password, user.password))) return null;
-  return { user, token: await issueToken(user, ctx) };
-}
-
-/**
- * AuthController::login(). Returns { status, body } exactly as Laravel responds.
- * The original calls attempt() twice; the first token only proves the password
- * (its api_tokens row is still created), the second carries the refreshed uuid.
- */
+/** Authenticate before issuing a token; rejected logins must not leave token rows. */
 export async function login(input, ctx) {
   const credentials = getCredentials(input);
-
-  const first = await attempt(credentials, ctx);
-  if (!first) return { status: 401, body: { error: 'Invalid credentials.' } };
-
-  if (!(await userRepo.refreshUniqueUuid(first.user.id))) {
-    return { status: 500, body: { error: 'Please try again.' } };
-  }
-
-  const second = await attempt(credentials, ctx);
-  const { user, token } = second;
+  let user = await userRepo.findByCredentials(credentials);
+  if (!user || !(await checkPassword(credentials.password, user.password))) return { status: 401, body: { error: 'Invalid credentials.' } };
 
   if (user.status === UserStatus.BANNED) {
-    await invalidateToken(token);
     return { status: 401, body: { error: 'Your account is banned by administrators.' } };
   }
   if (user.status === UserStatus.UNCONFIRMED) {
-    await invalidateToken(token);
     return { status: 401, body: { error: 'Please confirm your email address first.' } };
   }
 
+  if (!(await userRepo.refreshUniqueUuid(user.id))) {
+    return { status: 500, body: { error: 'Please try again.' } };
+  }
+  user = await userRepo.findById(user.id);
   // event(new LoggedIn): UpdateLastLoginTimestamp + activity log "Logged in."
   await userRepo.touchLastLogin(user.id);
   await logActivity({ userId: user.id, description: ACTIVITY.LOGGED_IN, ip: ctx.ip, userAgent: ctx.userAgent });
+  const token = await issueToken(user, ctx);
 
   return { status: 200, body: { token } };
 }

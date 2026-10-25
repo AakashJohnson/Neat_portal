@@ -5,6 +5,9 @@ import { clientIp } from '../utils/request.js';
  * Laravel `throttle:60,1` from the api middleware group: 60 requests per
  * minute per client, X-RateLimit-Limit / X-RateLimit-Remaining on every
  * response, 429 {"message":"Too Many Attempts."} with Retry-After when exceeded.
+ * /api/panel/* replaces Laravel *web* routes, which had no such throttle (one
+ * server-rendered request per page; the port needs several API calls per
+ * page), so it is exempt; the panel login keeps its own ThrottlesLogins.
  */
 export const apiThrottle = (limit = 60) =>
   rateLimit({
@@ -13,6 +16,7 @@ export const apiThrottle = (limit = 60) =>
     standardHeaders: false,
     legacyHeaders: false,
     keyGenerator: (req) => clientIp(req),
+    skip: (req) => req.path.startsWith('/panel/'),
     handler: (req, res, _next, options) => {
       const resetSeconds = Math.max(1, Math.ceil((req.rateLimit.resetTime - Date.now()) / 1000));
       res.set({

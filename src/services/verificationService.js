@@ -5,9 +5,6 @@ import { nowSql } from '../utils/time.js';
 
 const users = () => db(table('users'));
 
-// PHP strcmp() with null coercion: strcmp(null, '') === 0.
-const phpStrEq = (a, b) => String(a ?? '') === String(b ?? '');
-
 /**
  * GET /api/verifyUserLoggedIn
  * - no token        → empty 200 response (controller returns nothing)
@@ -34,15 +31,16 @@ export async function verifyUserLoggedIn(token) {
 
 /** POST /api/emailVerification */
 export async function emailVerification({ email, token }) {
-  const user = await users().where('email', email ?? null).first();
-  if (!user || !phpStrEq(user.email_verification_token, token)) {
-    return { status: 200, body: { message: 'Error' } };
-  }
-  await users().where('email', email).update({
-    email_verification_token: null,
-    email_verified_at: nowSql(),
-    status: 'Active',
+  const invalid = { status: 422, body: { message: 'Error', reason: 'Email already verified or incorrect token.' } };
+  if (typeof email !== 'string' || !email || typeof token !== 'string' || !token) return invalid;
+  const user = await users().where({ email, email_verification_token: token }).whereNot('status', 'Banned').first('id');
+  if (!user) return invalid;
+  const changed = await users().where({ id: user.id, email_verification_token: token }).whereNot('status', 'Banned').update({
+    email_verification_token: null, email_verified_at: nowSql(), status: 'Active',
   });
+  if (!changed) {
+    return invalid;
+  }
   return { status: 200, body: { message: 'Success' } };
 }
 

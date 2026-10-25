@@ -1,10 +1,12 @@
 // Port of Api\InstituteController (institute profile, students, Excel uploads).
 import { db, table } from '../database/knex.js';
-import { legacyAuthenticate } from './auth/legacyAuth.js';
+import { randomInt } from 'node:crypto';
+import { legacyAuthenticate, LegacyResponse } from './auth/legacyAuth.js';
+import { requireAccount } from './auth/permissions.js';
 import { legacyRun, legacyValidate } from './legacyErrors.js';
 import { logger } from '../config/logger.js';
 import { carbonAge, carbonParse } from '../utils/phpDate.js';
-import { idx, looseEq, offset, strOf, PhpError } from '../utils/php.js';
+import { idx, looseEq, strOf, PhpError } from '../utils/php.js';
 import { unixNow } from '../utils/time.js';
 
 const ok = (body) => ({ status: 200, body });
@@ -107,42 +109,65 @@ function microtimeAppId() {
 }
 
 /** POST /api/ecxelUpload — free-seat nominations parsed from Excel in the browser. */
-export const ecxelUpload = (req) =>
-  legacyRun(async () => {
-    return excelUpload(req, {
-      // $payload['permanent_institute_id'] and the Institute lookup happen before validation.
-      prepare: async (payload) => {
-        const permanentId = claim(payload, 'permanent_institute_id');
-        const institute = await db(table('institute')).select('Institute Name').where('Permanent Institute Id', permanentId).first();
-        return { permanentId, institute: institute ?? null };
-      },
-      rowOf: async (val, _payload, { permanentId, institute }) => {
-        return {
-          name: idx(val, 'Name of Beneficiary'),
-          father_name: idx(val, 'Father Name'),
-          mobile: idx(val, 'Valid Mobile Number'),
-          email: idx(val, 'Valid Email'),
-          birthdate: idx(val, 'Date of Birth'),
-          admission_registration_number: idx(val, 'Admission/ Registration number'),
-          program: idx(val, 'Programs'),
-          category: idx(val, 'Category'),
-          department_stream: idx(val, 'Department/ Stream'),
-          gender: idx(val, 'Gender'),
-          year_of_admission: idx(val, 'Year of Admission'),
-          application_number: idx(val, 'Application Number'),
-          permanent_institute_id: permanentId,
-          institute_name: idx(institute, 'Institute Name'),
-          state: idx(val, 'State/ UT'),
-          aicte_code: 'C-9425',
-          marks_hsc: idx(val, 'Marks secured in Class 12th'),
-          total_marks: idx(val, 'Total Marks'),
-          percentage: idx(val, 'Percentage'),
-          course_name: idx(val, 'Courses'),
+export async function ecxelUpload(req) {
+  const account = await requireAccount(req, [5]);
+  return legacyRun(async () => {
+    const fail = (reason) => { throw new LegacyResponse(200, { message: 'Error', reason }); };
+    if (!Array.isArray(req.body) || req.body.length === 0) fail('Choose a spreadsheet containing student nominations.');
+    await db.transaction(async trx => {
+      await trx(table('users')).where('id', account.id).forUpdate().first('id');
+      const profile = await trx(table('institute_details')).where('application_number', account.application_number).first();
+      const master = await trx(table('institute')).where('Permanent Institute Id', account.permanent_institute_id).first();
+      const instituteName = profile?.institute_name ?? master?.['Institute Name'];
+      if (!instituteName || !account.permanent_institute_id) fail('Please save your institute profile before uploading nominations.');
+      for (const [index, val] of req.body.entries()) {
+        if (!val || typeof val !== 'object' || Array.isArray(val)) fail(`Invalid spreadsheet row ${index + 2}.`);
+        const row = {
+          name: val['Name of Beneficiary'], father_name: val['Father\u2019s Name'] ?? val['Father Name'],
+          mobile: val['Valid Mobile Number'], email: val['Valid Email'], birthdate: val['Date of Birth'],
+          admission_registration_number: val['Admission/ Registration number'], program: val.Programs,
+          category: val.Category, department_stream: val['Department/ Stream'], gender: val.Gender,
+          year_of_admission: val['Year of Admission'], permanent_institute_id: account.permanent_institute_id,
+          institute_name: instituteName, state: val['State/ UT'], aicte_code: val['AICTE Code'],
+          marks_hsc: val['Marks secured in Class 12th'], total_marks: val['Total Marks'], percentage: val.Percentage,
+          course_name: val.Courses ?? val['Course Name'] ?? null,
+          preference_1: val['Free Seat Preference 1'] ?? null,
+          preference_2: val['Free Seat Preference 2'] ?? null,
+          preference_3: val['Free Seat Preference 3'] ?? null,
         };
-      },
-      failureName: (val) => idx(val, 'Name of Beneficiary'),
+        await legacyValidate(row, {
+          name: 'required|string|max:255', father_name: 'required|string|max:255',
+          mobile: 'required|digits:10', email: 'required|email|max:255', birthdate: 'required|string|max:255',
+          admission_registration_number: 'required|string|max:255', program: 'required|in:Graduate,Post Graduate,Undergraduate',
+          category: 'required|in:General (Gen),Scheduled Caste (SC),Scheduled Tribe (ST),Other Backward Classes (OBC),Economically Weaker Section (EWS)',
+          department_stream: 'required|string|max:191', gender: 'required|in:Male,Female,Others',
+          year_of_admission: 'required|digits:4', state: 'required|string|max:191', aicte_code: 'required|string|max:191',
+          marks_hsc: 'required|numeric|min:0', total_marks: 'required|numeric|min:1', percentage: 'required|numeric|min:0|max:100',
+          preference_1: 'nullable|string|max:191', preference_2: 'nullable|string|max:191', preference_3: 'nullable|string|max:191',
+          course_name: 'nullable|string|max:191',
+        });
+        const age = carbonAge(carbonParse(row.birthdate));
+        if (!(age >= 18 && age <= 30)) fail(`Invalid date of birth in row ${index + 2}; age must be 18 to 30.`);
+        if (Number(row.marks_hsc) > Number(row.total_marks)) fail(`Marks exceed total marks in row ${index + 2}.`);
+        if (await trx(table('student')).where('email', row.email).orWhere('mobile', row.mobile).first('id')) {
+          fail(`Email or mobile number already nominated in row ${index + 2}.`);
+        }
+        const registered = await trx(table('users')).where({ email: row.email, role_id: 3 }).first('application_number');
+        let applicationNumber = registered?.application_number ?? val['Application Number'];
+        if (applicationNumber) {
+          await legacyValidate({ applicationNumber }, { applicationNumber: 'required|string|max:191' });
+          if (await trx(table('student')).where('application_number', applicationNumber).first('id')) fail(`Application number already nominated in row ${index + 2}.`);
+        } else {
+          do {
+            applicationNumber = String(randomInt(1_000_000_000, 10_000_000_000));
+          } while (await trx(table('student')).where('application_number', applicationNumber).first('id'));
+        }
+        await trx(table('student')).insert({ ...row, application_number: applicationNumber });
+      }
     });
+    return ok({ message: 'Success' });
   });
+}
 
 /** POST /api/uploadExcelPaid — paid-seat student list parsed from Excel in the browser. */
 export const uploadExcelPaid = (req) =>
@@ -178,7 +203,7 @@ export const submitInstituteDetails = (req, input) =>
     const { payload } = await legacyAuthenticate(req, KEYS);
     await legacyValidate(input, {
       institute_address: 'required',
-      institute_contact_person_email: 'required',
+      institute_contact_person_email: 'required|email|max:191',
       institute_email: 'required|email',
       institute_mobile: 'required',
       institute_name: 'required',
@@ -186,29 +211,35 @@ export const submitInstituteDetails = (req, input) =>
       institute_state: 'required',
       institute_students_number: 'required',
     });
-    const details = () => db(table('institute_details'));
-    if (await details().where('institute_email', input.institute_email).first()) {
-      return ok({ message: 'Error', reason: 'Email already exists in database' });
-    }
-    if (await details().where('institute_mobile', input.institute_mobile).first()) {
-      return ok({ message: 'Error', reason: 'Mobile number already exists in database' });
-    }
-    const [id] = await details().insert({
-      application_number: claim(payload, 'application_number'),
-      institute_name: input.institute_name,
-      institute_aishe_code: input.institute_aishe_code ?? null,
-      // The stored e-mail is the account e-mail from the token, not the form field.
-      institute_email: claim(payload, 'email'),
-      institute_address: input.institute_address,
-      institute_state: input.institute_state,
-      institute_contact_person_email: input.institute_contact_person_email,
-      institute_neat_coordinator: input.institute_neat_coordinator,
-      institute_mobile: input.institute_mobile,
-      institute_landline: input.institute_landline ?? null,
-      institute_students_number: input.institute_students_number,
-      permanent_institute_id: claim(payload, 'permanent_institute_id'),
+    const appNo = claim(payload, 'application_number');
+    return db.transaction(async trx => {
+      await trx(table('users')).where('application_number', appNo).forUpdate().first('id');
+      const details = () => trx(table('institute_details'));
+      if (await details().where('institute_email', input.institute_email).whereNot('application_number', appNo).first()) {
+        return ok({ message: 'Error', reason: 'Email already exists in database' });
+      }
+      if (await details().where('institute_mobile', input.institute_mobile).whereNot('application_number', appNo).first()) {
+        return ok({ message: 'Error', reason: 'Mobile number already exists in database' });
+      }
+      const row = {
+        application_number: appNo,
+        institute_name: input.institute_name,
+        institute_aishe_code: input.institute_aishe_code ?? null,
+        institute_email: input.institute_email,
+        institute_address: input.institute_address,
+        institute_state: input.institute_state,
+        institute_contact_person_email: input.institute_contact_person_email,
+        institute_neat_coordinator: input.institute_neat_coordinator,
+        institute_mobile: input.institute_mobile,
+        institute_landline: input.institute_landline ?? null,
+        institute_students_number: input.institute_students_number,
+        permanent_institute_id: claim(payload, 'permanent_institute_id'),
+      };
+      const existing = await details().where('application_number', appNo).first('id');
+      if (existing) await details().where('id', existing.id).update(row);
+      else await details().insert(row);
+      return ok({ message: 'Success' });
     });
-    return id > 0 ? ok({ message: 'Success' }) : ok({ message: 'Error', reason: 'Data not inserted.' });
   });
 
 /** POST /api/submitStudentDetailsFromInstitute — add or edit one student of the institute. */
@@ -268,11 +299,11 @@ export const getStudents = (req) =>
 export const getInstituteDetails = (req) =>
   legacyRun(async () => {
     const { payload } = await legacyAuthenticate(req, KEYS);
-    const details = await db(table('institute_details')).where('institute_email', claim(payload, 'email'));
+    const details = await db(table('institute_details')).where('application_number', claim(payload, 'application_number'));
     const permanentId = claim(payload, 'permanent_institute_id');
     const type = await db(table('institute')).where('Permanent Institute Id', permanentId).first('Institution Type');
     const [{ n }] = await students().where('permanent_institute_id', permanentId).count({ n: '*' });
-    if (offset(details, 0).id != null) {
+    if (details.length > 0) {
       return ok({
         message: 'Success',
         institute_details: details,
@@ -284,10 +315,9 @@ export const getInstituteDetails = (req) =>
     return ok({ message: 'Success', institute_details_updated: 'No', institute_type: type?.['Institution Type'] ?? null });
   });
 
-/** GET /api/editInstituteDetails — deletes the institute_details row so it can be re-entered. */
+/** Compatibility action: opening the form must not delete the saved profile. */
 export const editInstituteDetails = (req) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, KEYS);
-    await db(table('institute_details')).where('institute_email', claim(payload, 'email')).delete();
+    await legacyAuthenticate(req, KEYS);
     return ok({ message: 'Success', reason: 'You can now Edit your details' });
   });

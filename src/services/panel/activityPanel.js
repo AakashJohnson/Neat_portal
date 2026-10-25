@@ -35,3 +35,7 @@ export async function forUser(req, userId) {
 
 /** UserActivityController@show (own log) */
 export const own = async (req, ctx) => ok(await page(req, query(req.query.search, ctx.user.id)));
+
+/** ShowUserComposer on user.view: the user's 10 latest activities (EloquentActivity::getLatestActivitiesForUser). */
+export const latestForUser = async (userId) =>
+  ok((await db(table('user_activity')).where('user_id', userId).orderBy('created_at', 'desc').limit(10)).map(activityTransformer));

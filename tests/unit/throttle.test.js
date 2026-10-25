@@ -8,20 +8,20 @@ describe('API throttle', () => {
     const app = createApp({ rateLimit: 3 });
     const remaining = [];
     for (let i = 0; i < 3; i++) {
-      const res = await request(app).get('/api/getAnnouncements');
+      const res = await request(app).get('/api/__throttle_probe');
       expect(res.headers['x-ratelimit-limit']).toBe('3');
       remaining.push(res.headers['x-ratelimit-remaining']);
     }
     expect(remaining).toEqual(['2', '1', '0']);
 
-    const blocked = await request(app).get('/api/getAnnouncements');
+    const blocked = await request(app).get('/api/__throttle_probe');
     expect(blocked.status).toBe(429);
     expect(blocked.body).toEqual({ message: 'Too Many Attempts.' });
     expect(Number(blocked.headers['retry-after'])).toBeGreaterThan(0);
   });
 
   it('defaults to 60 requests per minute like Laravel', async () => {
-    const res = await request(createApp()).get('/api/getAnnouncements');
+    const res = await request(createApp()).get('/api/__throttle_probe');
     expect(res.headers['x-ratelimit-limit']).toBe('60');
     expect(res.headers['x-ratelimit-remaining']).toBe('59');
   });

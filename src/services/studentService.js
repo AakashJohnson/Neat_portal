@@ -216,17 +216,24 @@ export const checkCompanySecretCode = (req, input) =>
 export const submitLearnerDetails = (req, input) =>
   legacyRun(async () => {
     const { payload } = await legacyAuthenticate(req, STUDENT_KEYS);
-    await legacyValidate(input, { date_of_birth: 'required', age: 'required', gender: 'required' });
-    await db(table('learner'))
-      .where('application_number', claim(payload, 'application_number'))
-      .update({
+    await legacyValidate(input, { date_of_birth: 'required', age: 'required|integer|min:1|max:150', gender: 'required', profession: 'required|string|max:191' });
+    const appNo = claim(payload, 'application_number');
+    await db.transaction(async trx => {
+      const user = await trx(table('users')).where('application_number', appNo).forUpdate().first();
+      const row = {
         updated_at: nowSql(),
         date_of_birth: input.date_of_birth,
         age: input.age,
         gender: input.gender,
         profession: input.profession,
         isDetailsSubmitted: 'Yes',
+      };
+      const existing = await trx(table('learner')).where('application_number', appNo).first();
+      if (existing) await trx(table('learner')).where('application_number', appNo).update(row);
+      else await trx(table('learner')).insert({
+        ...row, application_number: appNo, name: user.username, phone: user.phone, email: user.email,
       });
+    });
     return ok({ message: 'Success' });
   });
 

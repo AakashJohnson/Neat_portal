@@ -20,5 +20,4 @@ adminRouter.post('/update-mou-date', a.updateMouDate);
 adminRouter.get('/getAdminCountsForAICTEDashboard', a.getAdminCountsForAICTEDashboard);
 adminRouter.get('/getCompanyAndProductsForAICTEDashboard', a.getCompanyAndProductsForAICTEDashboard);
 
-// UNRESOLVED (R-03): allocateseat, allocated-seat, resendEmailVerificationLink
-// (ProductController methods missing in Laravel).
+// Recovered free-seat allocation actions are mounted in recovered.routes.js.

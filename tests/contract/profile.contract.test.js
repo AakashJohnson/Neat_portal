@@ -118,9 +118,9 @@ describe('PRF remaining course actions', () => {
     await db('product_details').where('code', product.code).update({ isDetailsSubmitted: product.isDetailsSubmitted });
   });
 
-  it('register/verify-email/{token} fails like the original (R-24)', async ({ skip }) => {
-    if (!reference) skip();
-    const [l, n] = await Promise.all([callLaravel('POST', '/api/register/verify-email/abc'), callNode('POST', '/api/register/verify-email/abc')]);
-    expect(n.status).toBe(l.status);
+  it('register/verify-email/{token} rejects an unknown token instead of querying a missing column', async () => {
+    const n = await callNode('POST', '/api/register/verify-email/abc');
+    expect(n.status).toBe(400);
+    expect(n.body).toEqual({ error: 'Invalid confirmation token.' });
   });
 });

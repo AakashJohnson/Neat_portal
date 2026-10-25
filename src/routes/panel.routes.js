@@ -31,6 +31,7 @@ panelRouter.post('/panel/email/verify', requireAuth, h((req) => webAuth.verifyEm
 // neatapp/activity-log web pages.
 panelRouter.get('/panel/activity', requireAuth, requirePermission('users.activity'), h((req) => activity.all(req)));
 panelRouter.get('/panel/activity/user/:user', requireAuth, requirePermission('users.activity'), h((req) => activity.forUser(req, req.params.user)));
+panelRouter.get('/panel/users/:user/latest-activity', requireAuth, requirePermission('users.manage'), h((req) => activity.latestForUser(req.params.user)));
 panelRouter.get('/panel/profile/activity', requireAuth, h((req) => activity.own(req, ctx(req))));
 
 // WebAuthorizationRolePermissionsController@update (every role, empty sets allowed).

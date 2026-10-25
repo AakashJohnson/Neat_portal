@@ -18,7 +18,8 @@ authRouter.post('/logout', requireAuth, auth.logout);
 
 // RegistrationController (middleware: registration)
 authRouter.post('/register', handle((req) => account.register(requestAll(req))));
-authRouter.post('/register/verify-email/:token', handle(() => account.verifyEmailToken()));
+authRouter.post('/register/verify-email/:token', handle((req) => account.verifyEmailToken(req.params.token)));
+authRouter.post('/resendEmailVerificationLink', handle((req) => account.resendEmailVerificationLink(requestAll(req))));
 
 // Password reset — stock broker (guest + password-reset) and the custom pair used by Angular.
 authRouter.post('/password/remind', requireGuest, handle((req) => account.passwordRemind(requestAll(req), ctx(req))));

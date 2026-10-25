@@ -22,6 +22,15 @@ export async function hasRole(user, roleName) {
   return role?.name === roleName;
 }
 
+/** Use the current account row, not stale role/application claims. */
+export async function requireAccount(req, roles = null) {
+  const auth = await resolveAuth(req);
+  if (!auth) throw httpException(401, 'Please log in to continue.');
+  if (auth.user.status !== 'Active') throw httpException(403, 'Your account is not active.');
+  if (roles && !roles.includes(Number(auth.user.role_id))) throw httpException(403, 'Forbidden.');
+  return auth.user;
+}
+
 /** `permission:a|b` middleware → abort(403, "Forbidden."). Use after requireAuth. */
 export const requirePermission = (...names) => async (req, _res, next) => {
   try {

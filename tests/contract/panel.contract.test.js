@@ -1,10 +1,9 @@
-// PNL — admin-panel endpoints replacing Laravel web actions, and R-03 parity.
+// PNL — admin-panel endpoints replacing Laravel web actions.
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';
 import jwt from 'jsonwebtoken';
 import { callLaravel, callNode, laravelAvailable, fixtureToken } from '../helpers/contract.js';
 import { db } from '../../src/database/knex.js';
-import { UNRESOLVED_ROUTES } from '../../src/routes/unresolved.routes.js';
 
 const ADMIN = 'neatadmin@aicte-india.org';
 let reference;
@@ -12,16 +11,6 @@ let nt;
 beforeAll(async () => {
   reference = await laravelAvailable();
   nt = await fixtureToken(callNode, ADMIN);
-});
-
-describe('R-03 unresolved routes answer the same status as Laravel', () => {
-  for (const [method, path] of UNRESOLVED_ROUTES) {
-    it(`${method.toUpperCase()} /api${path}`, async ({ skip }) => {
-      if (!reference) skip();
-      const [l, n] = await Promise.all([callLaravel(method.toUpperCase(), `/api${path}`), callNode(method.toUpperCase(), `/api${path}`)]);
-      expect(n.status).toBe(l.status);
-    });
-  }
 });
 
 describe('PNL settings', () => {

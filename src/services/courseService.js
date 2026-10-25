@@ -10,6 +10,9 @@ import { legacyRun } from './legacyErrors.js';
 import { sendMail } from '../integrations/mail/mailer.js';
 import { b2bCompany } from '../integrations/mail/templates/b2bCompany.js';
 import { logger } from '../config/logger.js';
+import { env } from '../config/env.js';
+import { validateOrFail } from '../validators/laravelValidator.js';
+import { httpException } from '../http/respond.js';
 import { nowSql } from '../utils/time.js';
 import { looseEq, offset, phpConcat, phpMultiply, prop, toPhpNumber } from '../utils/php.js';
 
@@ -210,34 +213,47 @@ export const getAppliedStudents = (req, { code }) =>
 // ------------------------------------------------------------- B2B enquiry
 
 /** POST /api/submitB2BEnquiry (public) */
-export const submitB2BEnquiry = (input) =>
-  legacyRun(async () => {
-    const product = await db(table('product_details')).select('course_name').where('code', input.product_code).first();
-    const enquiryNo = randomInt(11111, 100000);
-    const data = {
-      enquiry_no: enquiryNo,
-      product_code: input.product_code,
-      product_name: prop(product, 'course_name'),
-      college_representative_name: input.college_representative_name,
-      designation: input.designation,
-      college_name: input.college_name,
-      college_email: input.college_email,
-      no_of_seats: input.no_of_seats,
-      mobile_number: input.mobile_number,
-      message: input.message,
-    };
-    await db(table('b2b_enquiry')).insert({ neat_id: input.neat_id, ...data });
-
-    const company = await db(table('product')).where('code', input.product_code).first();
-    try {
-      await sendMail({ to: company?.email, ...b2bCompany(data) });
-    } catch (err) {
-      // DEV-03: the original print_r()'d the mail error into the response body,
-      // corrupting the JSON. The port logs it and still answers Success.
-      logger.warn({ err: err.message }, 'B2BCompany mail failed');
-    }
-    return ok({ message: 'Success', reason: 'We have received your message' });
+export const submitB2BEnquiry = async (input) => {
+  await validateOrFail(input, {
+    product_code: 'required|string|max:100',
+    college_representative_name: 'required|string|max:255',
+    designation: 'required|string|max:255',
+    college_name: 'required|string|max:255',
+    college_email: 'required|string|email|max:255',
+    no_of_seats: 'required|integer|min:1|max:2147483647',
+    mobile_number: 'required|digits_between:10,15',
+    message: 'required|string|max:10000',
   });
+  const product = await db(table('product_details')).select('course_name', 'neat_id').where('code', input.product_code).first();
+  if (!product) throw httpException(404, 'Product not found. Please select a product and try again.');
+  if (!product.neat_id || !product.course_name) throw httpException(503, 'This product is missing company details. Please contact support.');
+  const company = await db(table('product')).where('code', input.product_code).first();
+  const enquiryNo = randomInt(11111, 100000);
+  const data = {
+    enquiry_no: enquiryNo,
+    product_code: input.product_code,
+    product_name: prop(product, 'course_name'),
+    college_representative_name: input.college_representative_name,
+    designation: input.designation,
+    college_name: input.college_name,
+    college_email: input.college_email,
+    no_of_seats: Number(input.no_of_seats),
+    mobile_number: input.mobile_number,
+    message: input.message,
+  };
+  await db(table('b2b_enquiry')).insert({ neat_id: product.neat_id, ...data });
+
+  let delivery = 'failed';
+  try {
+    if (!company?.email) throw new Error('Company email is not configured');
+    await sendMail({ to: company?.email, ...b2bCompany(data) });
+    delivery = env.MAIL_TRANSPORT === 'smtp' ? 'sent' : 'captured';
+    if (delivery === 'captured') logger.warn('B2B notification captured only; configure MAIL_TRANSPORT=smtp for delivery');
+  } catch (err) {
+    logger.warn({ code: err.code, name: err.name }, 'B2BCompany mail failed; enquiry remains saved');
+  }
+  return ok({ message: 'Success', reason: 'We have received your message', enquiry_no: enquiryNo, email_delivery: delivery });
+};
 
 // ---------------------------------------------------- paid/free application
 
@@ -285,7 +301,7 @@ export const applyForPaidCourse = (req, input) =>
       await audit().insert({ application_number: appNo, code, course_type: 'Paid', sessionid: uuid, status: 'Payment pending', quantity });
       affected = 1;
     } else {
-      affected = await audit().where({ application_number: appNo, code, course_type: 'Paid' }).update({ sessionid: uuid });
+      affected = await audit().where({ application_number: appNo, code, course_type: 'Paid' }).update({ sessionid: uuid, quantity });
     }
 
     const product = await db(table('product')).where('code', code).first('name');

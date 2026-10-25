@@ -73,12 +73,11 @@ describe('AUTH-04 POST /api/emailVerification', () => {
     for (const s of snapshot) await db('users').where('id', s.id).update(s);
   });
 
-  it('matches Laravel for unknown e-mail and wrong token', async ({ skip }) => {
-    if (!reference) skip();
-    for (const body of [{ email: 'nobody@example.invalid', token: 'x' }, { email: pair[0].email, token: 'wrong' }, {}]) {
-      const [l, n] = await Promise.all([callLaravel('POST', '/api/emailVerification', { body }), callNode('POST', '/api/emailVerification', { body })]);
-      expect(n.status).toBe(l.status);
-      expect(n.body).toEqual(l.body);
+  it('returns an explicit error for unknown e-mail, wrong token and missing input', async () => {
+    for (const body of [{ email: 'nobody@example.invalid', token: 'x' }, { email: pair[0]?.email, token: 'wrong' }, {}]) {
+      const n = await callNode('POST', '/api/emailVerification', { body });
+      expect(n.status).toBe(422);
+      expect(n.body).toEqual({ message: 'Error', reason: 'Email already verified or incorrect token.' });
     }
   });
 
