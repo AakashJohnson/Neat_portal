@@ -151,3 +151,47 @@ Run both browser suites using the section 6 setup. `scripts/start-flow-server.js
 For the expanded backend run, add `tests\contract\profile-persistence.regression.test.js`, `tests\contract\institute.contract.test.js` and `tests\contract\student.contract.test.js` to the eight-file command above. The larger selection explains the increase from 54 to 77 reference-dependent skips; they remain explicitly unverified.
 
 Corrections are documented under `FIX-ACCEPTANCE` in `DEVIATIONS.md`. Remaining acceptance work includes company product creation/editing, full admin/report and panel coverage, legacy cross-runtime comparisons, external integrations and staging deployment. No external mail or payment was sent during this pass.
+
+## 8. Admin navigation and live-search regression
+
+Use the isolated API/frontend setup above, then run:
+
+```powershell
+# nextjs-frontend, with DB_DATABASE and FLOW_* variables from section 6
+npm run test:navigation-search
+npm run test:recovered
+npm run lint
+npm run build
+
+# express-backend
+$env:DB_DATABASE='neat_portal_test'
+npx vitest run tests\unit\panel-lookups.test.js tests\contract\panel-lookups.regression.test.js
+```
+
+Verified results:
+
+| Area | Evidence | Result |
+|---|---|---|
+| Site admin navigation | Home beside Logout; same cookie after Home; Dashboard return; logout clears cookie and guarded route redirects | PASS |
+| Both sidebars | Desktop, tablet and mobile; menus overflow/scroll; last option reachable; fixed Home/profile/header controls; site menu touch swipe | PASS |
+| Public catalogs | Home, B2C and B2B; real SQL products; live partial/case-insensitive matches; no results; clear retains category | PASS |
+| Admin products | Real company/product data; live query and clear retain selected company | PASS |
+| Admin tables | Student, Learner, Institute, Company, Free Allocation, Products Management, Free Seat Student and MOU; input-change search/clear; MOU autocomplete; paginated search resets to page one | PASS |
+| Company / institute tables | Actual SQL-backed verification and student records; mobile/tablet input-change filtering and clear | PASS |
+| Management panel | Users live search retains status and resets page; all/user/own activity searches retain their route scope when cleared; Home round trip retains session | PASS |
+| Async behavior | Measured 250 ms debounce (200-1000 ms scheduling allowance); one request per typing burst; pending indication; older response rejected; visible 503 and recovery | PASS |
+| NEAT-ID tools | Actual company lookup, explicit 404, clear and safe submit state; controlled Phase-2 product/code lookup; no creation calls while typing | PASS, external Phase-2 response transport simulated |
+| Backend | Four unit tests plus one disposable-account SQL contract test; matched fields, missing records, real DB error propagation, student permission denial | **5 passed** |
+| Existing workflows | Recovered browser suite: checkout/transaction, company approval, owned courses, admin allocation and free-course/code redemption | PASS |
+| Build / lint | Production build with 96 static pages; frontend lint and changed-backend-file lint; no browser runtime exceptions | PASS; one pre-existing settings link `aria-selected` warning |
+
+All fixture writes were confined to `neat_portal_test` and cleaned afterwards.
+Race/error transport responses were controlled deliberately; regular list and
+catalog assertions used actual API/SQL results. External Phase-2 schemas are
+unavailable locally, so their real connection/data integration is not certified.
+
+The old `panel.contract.test.js -t fetch-neat-id` attempt could not pass its
+shared setup because the pre-existing fixed-admin login returned 401. No
+existing account password was changed. The new disposable-account regression
+independently verifies the changed contract and permissions without that setup
+dependency; the legacy not-found expectation was updated to 404.

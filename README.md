@@ -5,6 +5,8 @@ behavioral corrections, test evidence and remaining acceptance work.
 
 ## Start here
 
+- [Architecture dashboard](architecture-dashboard/README.md): local-only,
+  source-derived interactive graph, API tracing and snapshot-based SQL ER view.
 - [Migration tracker](MIGRATION_TRACKER.md): current status and outstanding work.
 - [Test plan and results](TEST_PLAN.md): isolated database setup, runnable checks,
   verified journeys and explicitly skipped comparisons.

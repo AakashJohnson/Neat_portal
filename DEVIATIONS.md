@@ -112,3 +112,28 @@ Security-hardening flags that keep the vulnerable original behaviour available o
 | DEV-F12 | Social buttons redirected to the provider via Socialite (no keys configured) | Same buttons; `/panel/auth/{provider}/login` returns to the login form with "Social authentication is not configured." | Provider keys unavailable (R-45, BLOCKED) | `src/components/panel/SocialButtons.jsx`, `src/app/(panel)/panel/auth/[provider]/login/page.js` | PROPOSED |
 | DEV-F13 | `create-company-profile` and `product` were public pages | Same pages, behind the panel login; the endpoints need `users.manage` (DEV-15/16) | Unauthenticated writes to users/products | `src/app/(panel)/panel/(standalone)/*` | PROPOSED |
 | DEV-F14 | The Blade panel was served at the root of the Laravel host (`/login`, `/users`, `/settings`, …) | Served by Next.js under `/panel/*` (`/panel/login`, `/panel/users`, …); the site keeps its own paths. A redirect from the old host paths is a deployment task | One frontend for both the portal and the panel | `src/app/(panel)`; DEPLOYMENT.md | PROPOSED |
+
+## Requested navigation and live search
+
+Implemented at the user's request, retaining existing authentication, role
+permissions, routes and schema:
+
+- Home links in both admin shells preserve the existing session. Logout is
+  unchanged. Sidebar menus scroll within the available viewport while their
+  headers/profile actions stay visible; the site menu toggle is React-owned.
+- All existing search inputs react to input changes rather than requiring
+  Enter, button clicks or keyup events. Complete catalogs are filtered locally
+  on course/company name, retaining category/company selection. Existing B2B
+  landing-versus-category selection rules are deliberately unchanged.
+- Server-paginated lists and NEAT-ID lookups use a shared 250 ms debounce and
+  stale-response guard. URL search updates preserve status/user scope and reset
+  pagination. Empty/loading/error states are explicit; typing never performs
+  company/product creation.
+- Missing records in `fetchNeatId` and `getEoiProductDetails` now return
+  **404 `{"message":"No results found."}`**, rather than 500. Genuine database
+  failures still propagate. Successful response shapes and permissions remain
+  unchanged. External Phase-2 database availability is still an integration
+  prerequisite, not an empty-result fallback.
+
+Evidence: `tests/navigation-search.mjs`, `tests/unit/panel-lookups.test.js`,
+`tests/contract/panel-lookups.regression.test.js` and test-plan section 8.
