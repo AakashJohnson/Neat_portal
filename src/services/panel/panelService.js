@@ -146,7 +146,7 @@ export async function leaveImpersonation(ctx, reqCtx) {
 /** POST /api/panel/company-profile/fetch-neat-id {neat_id} — reads neat_eoi. */
 export async function fetchNeatId({ neat_id }) {
   const rows = await db(table('neat_eoi')).select('email', 'company', 'phone').where('neat_id', neat_id ?? null);
-  if (!rows.length) throw new HttpError(500, { message: 'Server Error' }); // $neatDetails[0] on an empty collection
+  if (!rows.length) throw new HttpError(404, { message: 'No results found.' });
   return ok({ msg: 'succes', data: rows[0] });
 }
 
@@ -209,7 +209,7 @@ export async function getEoiProductDetails({ code }) {
       where p.code = ? and p.product_active = 'Yes'`,
     [code ?? null],
   );
-  if (!rows.length) throw new HttpError(500, { message: 'Server Error' });
+  if (!rows.length) throw new HttpError(404, { message: 'No results found.' });
   return ok({ msg: 'succes', data: rows[0] });
 }
 
