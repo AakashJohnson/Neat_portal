@@ -9,7 +9,7 @@ const portal = () => (process.env.FRONTEND_URL || 'https://neat.aicte-india.org'
 
 /** @param {{ username, email, email_verification_token }} user (fresh DB row) */
 export function userRegistered(user, { year = new Date().getUTCFullYear() } = {}) {
-  const url = `${portal()}/verify-email?token=${user.email_verification_token ?? ''}&email=${user.email ?? ''}`;
+  const url = `${portal()}/verify-email?token=${encodeURIComponent(user.email_verification_token ?? '')}&email=${encodeURIComponent(user.email ?? '')}`;
   const html = `<html>
 <style>
     body {

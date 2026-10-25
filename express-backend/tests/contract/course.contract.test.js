@@ -152,10 +152,10 @@ describe('CMT comments', () => {
 });
 
 describe('CAT-B2B POST /api/submitB2BEnquiry', () => {
-  it('matches Laravel for an unknown product (PHP notice as reason)', async ({ skip }) => {
-    if (!reference) skip();
-    const [l, n] = await both('POST', '/api/submitB2BEnquiry', { body: { product_code: 'NO_SUCH' } });
-    expect(n.body).toEqual(l.body);
+  it('validates incomplete enquiries before looking up the product', async () => {
+    const n = await callNode('POST', '/api/submitB2BEnquiry', { body: { product_code: 'NO_SUCH' } });
+    expect(n.status).toBe(422);
+    expect(n.body.errors).toHaveProperty('college_email');
   });
 
   it('matches Laravel on success, stores the enquiry and mails the company', async ({ skip }) => {
@@ -163,12 +163,13 @@ describe('CAT-B2B POST /api/submitB2BEnquiry', () => {
     clearCapturedMail();
     const body = { neat_id: 'CONTRACT', product_code: sampleCode, college_representative_name: 'Rep', designation: 'Dean', college_name: 'Test College', college_email: 'college@example.invalid', no_of_seats: '5', mobile_number: '9876543210', message: 'contract' };
     const [l, n] = await both('POST', '/api/submitB2BEnquiry', { body });
-    expect(n.body).toEqual(l.body);
-    const rows = await db('b2b_enquiry').where('neat_id', 'CONTRACT').orderBy('id');
+    expect(n.body).toMatchObject(l.body);
+    const rows = await db('b2b_enquiry').where({ college_email: body.college_email, message: body.message }).orderBy('id');
     const strip = ({ id, enquiry_no, created_at, updated_at, ...rest }) => rest;
-    expect(strip(rows.at(-1))).toEqual(strip(rows.at(-2)));
+    const product = await db('product_details').where('code', sampleCode).first('neat_id');
+    expect(strip(rows.at(-1))).toEqual({ ...strip(rows.at(-2)), neat_id: product.neat_id });
     expect(capturedMail().at(-1)).toMatchObject({ mailable: 'B2BCompany', subject: 'B2 B Company' });
-    await db('b2b_enquiry').where('neat_id', 'CONTRACT').delete();
+    await db('b2b_enquiry').whereIn('id', rows.slice(-2).map(r => r.id)).delete();
   });
 });
 

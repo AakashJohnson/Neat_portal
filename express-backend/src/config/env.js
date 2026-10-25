@@ -8,6 +8,7 @@ const schema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
   APP_URL: z.string().default('http://localhost:4000'),
   APP_TIMEZONE: z.string().default('UTC'),
+  TRUST_PROXY: z.string().default('loopback'),
 
   // Base URL the JWT "iss" claim is built from (Laravel used request()->url(),
   // i.e. "<api base>/login"). The Angular client checks iss === baseUrl + '/login'.

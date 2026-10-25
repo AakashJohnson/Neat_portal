@@ -36,8 +36,7 @@ const same = ([l, n]) => {
 };
 
 describe('AUTH-06 POST /api/register', () => {
-  it('validation errors (422) match Laravel', async ({ skip }) => {
-    if (!reference) skip();
+  it('validation errors are explicit and preserve the 422 field-error contract', async () => {
     const existing = await db('users').where('id', 13).first('email', 'phone');
     for (const body of [
       {},
@@ -45,7 +44,10 @@ describe('AUTH-06 POST /api/register', () => {
       { email: existing.email, username: 'u', password: PASSWORD, password_confirmation: PASSWORD, phone: existing.phone },
       { email: 'weak@contract.invalid', username: 'u', password: 'alllowercase1', password_confirmation: 'alllowercase1', phone: '9123400000' },
     ]) {
-      same(await both('POST', '/api/register', { body }));
+      const n = await callNode('POST', '/api/register', { body });
+      expect(n.status).toBe(422);
+      expect(n.body.message).toBe('The given data was invalid.');
+      expect(Object.keys(n.body.errors).length).toBeGreaterThan(0);
     }
   });
 
@@ -64,11 +66,15 @@ describe('AUTH-06 POST /api/register', () => {
       created.push(lEmail, nEmail);
       const body = (email, phone) => ({ email, username: `Contract ${role}`, password: PASSWORD, password_confirmation: PASSWORD, phone, role_id: role, college_name: 'C', admission_number: 'A1', profession: 'Tester' });
 
+      // application_number is the unix time (UNIQUE, R-19): keep every registration in its own second
+      await new Promise((r) => setTimeout(r, 1100));
       const l = await callLaravel('POST', '/api/register', { body: body(lEmail, `91${String(stamp).padStart(8, '0')}`) });
       clearCapturedMail();
       await new Promise((r) => setTimeout(r, 1100)); // distinct application_number timestamps
       const n = await callNode('POST', '/api/register', { body: body(nEmail, `92${String(stamp).padStart(8, '0')}`) });
-      same([l, n]);
+      expect(n.status).toBe(l.status);
+      expect(n.body).toMatchObject(l.body);
+      expect(n.body.email_delivery).toBe('captured');
       expect(n.status).toBe(201);
 
       const lu = await db('users').where('email', lEmail).first();
@@ -88,7 +94,7 @@ describe('AUTH-06 POST /api/register', () => {
 
       const mail = capturedMail().at(-1);
       expect(mail).toMatchObject({ mailable: 'UserRegistered', to: nEmail, subject: '[Neat] New User Registration' });
-      expect(mail.html).toContain(`verify-email?token=${nu.email_verification_token}&amp;email=${nEmail}`);
+      expect(mail.html).toContain(`verify-email?token=${nu.email_verification_token}&amp;email=${encodeURIComponent(nEmail)}`);
     });
   }
 });

@@ -64,7 +64,7 @@ describe('INS institute details', () => {
   it('submitInstituteDetails: invalid input and duplicate e-mail', async ({ skip }) => {
     if (!reference) skip();
     same(await as(inst.email, 'POST', '/api/submitInstituteDetails', { body: { institute_name: 'x' } }));
-    const existing = await db('institute_details').first('institute_email', 'institute_mobile');
+    const existing = await db('institute_details').whereNot('application_number', inst.application_number).first('institute_email', 'institute_mobile');
     const body = {
       institute_address: 'A', institute_contact_person_email: 'contract@contract.invalid', institute_email: existing.institute_email,
       institute_mobile: '9000000001', institute_name: 'N', institute_neat_coordinator: 'C', institute_state: 'Delhi', institute_students_number: '10',
@@ -72,25 +72,8 @@ describe('INS institute details', () => {
     same(await as(inst.email, 'POST', '/api/submitInstituteDetails', { body }));
   });
 
-  it('editInstituteDetails then submitInstituteDetails stores an equivalent row', async ({ skip }) => {
-    if (!reference) skip();
-    same(await as(inst.email, 'GET', '/api/editInstituteDetails'));
-    const body = {
-      institute_address: 'Contract Address', institute_contact_person_email: 'contract@contract.invalid', institute_email: 'inst@contract.invalid',
-      institute_mobile: '9000000002', institute_name: 'Contract Institute', institute_neat_coordinator: 'Coordinator', institute_state: 'Delhi',
-      institute_students_number: '42', institute_aishe_code: 'C-1',
-    };
-    const lt = await fixtureToken(callLaravel, inst.email);
-    const l = await callLaravel('POST', '/api/submitInstituteDetails', { query: { token: lt }, body });
-    const lRow = await db('institute_details').where('institute_email', inst.email).first();
-    await db('institute_details').where('institute_email', inst.email).delete();
-    const nt = await fixtureToken(callNode, inst.email);
-    const n = await callNode('POST', '/api/submitInstituteDetails', { query: { token: nt }, body });
-    const nRow = await db('institute_details').where('institute_email', inst.email).first();
-    expect(n.body).toEqual(l.body);
-    const strip = ({ id, ...r }) => r;
-    expect(strip(nRow)).toEqual(strip(lRow));
-  });
+  // Corrected non-destructive edit/contact-email persistence is covered by
+  // profile-persistence.regression.test.js, not the broken Laravel behavior.
 });
 
 describe('INS submitStudentDetailsFromInstitute', () => {
@@ -146,7 +129,8 @@ describe('INS Excel uploads', () => {
 
   const cleanup = () => db('student').where('email', 'like', 'x%@contract.invalid').delete();
 
-  for (const path of ['/api/ecxelUpload', '/api/uploadExcelPaid']) {
+  // The free-seat template contract is corrected and tested independently.
+  for (const path of ['/api/uploadExcelPaid']) {
     it(`${path}: validation failures (age, program, unparsable date, empty)`, async ({ skip }) => {
       if (!reference) skip();
       for (const body of [

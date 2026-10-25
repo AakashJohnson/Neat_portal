@@ -8,5 +8,4 @@ export const companyRouter = Router();
 companyRouter.post('/getProducts', asyncHandler(async (req, res) => send(res, await company.getProducts(req, input(req, 'application_number')))));
 companyRouter.post('/submitProductDetails', asyncHandler(async (req, res) => send(res, await company.submitProductDetails(req, requestAll(req)))));
 
-// UNRESOLVED (R-03): getCounts, getProductFlags, getStudentTransactionIds,
-// product-list (getcompanyProductList) — routed in Laravel, methods missing.
+// Recovered company counts, flags and transaction views are in recovered.routes.js.

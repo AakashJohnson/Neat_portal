@@ -1,14 +1,39 @@
 // AUTH-01 login / AUTH-02 logout — contract parity with Laravel Api\Auth\AuthController.
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { randomUUID } from 'node:crypto';
 import jwt from 'jsonwebtoken';
 import { callLaravel, callNode, normalise, laravelAvailable, fixtureToken } from '../helpers/contract.js';
 import { db } from '../../src/database/knex.js';
+import { hashPassword } from '../../src/services/auth/authService.js';
+import { nowSql } from '../../src/utils/time.js';
 
-const ADMIN = 'neatadmin@aicte-india.org';
+const marker = `auth-${randomUUID()}`;
+const ADMIN = `${marker}@example.invalid`;
+const createdIds = [];
+let instituteId;
 let reference;
 
 beforeAll(async () => {
   reference = await laravelAvailable();
+  for (const role_id of [1, 5]) {
+    const [id] = await db('users').insert({
+      email: role_id === 1 ? ADMIN : `${marker}-institute@example.invalid`,
+      username: role_id === 1 ? `${marker}-admin` : `${marker}-institute`,
+      password: await hashPassword(process.env.FIXTURE_PASSWORD),
+      role_id, status: 'Active', email_verified_at: nowSql(), unique_uuid: randomUUID(),
+      application_number: `${marker}-${role_id}`, phone: '9000000000',
+      permanent_institute_id: role_id === 5 ? marker : null,
+    });
+    createdIds.push(id);
+    if (role_id === 5) instituteId = id;
+  }
+});
+
+afterAll(async () => {
+  if (!createdIds.length) return;
+  await db('api_tokens').whereIn('user_id', createdIds).delete();
+  await db('user_activity').whereIn('user_id', createdIds).delete();
+  await db('users').whereIn('id', createdIds).delete();
 });
 
 const both = async (method, path, opts) => {
@@ -53,14 +78,14 @@ describe('AUTH-01 POST /api/login', () => {
 
   it('login by username behaves like Laravel', async ({ skip }) => {
     if (!reference) skip();
-    const body = { username: 'admin', password: process.env.FIXTURE_PASSWORD };
+    const body = { username: `${marker}-admin`, password: process.env.FIXTURE_PASSWORD };
     const { l, n } = await both('POST', '/api/login', { body });
     expect(n.status).toBe(l.status);
     expect(normalise(n.body)).toEqual(normalise(l.body));
   });
 
   it('institute token carries permanent_institute_id before phone (role 5)', async () => {
-    const inst = await db('users').where('id', 56).first('email');
+    const inst = await db('users').where('id', instituteId).first('email');
     const token = await fixtureToken(callNode, inst.email);
     const keys = Object.keys(jwt.decode(token));
     expect(keys.slice(-2)).toEqual(['permanent_institute_id', 'phone']);

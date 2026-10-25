@@ -21,7 +21,10 @@ export function createApp({ rateLimit = 60 } = {}) {
 
   app.disable('x-powered-by');
   // Behind a reverse proxy in production; correct client IPs for api_tokens/activity.
-  app.set('trust proxy', 'loopback');
+  // Proxies whose X-Forwarded-For is trusted for the client IP (rate limits,
+  // activity log): Next.js BFF on the same host by default; behind a reverse
+  // proxy set TRUST_PROXY (Express syntax: hop count, subnet list, …).
+  app.set('trust proxy', /^\d+$/.test(env.TRUST_PROXY) ? Number(env.TRUST_PROXY) : env.TRUST_PROXY);
   // Laravel accepts PHP-style nested query strings (a[b]=c).
   app.set('query parser', 'extended');
 

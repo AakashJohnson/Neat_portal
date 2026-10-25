@@ -26,6 +26,4 @@ courseRouter.get('/getB2CBucketWiseSearchProducts', c.getB2CBucketWiseSearchProd
 courseRouter.post('/submitB2BEnquiry', c.submitB2BEnquiry);
 courseRouter.get('/getHomePageCounter', c.getHomePageCounter);
 
-// UNRESOLVED (R-03): routed in Laravel but the controller methods do not exist —
-// applyForFreeCourse, assignFreeCourse, assignPaidCourse, addToCart, displayCart,
-// displayPaidProducts. Handled in routes/unresolved.routes.js.
+// Recovered purchase/allocation actions are mounted in recovered.routes.js.

@@ -8,16 +8,32 @@ import { logger } from '../../config/logger.js';
 let transport;
 const outbox = [];
 
+function smtpTransport() {
+  const sendgrid = env.MAIL_HOST?.toLowerCase() === 'smtp.sendgrid.net';
+  if (sendgrid && env.MAIL_USERNAME !== 'apikey') {
+    logger.warn('SendGrid SMTP requires the literal username apikey; using it with the configured API key');
+  }
+  return nodemailer.createTransport({
+    host: env.MAIL_HOST,
+    port: env.MAIL_PORT,
+    secure: env.MAIL_ENCRYPTION === 'ssl',
+    requireTLS: env.MAIL_ENCRYPTION === 'tls',
+    auth: env.MAIL_USERNAME || sendgrid ? { user: sendgrid ? 'apikey' : env.MAIL_USERNAME, pass: env.MAIL_PASSWORD } : undefined,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+  });
+}
+
+export async function verifySmtp() {
+  const smtp = smtpTransport();
+  try { await smtp.verify(); } finally { smtp.close(); }
+}
+
 function getTransport() {
   if (transport) return transport;
   if (env.MAIL_TRANSPORT === 'smtp') {
-    transport = nodemailer.createTransport({
-      host: env.MAIL_HOST,
-      port: env.MAIL_PORT,
-      secure: env.MAIL_ENCRYPTION === 'ssl',
-      requireTLS: env.MAIL_ENCRYPTION === 'tls',
-      auth: env.MAIL_USERNAME ? { user: env.MAIL_USERNAME, pass: env.MAIL_PASSWORD } : undefined,
-    });
+    transport = smtpTransport();
   } else {
     transport = nodemailer.createTransport({ jsonTransport: true });
   }

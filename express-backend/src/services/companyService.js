@@ -8,10 +8,68 @@ import { legacyRun } from './legacyErrors.js';
 import { nowSql } from '../utils/time.js';
 import { looseEq } from '../utils/php.js';
 import { phpEmpty } from '../utils/str.js';
+import { requireAccount } from './auth/permissions.js';
+import { validateOrFail } from '../validators/laravelValidator.js';
+import { httpException } from '../http/respond.js';
 
 const ok = (body) => ({ status: 200, body });
 const KEYS = ['user_id', 'uuid', 'email'];
 const ADMIN_ROLE = 1;
+
+const ownedProducts = (user) => {
+  const query = db(table('product_details'));
+  if (Number(user.role_id) !== ADMIN_ROLE) {
+    if (!user.application_number) throw httpException(409, 'Your company account has no application number. Please contact support.');
+    query.where('neat_id', user.application_number);
+  }
+  return query;
+};
+
+export async function requireOwnedProduct(user, code, connection = db) {
+  if (Number(user.role_id) !== ADMIN_ROLE && !user.application_number) throw httpException(409, 'Your company account has no application number. Please contact support.');
+  const product = await connection(table('product_details')).where({ code }).first();
+  if (!product) throw httpException(404, 'Product not found.');
+  if (Number(user.role_id) !== ADMIN_ROLE && String(product.neat_id) !== String(user.application_number)) {
+    throw httpException(403, 'This product does not belong to your company.');
+  }
+  return product;
+}
+
+export async function productList(req) {
+  const user = await requireAccount(req, [1, 4]);
+  const details = await ownedProducts(user).select('code', 'course_name');
+  const codes = details.map(p => p.code);
+  const purchases = await db(table('product_purchased_audit')).whereIn('code', codes)
+    .where('status', 'Payment Successful').select('code', 'course_type').sum({ seats: 'quantity' }).groupBy('code', 'course_type');
+  const counts = new Map(purchases.map(p => [`${p.code}:${p.course_type}`, Number(p.seats)]));
+  return ok({ message: 'Success', products: details.map(p => [p.course_name, counts.get(`${p.code}:Free`) ?? 0, counts.get(`${p.code}:Paid`) ?? 0]) });
+}
+
+export async function getCounts(req) {
+  const { body } = await productList(req);
+  return ok({
+    message: 'Success', products: body.products.length,
+    free_students: body.products.reduce((sum, p) => sum + p[1], 0),
+    paid_students: body.products.reduce((sum, p) => sum + p[2], 0),
+  });
+}
+
+export async function getProductFlags(req, input) {
+  const user = await requireAccount(req, [1, 4]);
+  await validateOrFail(input, { code: 'required|string|max:191' });
+  const product = await requireOwnedProduct(user, input.code);
+  return ok({ message: 'Success', flags: Object.fromEntries(Object.entries(product).filter(([key]) =>
+    key === 'code' || key === 'product_active' || key === 'isDetailsSubmitted' || key.endsWith('_uploaded'))) });
+}
+
+export async function getStudentTransactionIds(req) {
+  const user = await requireAccount(req, [1, 4]);
+  const codes = await ownedProducts(user).pluck('code');
+  const students = await db(table('product_purchased_audit')).whereIn('code', codes)
+    .where('course_type', 'Paid').whereNotNull('transaction_id').where('status', 'Payment Pending')
+    .select('application_number', 'code', 'transaction_id', 'status', 'quantity').orderBy('id');
+  return ok({ message: 'Success', students });
+}
 
 /** POST /api/getProducts {application_number} — public in Laravel (SEC-IDOR-03). */
 export const getProducts = (req, { application_number }) =>
