@@ -48,7 +48,7 @@ export function DashboardCard({ title, headerClass = 'card-header bg-head d-flex
   );
 }
 
-/** <mat-form-field appearance="outline"><mat-label>…</mat-label><input matInput (keyup)><mat-icon matSuffix>search</mat-icon>. */
+/** The legacy callback name is retained; input changes also cover paste and touch keyboards. */
 export function SearchField({ className = 'col-md-3 col-sm-12', label = 'Search', onKeyUp, placeholder, style, value: controlled, onValueChange }) {
   const [own, setOwn] = useState('');
   const value = controlled ?? own;
@@ -59,8 +59,13 @@ export function SearchField({ className = 'col-md-3 col-sm-12', label = 'Search'
           id={id}
           value={value}
           placeholder={placeholder}
-          onChange={(e) => (onValueChange ? onValueChange(e.target.value) : setOwn(e.target.value))}
-          onKeyUp={(e) => onKeyUp(e.currentTarget.value)}
+          type="search"
+          onChange={(e) => {
+            const next = e.target.value;
+            if (onValueChange) onValueChange(next);
+            else setOwn(next);
+            onKeyUp?.(next);
+          }}
         />
       )}
     </MatFormField>

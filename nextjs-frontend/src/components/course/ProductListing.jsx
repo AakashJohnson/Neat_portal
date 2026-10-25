@@ -4,13 +4,15 @@
 // and the course logo block (B2B only).
 // DEV-F02: href="javascript:void(0)" (blocked by React 19) is rendered as
 // href="#" with preventDefault — same behaviour on click.
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SiteChrome from '@/components/layout/SiteChrome';
 import Scope from '@/components/common/Scope';
 import SafeHtml from '@/components/common/SafeHtml';
 import { companyService } from '@/services';
-import { subscribe } from '@/lib/api';
+import { filterProducts } from '@/lib/liveSearch';
+import useProductCatalog from './useProductCatalog';
+import SearchStatus from '@/components/common/SearchStatus';
 import { fileUrl } from '@/lib/format';
 import { slideToggle } from '@/lib/jquery';
 
@@ -39,26 +41,16 @@ export default function ProductListing({ kind }) {
   const k = KINDS[kind];
   const router = useRouter();
   const listRef = useRef(null);
-  const [products, setProducts] = useState(undefined);
-  const [buckets, setBuckets] = useState(undefined);
   const [searchQuery, setSearchQuery] = useState('');
-
-  const handleProducts = (data) => setProducts(data['products']);
-
-  useEffect(() => {
-    let alive = true;
-    subscribe(k.landing(), (data) => alive && setProducts(data['products']));
-    subscribe(k.buckets(), (data) => alive && setBuckets(data['buckets']));
-    return () => {
-      alive = false;
-    };
-  }, [k]);
+  const catalog = useProductCatalog(k);
+  const { buckets } = catalog;
+  const products = filterProducts(catalog.products, searchQuery);
 
   const showProductDetails = (code) => {
     router.push(k.details + code);
     window.scroll(0, 0);
   };
-  const bucketWise = (bucket) => subscribe(k.bucketWise(bucket), handleProducts);
+  const bucketWise = catalog.setCategory;
 
   return (
     <SiteChrome>
@@ -99,13 +91,14 @@ export default function ProductListing({ kind }) {
                     <h2>All Courses </h2>
                     {/* Search form positioned next to the heading */}
                     <div className="search-form-container">
-                      <input type="text" placeholder="Search Courses/ Institutes" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="search-input" />
-                      <button onClick={() => subscribe(k.search(searchQuery), handleProducts)} className="search-btn">
+                      <input type="search" aria-label="Search Courses/ Institutes" placeholder="Search Courses/ Institutes" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="search-input" />
+                      <button type="button" onClick={catalog.refresh} className="search-btn">
                         <i className="fa fa-search" aria-hidden="true"></i> Search
                       </button>
                     </div>
                   </div>
-                  <div className="topmainLstPrdct scrollbar" id="style-3">
+                  <SearchStatus loading={catalog.loading} error={catalog.error} empty={products.length === 0} />
+                  <div className="topmainLstPrdct scrollbar" id="style-3" aria-busy={catalog.loading}>
                     <div className="force-overflow">
                       <div className="internshipMainDivHmcar">
                         {(Array.isArray(products) ? products : []).map((product, i) => (

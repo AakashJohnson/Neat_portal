@@ -205,6 +205,9 @@ export function MatTable({ dataSource, columns, sort = true, stickyHeader = fals
         </tr>
       </thead>
       <tbody role="rowgroup">
+        {dataSource.filter && dataSource.data?.length > 0 && dataSource.renderedData.length === 0 && (
+          <tr><td colSpan={columns.length}><p role="status">No results found.</p></td></tr>
+        )}
         {dataSource.renderedData.map((row, i) => (
           <tr key={i} className="mat-row" mat-row="" role="row">
             {columns.map((c) => (

@@ -12,6 +12,7 @@ import { PanelProvider, nameOrEmail, presentName, usePanel } from '@/components/
 import { PageMetaContext, useDropdown } from '@/components/panel/ui';
 import { panelApi } from '@/lib/panelApi';
 import { diffForHumans } from '@/lib/carbon';
+import styles from './PanelShell.module.css';
 
 /** Request::is($pattern) on the Laravel path (pathname without /panel, no leading slash, "/" for the root). */
 export function requestIs(pathname, patterns) {
@@ -216,6 +217,10 @@ function Navbar({ meta }) {
                 Active Sessions
               </Link>
               <div className="dropdown-divider m-0"></div>
+              <Link className="dropdown-item py-2" href="/">
+                <i className="fas fa-home text-muted mr-2" aria-hidden="true"></i>
+                Home
+              </Link>
               <Link className="dropdown-item py-2" href="/panel/logout">
                 <i className="fas fa-sign-out-alt text-muted mr-2"></i>
                 Logout
@@ -232,7 +237,7 @@ function Sidebar() {
   const panel = usePanel();
   const pathname = usePathname();
   return (
-    <nav className="col-md-2 sidebar">
+    <nav className={`col-md-2 sidebar ${styles.sidebar}`} aria-label="Management navigation">
       <div className="user-box text-center pt-5 pb-3">
         <div className="user-img">
           <img src={panel.user?.avatar} width="90" height="90" alt="user-img" className="rounded-circle img-thumbnail img-responsive" />
@@ -247,13 +252,18 @@ function Sidebar() {
             </Link>
           </li>
           <li className="list-inline-item">
+            <Link href="/" className="text-custom" title="Home" aria-label="Home">
+              <i className="fas fa-home" aria-hidden="true"></i>
+            </Link>
+          </li>
+          <li className="list-inline-item">
             <Link href="/panel/logout" className="text-custom" title="Logout">
               <i className="fas fa-sign-out-alt"></i>
             </Link>
           </li>
         </ul>
       </div>
-      <div className="sidebar-sticky">
+      <div className={`sidebar-sticky ${styles.menu}`}>
         <ul className="nav flex-column">
           {SIDEBAR.map((item) => (
             <SidebarItem key={item.title} item={item} pathname={pathname} can={panel.can} />

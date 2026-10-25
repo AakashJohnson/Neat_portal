@@ -25,7 +25,7 @@ export default function MatAutocomplete({ id, value, onChange, options, onOption
   const [placement, setPlacement] = useState(null);
   const inputRef = useRef(null);
   const paneRef = useRef(null);
-  const showPanel = open && options.length > 0;
+  const showPanel = open && (options.length > 0 || String(value ?? '').trim().length > 0);
 
   const openPanel = () => {
     if (!open) {
@@ -70,7 +70,7 @@ export default function MatAutocomplete({ id, value, onChange, options, onOption
     if (e.key === 'Escape' && open) {
       e.preventDefault();
       closePanel();
-    } else if (e.key === 'Enter' && open && activeIndex >= 0) {
+    } else if (e.key === 'Enter' && open && activeIndex >= 0 && options[activeIndex]) {
       e.preventDefault();
       select(options[activeIndex]);
     } else if (e.key === 'Tab') closePanel();
@@ -111,6 +111,7 @@ export default function MatAutocomplete({ id, value, onChange, options, onOption
           <div className="cdk-overlay-connected-position-bounding-box" dir="ltr" style={{ top: 0, left: 0, height: '100%', width: '100%' }}>
             <div ref={paneRef} id={overlayId} className="cdk-overlay-pane" style={{ width: placement?.width, top: placement?.top, left: placement?.left, ...(placement ? {} : { visibility: 'hidden' }) }}>
               <div className={`mat-autocomplete-panel mat-autocomplete-visible${placement?.above ? ' mat-autocomplete-panel-above' : ''}`} role="listbox" id={panelId}>
+                {options.length === 0 && <div role="status" className="mat-option mat-option-disabled">No results found.</div>}
                 {options.map((option, i) => (
                   <mat-option
                     key={i}
