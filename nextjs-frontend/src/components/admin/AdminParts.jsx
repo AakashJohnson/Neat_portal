@@ -1,7 +1,6 @@
 'use client';
-// Markup shared by the admin pages (repeated in each Angular template):
-// page header + breadcrumb, the dashboard card, the outline search field and a
-// client-side MatTableDataSource with the default filter / first-page reset.
+
+
 import Link from 'next/link';
 import { useState } from 'react';
 import MatFormField from '@/components/mat/MatFormField';
@@ -48,7 +47,7 @@ export function DashboardCard({ title, headerClass = 'card-header bg-head d-flex
   );
 }
 
-/** The legacy callback name is retained; input changes also cover paste and touch keyboards. */
+
 export function SearchField({ className = 'col-md-3 col-sm-12', label = 'Search', onKeyUp, placeholder, style, value: controlled, onValueChange }) {
   const [own, setOwn] = useState('');
   const value = controlled ?? own;
@@ -82,5 +81,5 @@ export function useAdminTable() {
   return { ds, applyFilter };
 }
 
-/** Text cell / header as Angular renders " {{x}} " (whitespace collapsed, kept at the edges). */
+
 export const pad = (v) => ` ${v ?? ''} `;

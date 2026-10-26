@@ -1,7 +1,6 @@
-// Angular 8.2 HTML sanitizer (what `[innerHTML]="html"` applied), ported from
+// HTML sanitizer based on Angular 8.2:
 // @angular/core/fesm2015/core.js (_sanitizeHtml, SanitizingHtmlSerializer,
-// _sanitizeUrl, sanitizeSrcset, encodeEntities). Same allow-lists, so the
-// ported pages render exactly the markup the Angular app rendered: e.g.
+// _sanitizeUrl, sanitizeSrcset, encodeEntities). The allow-lists mean that
 // `style` attributes, <form>/<button>/<input>, SVG and comments are removed;
 // unsafe URLs become "unsafe:…". Browser only (uses DOMParser).
 
@@ -129,7 +128,7 @@ function inertBody(html) {
   return body;
 }
 
-/** Angular's _sanitizeHtml(document, value). */
+
 export function ngSanitizeHtml(unsafeHtmlInput) {
   let unsafeHtml = unsafeHtmlInput ? String(unsafeHtmlInput) : '';
   let body = inertBody(unsafeHtml);

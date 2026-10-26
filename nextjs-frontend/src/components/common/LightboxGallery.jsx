@@ -1,10 +1,6 @@
 'use client';
-// Image grid + #myModal lightbox shared by the gallery pages. Replaces the
-// global functions of src/assets/js/modal.js (openModal, closeModal,
-// plusSlides, currentSlide) with component state; wrap-around is the same as
-// showSlides(): past the last slide → 1, before the first → last.
-// modal.js also wrote to non-existent ".demo" dots and "#caption" (throwing a
-// TypeError after showing the slide); that part had no visible effect and is not ported.
+
+
 import { useState } from 'react';
 
 /**

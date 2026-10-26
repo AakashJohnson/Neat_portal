@@ -1,22 +1,10 @@
 'use client';
-// Port of components/users/company/company-form (route company/form/:id): the
-// company's product page form (rich-text fields in <angular-editor>, now
-// TipTap — DEV-F08), course image / video / B2B discount table uploads, and the
-// submitted-details preview (CourseFormPreview) once isDetailsSubmitted is
-// 'Yes'. Kept from the original:
-//   - ngOnInit() rebuilds the form with its initial values (' ' / null) and
-//     reloads the product; it runs again after a file upload and after "Edit
-//     details" in the preview;
-//   - <mat-error> shows as soon as a control has a required error;
-//   - setPreviousValuesForm() sets payment_link twice, the second time to
-//     product_direct_url, and never sets product_direct_url (R-39), while the
-//     inputs' value="{{products?.…}}" bindings display the stored values;
-//   - start/end/interactive dates are not prefilled and are sent as D-M-YYYY
-//     (null → 1-1-1970); typing in them is blocked (two keypress filters).
+
+
 import { useParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import Scope from '@/components/common/Scope';
-import AngularEditor from '@/components/editor/AngularEditor';
+import RichTextEditor from '@/components/editor/RichTextEditor';
 import CourseFormPreview from '@/components/company/CourseFormPreview';
 import { MatError } from '@/components/mat/MatError';
 import MatInput from '@/components/mat/MatInput';
@@ -203,7 +191,7 @@ export default function CompanyForm() {
   };
 
   const err = (name, text) => form.hasError(name, 'required') && <MatError>{text}</MatError>;
-  const editor = (name, withPlaceholder = false) => <AngularEditor {...form.bindValue(name)} placeholder={withPlaceholder ? 'Enter text here...' : ''} />;
+  const editor = (name, withPlaceholder = false) => <RichTextEditor {...form.bindValue(name)} placeholder={withPlaceholder ? 'Enter text here...' : ''} />;
   const input = (name, attrs = {}) => (
     <MatInput
       type="text"
@@ -248,9 +236,9 @@ export default function CompanyForm() {
 
   return (
     <Scope name="company-form">
-      {/* Component styles of angular-editor, injected on first use as in Angular. */}
+      {                                                                              }
       {/* eslint-disable-next-line @next/next/no-css-tags */}
-      <link rel="stylesheet" href="/legacy/angular-editor.css" precedence="default" />
+      <link rel="stylesheet" href="/theme/angular-editor.css" precedence="default" />
       {!showLoadingSpinner && (
         <div>
           {showForm && (

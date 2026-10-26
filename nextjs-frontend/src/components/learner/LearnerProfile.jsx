@@ -41,7 +41,7 @@ export default function LearnerProfile() {
       setIsLearnerPresent(presentStatus ?? (complete && d.isDetailsSubmitted === 'Yes'));
       setLearnerDetails(d);
       if (d['date_of_birth']) {
-        // dd-MM-yyyy → "yyyy-MM-dd" string parsed by Date (as in the original)
+
         const parts = d.date_of_birth.split('-');
         form.patchValue({ date_of_birth: new Date(`${parts[2]}-${parts[1]}-${parts[0]}`), age: d['age'], gender: d['gender'], profession: d['profession'] });
       }
@@ -146,7 +146,7 @@ export default function LearnerProfile() {
                         </div>
                         <div className="col-md-4">
                           {form.hasError('age', 'required') && <MatError className="ml-2"> Age is required </MatError>}
-                          {/* inline onKeyPress="if(this.value.length==3) return false;" (not an Angular binding) */}
+                          {                                                                                         }
                           <input
                             type="number"
                             onKeyPress={(e) => {

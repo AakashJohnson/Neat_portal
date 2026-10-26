@@ -1,7 +1,3 @@
-// jQuery 3.7.1 effects used by the Angular templates through `$(...)`, without
-// jQuery. Same visible result: properties, duration, 'swing' easing, overflow
-// handling and final inline styles.
-
 const SPEEDS = { slow: 600, fast: 200, _default: 400 };
 const SLIDE_PROPS = ['height', 'marginTop', 'marginBottom', 'paddingTop', 'paddingBottom'];
 const swing = (p) => 0.5 - Math.cos(p * Math.PI) / 2;
@@ -20,7 +16,7 @@ export function slideToggle(el, speed = '_default') {
   const prev = running.get(el);
   const show = prev ? !prev.showing : isHidden(el);
 
-  // Original inline values restored when the animation completes.
+
   const saved = prev?.saved ?? {
     display: el.style.display,
     overflow: el.style.overflow,
@@ -59,7 +55,7 @@ export function slideToggle(el, speed = '_default') {
       return;
     }
     running.delete(el);
-    // complete: restore the original inline styles; hide sets display:none.
+
     for (const [k, v] of Object.entries(saved)) el.style[k] = v;
     el.style.display = show ? (saved.display === 'none' ? '' : saved.display) : 'none';
     if (show && getComputedStyle(el).display === 'none') el.style.display = 'block'; // hidden by a stylesheet

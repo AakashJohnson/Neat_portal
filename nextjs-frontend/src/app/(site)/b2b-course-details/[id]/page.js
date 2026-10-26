@@ -47,7 +47,7 @@ export default function B2bCourseDetailsPage({ params }) {
   const quantity = 1;
 
   useNgOnInit(() => {
-    // Angular decoded the token inline; a payload its atob() cannot read threw here.
+
     if (claims && !legacyDecodable) return;
     subscribe(courseService.getProductDetails({ code: productCode }), (data) => {
       if (data?.message !== 'Success' || !data.products) {

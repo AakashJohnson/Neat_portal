@@ -1,8 +1,6 @@
 'use client';
-// Port of FileService.uploadFile(event, fileType, id) (Services/file.service.ts):
-// MIME → extension check per input id, size check (only a toast: the upload
-// still goes ahead, as in the original), multipart POST /uploadFile, input
-// cleared right after the request is sent.
+
+
 import { toastr } from '@/components/common/Toastr';
 import { fileService } from '@/services';
 import { subscribe } from '@/lib/api';

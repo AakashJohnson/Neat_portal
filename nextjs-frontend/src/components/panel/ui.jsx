@@ -1,10 +1,4 @@
 'use client';
-// Building blocks of the panel pages, ported from the Laravel views/JS:
-//   - Messages: partials/messages.blade.php (+ as.hideNotifications: every
-//     .alert-notification slides up 3.5 s after the page shows it);
-//   - flash: session('success') across a redirect (sessionStorage here);
-//   - useDropdown / Tooltip / Popover: Bootstrap 4.1 data-api behaviour;
-//   - PanelPage: @section('page-title' | 'page-heading' | 'breadcrumbs').
 import { cloneElement, createContext, useContext, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';

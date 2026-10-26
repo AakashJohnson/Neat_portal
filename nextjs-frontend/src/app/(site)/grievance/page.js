@@ -11,7 +11,7 @@ import { subscribe } from '@/lib/api';
 import { emailValidator } from '@/lib/appValidators';
 import { toastr } from '@/components/common/Toastr';
 
-// keypress filters: returning false makes Angular call preventDefault().
+
 const charCode = (evt) => (evt.which ? evt.which : evt.keyCode);
 const isNumberKey = (evt) => charCode(evt) >= 48 && charCode(evt) <= 57;
 const isCharKey = (evt) => !(charCode(evt) >= 48 && charCode(evt) <= 57);
@@ -196,4 +196,3 @@ export default function GrievancePage() {
     </SiteChrome>
   );
 }
-

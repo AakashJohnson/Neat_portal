@@ -1,9 +1,6 @@
 'use client';
-// Port of components/users/student/student-course-details (inside the student
-// shell): free product page. "Avail Free Seat" → sendFreeSeatVerificationMail;
-// on Success the code goes to DataService (freeSeatCode) and the student to
-// /student/free-seat-verification. Product highlights are shown as text
-// ({{ }} interpolation, not [innerHTML]) as in the original.
+
+
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SafeHtml from '@/components/common/SafeHtml';

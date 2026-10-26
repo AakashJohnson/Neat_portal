@@ -1,7 +1,6 @@
 'use client';
-// user/list.blade.php + user/partials/row (UsersController@index, 20 per page,
-// ?search & ?status): the status select submits the form on change, each row
-// has the actions dropdown (sessions, view, impersonate), edit and delete.
+
+
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useState } from 'react';

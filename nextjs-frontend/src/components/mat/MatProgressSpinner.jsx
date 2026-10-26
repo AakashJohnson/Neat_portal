@@ -1,10 +1,6 @@
 'use client';
-// Port of Angular Material 7.3.7 <mat-progress-spinner mode="indeterminate">
-// and <mat-spinner> (same component, extra host class, always indeterminate):
-// host classes/attributes and the SVG circle as MatProgressSpinner renders them.
-// The stroke-rotate keyframes for the default diameter (100) ship in the
-// component styles (public/legacy/material.css); any other diameter gets its
-// keyframes in one shared <style> element, as _attachStyleNode() does.
+
+
 import { useInsertionEffect } from 'react';
 
 const BASE_SIZE = 100;

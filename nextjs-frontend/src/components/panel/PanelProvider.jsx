@@ -1,7 +1,6 @@
 'use client';
-// What every Blade view read from the session: auth()->user(), its role's
-// permissions (@permission, sidebar items), impersonation state, settings and
-// the announcements navbar hook — loaded once from GET /api/panel/context.
+
+
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { panelApi } from '@/lib/panelApi';
 

@@ -1,12 +1,6 @@
 'use client';
-// matTooltip (Angular Material 7.3.7) for a single child element: shown on
-// mouseenter and hidden on mouseleave (delays 0), rendered in the shared CDK
-// overlay container as
-//   .cdk-overlay-connected-position-bounding-box > .cdk-overlay-pane.mat-tooltip-panel > .mat-tooltip
-// positioned with the CDK exact strategy (main position, then the mirrored
-// fallback, then pushed on screen with an 8 px viewport margin), and the
-// 'state' animation (scale 0→1 in 200 ms, fade out in 100 ms). The message is
-// registered for screen readers like AriaDescriber (aria-describedby).
+
+
 import { cloneElement, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { getOverlayContainer, nextOverlayId } from '@/components/cdk/overlay';

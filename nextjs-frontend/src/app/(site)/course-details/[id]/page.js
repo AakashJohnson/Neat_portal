@@ -1,12 +1,6 @@
 'use client';
-// Port of components/pages/course-details/course-details.component.{html,ts}
-// (B2C product page). Behaviour kept from the original:
-//   - "Buy Now" for roles 3/5/6 opens the #bookYourPaidSeat disclaimer
-//     (Bootstrap modal); otherwise "Enroll Now" → alert + /login + paidCode.
-//   - Submit with the box ticked → DataService code/quantity → /payment-redirect.
-//   - Products not 'Approved' redirect to the B2B/B2C listing.
-//   - getComments() is requested on load although the template no longer shows
-//     comments (the comment/reply/addToCart handlers are unreachable and not ported).
+
+
 import { use, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SiteChrome from '@/components/layout/SiteChrome';
@@ -62,10 +56,10 @@ export default function CourseDetailsPage({ params }) {
   const [isChecked, setIsChecked] = useState(false);
   const quantity = 1;
 
-  // ngOnInit, once the session (Angular: localStorage token) is known.
+
   useNgOnInit(() => {
     if (claims) {
-      // Angular decoded the token inline; a payload its atob() cannot read threw here.
+
       if (!legacyDecodable) return;
     }
     subscribe(courseService.getProductDetails({ code: productCode }), (data) => {

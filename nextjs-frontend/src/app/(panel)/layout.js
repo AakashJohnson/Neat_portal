@@ -1,7 +1,3 @@
-// Root layout of the admin panel (port of the Laravel web/Blade panel,
-// resources/views/layouts/{app,auth}.blade.php). Separate from the site's root
-// layout so the panel gets only its own stylesheets (public/panel/assets),
-// not the Angular site's cascade.
 import { Suspense } from 'react';
 import { SessionProvider } from '@/components/providers/SessionProvider';
 

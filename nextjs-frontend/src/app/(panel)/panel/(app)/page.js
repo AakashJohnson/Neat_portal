@@ -1,8 +1,6 @@
 'use client';
-// dashboard/index.blade.php: Neat::availableWidgets(auth()->user()) in order —
-// UserActions (role User), Total/New/Banned/Unconfirmed users (3 columns
-// each), Registration History (8) and Latest Registrations (4) for
-// users.manage, Activity (12, role User).
+
+
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { nameOrEmail, usePanel } from '@/components/panel/PanelProvider';

@@ -1,6 +1,6 @@
 'use client';
-// user/sessions.blade.php: the database sessions of a user (or of the
-// logged-in user) with "Invalidate Session".
+
+
 import { useCallback, useEffect, useState } from 'react';
 import { DeleteLink } from '@/components/panel/confirm';
 import { Messages, Tooltip } from '@/components/panel/ui';

@@ -1,7 +1,6 @@
 'use client';
-// auth/verify.blade.php (VerificationController@show, layouts.app with no
-// page title): the notice plus "click here to request another" (email/resend).
-// A verified user is sent to the dashboard.
+
+
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { usePanel } from '@/components/panel/PanelProvider';

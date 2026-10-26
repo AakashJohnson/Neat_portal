@@ -1,10 +1,6 @@
 'use client';
-// Route "neatstudentresponse.php" → PaymentVerificationComponent: the payment
-// gateway's return URL. Query: studentid, sessionid, courseid (or
-// neat_course_id), Success=1 | Failure=1, payment.
-// Behaviour as in the original, including SEC-PAY-01: the result is taken
-// from the query string and reported to paymentSuccess/paymentFailure, which
-// are not verified against the gateway (see SECURITY_REVIEW; owner decision).
+
+
 import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from '@/components/providers/SessionProvider';

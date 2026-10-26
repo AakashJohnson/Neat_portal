@@ -1,5 +1,5 @@
 'use client';
-// Angular reactive-forms semantics (@angular/forms 8.2) for the ported forms:
+// Reactive-form behavior based on @angular/forms 8.2:
 // controls start at their initial value (usually null, as in fb.group({x: [null, …]})),
 // typing yields strings ('' once cleared), validity is computed by the same
 // validator rules, and touched (blur) / dirty (user change) are tracked per
@@ -12,7 +12,7 @@ const isEmptyInputValue = (value) => value == null || value.length === 0;
 const EMAIL_REGEXP =
   /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-/** Validators: each returns null (valid) or an errors object, like Angular's. */
+
 export const Validators = {
   required: (v) => (isEmptyInputValue(v) ? { required: true } : null),
   requiredTrue: (v) => (v === true ? null : { required: true }),

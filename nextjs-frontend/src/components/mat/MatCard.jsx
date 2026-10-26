@@ -1,6 +1,3 @@
-// Angular Material 7.3.7 card elements: host classes as MatCard / MatCardTitle /
-// MatCardContent add them, and MatCardHeader's template, which wraps the titles
-// in .mat-card-header-text (other children follow it).
 import { Children, isValidElement } from 'react';
 
 const cls = (extra, own) => `${extra ?? ''} ${own}`.trim();

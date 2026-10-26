@@ -1,12 +1,6 @@
 'use client';
-// Port of ngx-toastr 11 as configured in app.module.ts (timeOut 3000,
-// positionClass toast-bottom-right, preventDuplicates false) with its library
-// defaults: newestOnTop, tapToDismiss, extendedTimeOut 1000 (after hover),
-// 300 ms ease-in opacity fade, no close button, no progress bar.
-// The DOM matches the library's so legacy.css (ngx-toastr/toastr.css) styles it:
-//   .cdk-overlay-container > #toast-container.toast-bottom-right.toast-container
-//     > .toast-success.ngx-toastr > .toast-title + .toast-message
-// Usage (same call shape as ToastrService): toastr.success(message, title?)
+
+
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { getOverlayContainer } from '@/components/cdk/overlay';

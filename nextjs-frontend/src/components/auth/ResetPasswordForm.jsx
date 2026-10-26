@@ -1,11 +1,6 @@
 'use client';
-// Reset-password form shared by /reset-password (ResetPasswordComponent) and
-// /response-password-reset (ResponseResetPasswordComponent): identical
-// component logic; the templates differ only around the submit button.
-// Token from ?token=; validators as in the components plus the templates'
-// minlength="8" on the password; the button is disabled while invalid.
-// Success: alert(data.data) then /login. Errors show nothing (the original
-// error handlers only contained commented-out toasts).
+
+
 import { useRouter, useSearchParams } from 'next/navigation';
 import MatIcon from '@/components/mat/MatIcon';
 import MatTooltip from '@/components/mat/MatTooltip';
@@ -13,7 +8,7 @@ import { jarwisService } from '@/services';
 import { subscribe } from '@/lib/api';
 import { useFormGroup, Validators } from '@/lib/forms';
 
-// String patterns exactly as in the component (Angular anchors them with ^…$).
+
 const PASSWORD_PATTERN = '(?=^.{6,}$)(?=.*[0-9])(?![.\n])(?=.*[@!#$%^&*-+:;_=,.<>~`/()\\[\\{}])(?=.*[A-Z])(?=.*[a-z]).*$';
 const CONFIRMATION_PATTERN = '(?=^.{6,}$)(?=.*[0-9])(?![.\n])(?=.*[@!#$%^&*-+:;_=,.<>~`/])(?=.*[A-Z])(?=.*[a-z]).*$';
 const HINT = 'Password must contain at least a number, lowercase, uppercase and one special character. White spaces are not allowed.';

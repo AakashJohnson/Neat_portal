@@ -1,7 +1,6 @@
 'use client';
-// auth/passwords/reset.blade.php (ResetPasswordController, password-reset +
-// guest): email + new password; on success the user is logged in and sent
-// to the dashboard (ResetsPasswords::reset → $redirectTo = '/').
+
+
 import { notFound, useRouter } from 'next/navigation';
 import { use, useState } from 'react';
 import { useGuestPage } from '@/components/panel/guest';

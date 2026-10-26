@@ -1,7 +1,3 @@
-// Impersonation (lab404/laravel-impersonate, session-based in Laravel):
-//   POST {user} → API /api/panel/impersonate/{user}; the target's token
-//                 (with the impersonator in its "imp" claim) replaces the cookie
-//   DELETE      → API /api/panel/impersonate/leave; back to the impersonator
 import { NextResponse } from 'next/server';
 import { API_ORIGIN, TOKEN_COOKIE } from '@/lib/config';
 import { cookieOptions, getToken } from '@/lib/server/session';

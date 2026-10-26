@@ -1,14 +1,6 @@
 'use client';
-// Route "admin/mou-management" → AdminMomManagementComponent: MoU list (search,
-// sort, paginator), MoU upload for a company chosen with an autocomplete
-// (upload progress bar), and per-row MoU date editing. Kept from the original:
-//   - "Please Select Company" shows until a company is chosen;
-//   - only the Neat Id column really sorts (the other sort headers read
-//     row.company / row.mouStatus / row.mouDate, which do not exist);
-//   - an invalid file (not a PDF, or > 10 MB) leaves "Uploading... 0%" on
-//     screen: uploadFileWithProgress() returns null and .subscribe() throws;
-//   - mat-icon-button / mat-flat-button / mat-stroked-button are plain buttons
-//     (MatButtonModule is not imported).
+
+
 import { useRef, useState } from 'react';
 import Link from 'next/link';
 import Scope from '@/components/common/Scope';

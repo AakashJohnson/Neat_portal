@@ -1,5 +1,5 @@
 'use client';
-// user/partials/{details,auth,avatar}.blade.php and assets/js/as/profile.js.
+
 import { useEffect, useRef, useState } from 'react';
 import Datepicker from '@/components/panel/Datepicker';
 import { nameOrEmail } from '@/components/panel/PanelProvider';

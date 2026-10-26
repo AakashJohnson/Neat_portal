@@ -1,8 +1,6 @@
 'use client';
-// Port of components/users/institute/institute-file-upload (free-seat Excel
-// upload; the manual entry and paid-seat blocks are commented out in the
-// original template). Each selection replaces the previous batch.
-// SheetJS 0.20.3 instead of 0.15.4: see R-37 / tests/parity/xlsx-oracle.mjs.
+
+
 import { useRef, useState } from 'react';
 import Scope from '@/components/common/Scope';
 import { toastr } from '@/components/common/Toastr';

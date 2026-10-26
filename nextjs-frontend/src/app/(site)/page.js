@@ -1,4 +1,3 @@
-// Route "" — LandingPageComponent (also the Angular "**" fallback, see not-found.js).
 import SiteChrome from '@/components/layout/SiteChrome';
 import Banner from '@/components/home/Banner';
 import Highlights from '@/components/home/Highlights';

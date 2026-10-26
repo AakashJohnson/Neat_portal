@@ -1,9 +1,3 @@
-// Panel (Laravel web) session of the BFF.
-//   POST   {username, password, remember, to} → API /api/panel/login (web login
-//          rules); the JWT goes to the httpOnly cookie, also for unverified
-//          users (the panel's `verified` middleware shows the notice).
-//   DELETE → API /api/logout ("Logged out." activity, token invalidated) and
-//          cookie removal (LoginController@logout).
 import { NextResponse } from 'next/server';
 import { API_ORIGIN, TOKEN_COOKIE } from '@/lib/config';
 import { cookieOptions, getToken } from '@/lib/server/session';

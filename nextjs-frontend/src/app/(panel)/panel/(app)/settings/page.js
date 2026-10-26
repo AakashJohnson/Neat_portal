@@ -1,5 +1,5 @@
 'use client';
-// settings/general.blade.php (settings.general): the application name.
+
 import { Crumb, Messages, PanelPage } from '@/components/panel/ui';
 import { settingValue, useSettings } from '@/components/panel/settings';
 

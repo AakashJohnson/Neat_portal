@@ -42,7 +42,7 @@ export default function Banner() {
     <section className="banner_part">
       <div className="container">
         <div className="row align-items-center">
-          {/* Three slides but two indicators, as in the original markup. */}
+          {                                                                 }
           <Carousel id="main-carousel" slides={slides} indicators={2} controls />
         </div>
       </div>

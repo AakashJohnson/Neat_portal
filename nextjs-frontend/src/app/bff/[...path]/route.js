@@ -1,10 +1,3 @@
-// Backend-for-frontend proxy: /bff/<endpoint> → <API>/api/<endpoint>.
-// Token handling mirrors the Angular services: requests the client marks with
-// a `token` parameter (the endpoints Angular called with ?token=, see
-// lib/tokenEndpoints.js) get the JWT from the httpOnly cookie as ?token= and
-// "Authorization: Bearer"; with no session they get ?token=null, the value
-// Angular sent from an empty localStorage. Unmarked requests carry no token.
-// Bodies (JSON, form data, multipart uploads) are streamed through unchanged.
 import { API_ORIGIN } from '@/lib/config';
 import { getToken } from '@/lib/server/session';
 

@@ -1,7 +1,6 @@
 'use client';
-// CDK OverlayContainer: one <div class="cdk-overlay-container"> appended to
-// <body>, shared by every overlay (mat-select panels, dialogs, ngx-toastr),
-// as in the Angular app.
+
+
 export function getOverlayContainer() {
   let el = document.querySelector('body > .cdk-overlay-container');
   if (!el) {

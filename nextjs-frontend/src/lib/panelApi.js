@@ -1,8 +1,5 @@
 'use client';
-// API client of the admin panel (port of the Laravel web/Blade panel). Every
-// panel request is authenticated, so the BFF is always asked to attach the
-// session JWT (`token` parameter); bodies are JSON or FormData.
-//   const { status, ok, data } = await panelApi.get('/users', { search, page });
+
 
 async function call(method, path, { params, body } = {}) {
   const url = new URL(`/bff${path}`, window.location.origin);
@@ -33,5 +30,5 @@ export const panelApi = {
   delete: (path) => call('DELETE', path),
 };
 
-/** Laravel 422 body → flat list of messages (as $errors->all()). */
+
 export const validationMessages = (data) => (data?.errors ? Object.values(data.errors).flat() : data?.message ? [data.message] : []);

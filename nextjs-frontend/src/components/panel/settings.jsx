@@ -1,8 +1,6 @@
 'use client';
-// SettingsController (settings/{general,auth,notifications}.blade.php): the
-// values come from storage/settings.json through GET /api/panel/settings/{group}
-// and every form posts its fields to the same group; the page then reloads the
-// values, as back()->withSuccess() re-rendered them.
+
+
 import { useCallback, useEffect, useState } from 'react';
 import { panelApi, validationMessages } from '@/lib/panelApi';
 

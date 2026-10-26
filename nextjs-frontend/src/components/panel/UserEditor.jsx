@@ -1,8 +1,6 @@
 'use client';
-// user/edit.blade.php (admin, Users\*Controller) and user/profile.blade.php
-// (own profile, Profile\*Controller): "User Details" / "Login Details" tabs
-// (2FA tab only with setting 2fa.enabled — off), avatar card on the side.
-// Each form saves and reloads with the controller's success message.
+
+
 import { useCallback, useEffect, useState } from 'react';
 import { AuthFields, AvatarCard, DetailsFields, gravatarUrl } from '@/components/panel/userForms';
 import { Messages, useFlash } from '@/components/panel/ui';

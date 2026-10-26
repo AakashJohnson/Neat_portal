@@ -1,15 +1,3 @@
-// Route protection (Next.js 16 "proxy", formerly middleware), derived from the
-// effective Angular route table (migration-docs/generated/angular-routes-effective.txt):
-//   AfterLoginService on a route or on its parent shell → login required;
-//   BeforeLoginService → only for visitors who are not logged in;
-//   role checks of the admin/student/company/institute/learner shells.
-// Angular matched with backtracking: an unknown child (e.g. /student/xyz) did
-// not hit the guard but fell through to the "**" route (landing page), so only
-// known paths are guarded here. This is an optimistic check; the API authorises
-// every call itself.
-// DEV-F05: a denied guard cancelled the navigation in Angular (on a direct load
-// the app stayed on an empty page at "/"); the port redirects to /login
-// (login required) or / (guest-only page while logged in).
 import { NextResponse } from 'next/server';
 import { jwtVerify, decodeJwt } from 'jose';
 
@@ -66,5 +54,5 @@ export async function proxy(request) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|bff|api|legacy|assets|assets_new|favicon.ico).*)'],
+  matcher: ['/((?!_next|bff|api|theme|assets|assets_new|favicon.ico).*)'],
 };

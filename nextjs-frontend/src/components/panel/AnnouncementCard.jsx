@@ -1,8 +1,6 @@
 'use client';
-// announcements::partials.card: title, the markdown body (parsed_body), the
-// creator and the "M d" date, and "Edit" for announcements.manage. The
-// original echoed parsed_body unescaped (stored XSS); here it goes through
-// DOMPurify in the browser (see SECURITY_REVIEW).
+
+
 import DOMPurify from 'dompurify';
 import Link from 'next/link';
 import { useMemo, useSyncExternalStore } from 'react';

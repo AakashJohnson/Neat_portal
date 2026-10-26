@@ -142,7 +142,7 @@ const cell = (suffix, content, blockChildren) =>
     renderHTML: ({ node, HTMLAttributes }) => [node.attrs.tag, HTMLAttributes, 0],
   });
 
-export const legacyExtensions = [
+export const editorExtensions = [
   StarterKit.configure({
     bold: false,
     italic: false,

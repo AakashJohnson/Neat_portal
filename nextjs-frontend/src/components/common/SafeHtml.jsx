@@ -1,7 +1,6 @@
 'use client';
-// Equivalent of Angular's sanitised [innerHTML] binding. HTML is sanitised with
-// DOMPurify in the browser only; the server and the hydration pass render it
-// empty, so server and client markup match.
+
+
 import { useMemo, useSyncExternalStore } from 'react';
 import { sanitize } from '@/lib/format';
 

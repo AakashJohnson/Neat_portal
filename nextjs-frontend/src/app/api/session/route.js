@@ -37,8 +37,7 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Invalid login response. Please contact support.' }, { status: 502 });
   }
 
-  // Keep unverified accounts logged out; valid UTF-8/base64url claims must
-  // not be rejected because of the old Angular inline decoder.
+
   let claims;
   try {
     claims = decodeJwt(data.token);
@@ -59,8 +58,7 @@ export async function GET() {
   // Not logged in is a normal state for the public site, not an error.
   if (!claims) return NextResponse.json({ claims: null });
 
-  // Same check the Angular app ran on start-up (verifyUserLoggedIn): the API
-  // confirms the token (signature, expiry, api_tokens row).
+
   const res = await fetch(`${API_ORIGIN}/api/verifyUserLoggedIn?token=${encodeURIComponent(token)}`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
   const data = await res.json().catch(() => null);
   if (data?.message !== 'Success') {
@@ -71,8 +69,7 @@ export async function GET() {
   return NextResponse.json({ claims: publicClaims(claims), legacyDecodable: legacyDecodable(token) });
 }
 
-// ?revoke=0: TokenService.remove() only (the shells' logout()): the cookie is
-// dropped without calling the API, so the token row stays valid as in Angular.
+
 export async function DELETE(request) {
   const token = await getToken();
   const revoke = new URL(request.url).searchParams.get('revoke') !== '0';

@@ -1,6 +1,3 @@
-// auth/social/buttons.blade.php with config('auth.social.providers') =
-// facebook, twitter, google. Social login stays BLOCKED until provider keys
-// exist; the links land on /panel/auth/{provider}/login, which says so.
 const PROVIDERS = [
   { name: 'facebook', className: 'btn-facebook', icon: 'fab fa-facebook fa-2x' },
   { name: 'twitter', className: 'btn-twitter', icon: 'fab fa-twitter fa-2x' },

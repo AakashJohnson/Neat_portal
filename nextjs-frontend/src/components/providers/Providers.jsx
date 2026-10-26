@@ -6,7 +6,7 @@ import { ToastContainer } from '@/components/common/Toastr';
 import { SessionProvider } from './SessionProvider';
 import { I18nProvider } from './I18nProvider';
 
-// Angular Material prebuilt theme "deeppurple-amber" (src/styles.css).
+
 const theme = createTheme({
   palette: { primary: { main: '#673ab7' }, secondary: { main: '#ffd740' } },
   typography: { fontFamily: 'Roboto, "Helvetica Neue", sans-serif' },

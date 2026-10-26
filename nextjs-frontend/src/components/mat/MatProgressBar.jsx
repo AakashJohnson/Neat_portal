@@ -1,7 +1,6 @@
 'use client';
-// Port of Angular Material 7.3.7 <mat-progress-bar mode="determinate" [value]>:
-// host attributes, the dotted buffer pattern (fill="url(<current path>#id)")
-// and the primary bar scaled to value / 100.
+
+
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 

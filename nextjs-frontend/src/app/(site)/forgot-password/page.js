@@ -1,8 +1,6 @@
 'use client';
-// Port of components/pages/forgot-password/forgot-password.component.{html,ts}.
-// As in the original, the request is sent even when the form is invalid
-// (formValues keeps the last valid e-mail, initially null); on success a toast,
-// an alert, then /login after 2 s.
+
+
 import Link from 'next/link';
 import { useRef } from 'react';
 import { useRouter } from 'next/navigation';

@@ -1,12 +1,6 @@
 'use client';
-// <mat-form-field> (Angular Material 7.3.7) for the two uses in the app:
-// appearance "outline" with a <mat-label> (search boxes) and "legacy" around a
-// mat-select (paginator page size). Same DOM and state classes; the outline
-// gap is measured as in MatFormField.updateOutlineGap() (label width × 0.75
-// + 2 × 5 px, start = label left − container left − 5 px).
-//   <MatFormField appearance="outline" label="Search" empty={!value} suffix={<MatIcon matsuffix="">search</MatIcon>}>
-//     {(id) => <MatInput id={id} … />}
-//   </MatFormField>
+
+
 import { useId, useLayoutEffect, useRef, useState } from 'react';
 
 const FLOATING_LABEL_SCALE = 0.75;

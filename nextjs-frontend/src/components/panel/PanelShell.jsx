@@ -1,9 +1,6 @@
 'use client';
-// layouts/app.blade.php: partials/navbar (page heading, breadcrumbs,
-// impersonation, the announcements hook, user dropdown), partials/sidebar
-// (user box, plugin items filtered by permission, active by Request::is()),
-// and assets/js/as/app.js (sidebar toggle, body.sidebar-collapsed between 992
-// and 1199 px).
+
+
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -14,7 +11,7 @@ import { panelApi } from '@/lib/panelApi';
 import { diffForHumans } from '@/lib/carbon';
 import styles from './PanelShell.module.css';
 
-/** Request::is($pattern) on the Laravel path (pathname without /panel, no leading slash, "/" for the root). */
+
 export function requestIs(pathname, patterns) {
   const path = pathname.replace(/^\/panel/, '').replace(/^\/+/, '') || '/';
   return [patterns].flat().some((p) => {
