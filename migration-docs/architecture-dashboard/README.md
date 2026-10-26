@@ -19,7 +19,7 @@ npm run dev
 
 Open **http://127.0.0.1:4310**. The default root is two directories above this
 tool: the directory containing `express-backend`, `nextjs-frontend` and
-`migration-docs`. This also works in the published subtree-based monorepo.
+`docs`. This also works in the published subtree-based monorepo.
 
 The build is a static client bundle; the serving process and file watcher remain
 development-only. Startup refuses `NODE_ENV=production`. No frontend/Express
