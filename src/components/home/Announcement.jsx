@@ -1,14 +1,13 @@
 'use client';
-// Port of components/pages/announcement/announcement.component.{html,ts}.
-// The "Minister's Quote" and blog sections are commented out in the original
-// template and therefore not rendered here either.
+
+
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { grievanceService } from '@/services';
 import Carousel from '@/components/common/Carousel';
 import Scope from '@/components/common/Scope';
 
-/** <marquee> with the original onmouseover="this.stop()" / onmouseout="this.start()". */
+
 function Marquee({ children }) {
   return (
     <marquee behavior="scroll" direction="up" scrollamount="3" onMouseOver={(e) => e.currentTarget.stop?.()} onMouseOut={(e) => e.currentTarget.start?.()}>
@@ -56,7 +55,7 @@ export default function Announcement() {
                       <div>
                         <div>
                           <Marquee>
-                            {/* The original repeats the article list once per "news" item. */}
+                            {                                                                 }
                             {data.news.map((n, i) => (
                               <div className="news-block" key={i}>
                                 {data.articles.map((article) => (

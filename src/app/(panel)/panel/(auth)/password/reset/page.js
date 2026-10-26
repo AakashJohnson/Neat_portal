@@ -1,6 +1,6 @@
 'use client';
-// auth/passwords/email.blade.php (ForgotPasswordController, password-reset +
-// guest middleware): sends the reset link and shows the broker's message.
+
+
 import { notFound } from 'next/navigation';
 import { useState } from 'react';
 import { useGuestPage } from '@/components/panel/guest';

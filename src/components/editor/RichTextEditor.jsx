@@ -1,14 +1,14 @@
 'use client';
 // Port of <angular-editor> (@kolkov/angular-editor 1.1.2, default config) used
 // as a reactive-form control in the company product form. Same DOM, toolbar,
-// classes and styles (public/legacy/angular-editor.css); the editing engine is
+// classes and styles (public/theme/angular-editor.css); the editing engine is
 // TipTap instead of contenteditable + document.execCommand (DEV-F08), with the
-// schema in legacyExtensions.js.
+// schema in editorExtensions.js.
 // Behaviour kept from the original:
 //   - writeValue() (form → editor) never emits; only edits do, and they emit
 //     the Angular-sanitized HTML ('' for an empty editor);
 //   - placeholder toggling with the original's showPlaceholder logic;
-//   - one AngularEditorService for every editor (saved selection / text);
+//   - one RichTextEditorService for every editor (saved selection / text);
 //   - toolbar state from document.queryCommandState/Value and ids
 //     "<button>-<id>" looked up with getElementById (id '' → the first editor's
 //     toolbar on the page, as in the original);
@@ -16,7 +16,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { EditorContent, useEditor } from '@tiptap/react';
 import AeSelect from '@/components/editor/AeSelect';
-import { legacyExtensions } from '@/components/editor/legacyExtensions';
+import { editorExtensions } from '@/components/editor/editorExtensions';
 import { ngSanitizeHtml } from '@/lib/ngSanitize';
 
 const CONFIG_PLACEHOLDER = 'Enter text here...';
@@ -40,7 +40,7 @@ const BUTTONS = ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 's
 const SELECT = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'PRE', 'DIV'];
 const TAG_MAP = { BLOCKQUOTE: 'indent', A: 'link' };
 
-// ---- AngularEditorService (providedIn: 'root': shared by all editors)
+// ---- RichTextEditorService (providedIn: 'root': shared by all editors)
 const service = {
   savedSelection: null,
   selectedText: undefined,
@@ -74,7 +74,7 @@ function Button({ name, title, icon, onClick, disabled }) {
 }
 const fa = (cls) => <i className={`fa ${cls}`}></i>;
 
-export default function AngularEditor({ value, onChange, onBlur, placeholder = '' }) {
+export default function RichTextEditor({ value, onChange, onBlur, placeholder = '' }) {
   const [htmlMode, setHtmlMode] = useState(false);
   const [showPlaceholder, setShowPlaceholderState] = useState(false);
   const showPlaceholderRef = useRef(false);
@@ -109,7 +109,7 @@ export default function AngularEditor({ value, onChange, onBlur, placeholder = '
   };
 
   const editor = useEditor({
-    extensions: legacyExtensions,
+    extensions: editorExtensions,
     immediatelyRender: false,
     editorProps: {
       attributes: { class: 'angular-editor-textarea', spellcheck: 'true', translate: 'yes', style: 'height: auto; min-height: 0px;' },
@@ -175,7 +175,7 @@ export default function AngularEditor({ value, onChange, onBlur, placeholder = '
     }
   };
 
-  /** executeCommand(command) of AngularEditorComponent + AngularEditorService. */
+  /** executeCommand(command) of RichTextEditorComponent + RichTextEditorService. */
   const executeCommand = (command) => {
     if (!editor) return;
     if (command === 'toggleEditorMode') return toggleEditorMode();

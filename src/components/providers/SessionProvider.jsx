@@ -1,7 +1,6 @@
 'use client';
-// Session state for the browser: the JWT's public claims (role_id, email,
-// username, application_number, uuid, …). Replaces Angular's TokenService /
-// AuthService and the per-component `atob(token.split('.')[1])` decoding.
+
+
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 const SessionContext = createContext({ claims: null, ready: false, refresh: async () => {}, login: async () => ({}), logout: async () => {}, removeToken: async () => {} });
@@ -14,7 +13,7 @@ const fetchSession = () =>
 export function SessionProvider({ children }) {
   const [claims, setClaims] = useState(null);
   const [ready, setReady] = useState(false);
-  // false when the Angular pages' inline atob() decode of this token would throw.
+
   const [legacyDecodable, setLegacyDecodable] = useState(true);
 
   const apply = useCallback((data) => {
@@ -45,7 +44,7 @@ export function SessionProvider({ children }) {
     return { status: res.status, data };
   }, []);
 
-  /** Angular logout(): token removed, auth status false, localStorage cleared. */
+
   const logout = useCallback(async () => {
     await fetch('/api/session', { method: 'DELETE' }).catch(() => {});
     try {
@@ -67,5 +66,5 @@ export function SessionProvider({ children }) {
 
 export const useSession = () => useContext(SessionContext);
 
-/** Angular templates compared role_id with strings ('' when logged out). */
+
 export const roleOf = (claims) => (claims?.role_id == null ? '' : String(claims.role_id));

@@ -1,16 +1,6 @@
 'use client';
-// proengsoft/laravel-jsvalidation for the panel forms, with the app's override
-// of the `bootstrap` view (resources/views/vendor/jsvalidation/bootstrap.php):
-// span.invalid-feedback right after the field; .is-invalid on the <input>
-// itself and never on a textarea/select (closest('.form-group input')); no
-// .is-valid (its success() callback receives the label, not the input); no
-// form-group classes. The FormRequest's local rules are checked with Laravel's
-// English messages (resources/lang/en/validation.php); empty optional fields
-// are skipped as jquery.validate does. Remote rules (unique / exists) are left
-// to the server: its 422 errors show in the page's error alert (DEV-F09).
-//   const v = useJsValidation({ email: 'required|email', password: 'required|min:8|confirmed' });
-//   <input className="form-control" … {...v.field('email')} />{v.error('email')}
-//   onSubmit: if (!v.validateAll(formElement)) return;
+
+
 import { useState } from 'react';
 
 const attribute = (name) => name.replace(/_/g, ' ');

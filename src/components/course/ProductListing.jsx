@@ -1,9 +1,6 @@
 'use client';
-// Shared port of components/pages/course (B2C) and components/pages/b2b-course
-// (B2B): identical templates/styles except the endpoints, the details route
-// and the course logo block (B2B only).
-// DEV-F02: href="javascript:void(0)" (blocked by React 19) is rendered as
-// href="#" with preventDefault — same behaviour on click.
+
+
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SiteChrome from '@/components/layout/SiteChrome';

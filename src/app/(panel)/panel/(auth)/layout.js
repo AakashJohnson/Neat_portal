@@ -1,4 +1,3 @@
-// layouts/auth.blade.php: app.css + fontawesome, <body class="auth">, .container.
 import BodyClass from '@/components/panel/BodyClass';
 
 export default function PanelAuthLayout({ children }) {

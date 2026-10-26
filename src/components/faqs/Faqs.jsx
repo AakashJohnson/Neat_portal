@@ -1,10 +1,6 @@
 'use client';
-// Port of components/pages/faqs/faqs.component.{html,ts}, shared by
-// /faqs-student, /faqs-companies and /faqs-institutes. The role is the part of
-// the URL after the first "-" (router.url.split('-')[1]), sent to getFaqs.
-// Language: DataService.currentMessageForLanguage starts from
-// sessionStorage 'lang' ('HINDI' → Hindi texts; anything else keeps English).
-// The navbar handlers that set it are not bound in the original template.
+
+
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
 import SiteChrome from '@/components/layout/SiteChrome';

@@ -4,6 +4,6 @@ node_modules
 .env*
 !.env.example
 .scratch
-tests/parity/out
+tests
 test-results
 playwright-report

@@ -21,9 +21,7 @@ export default function Footer() {
   const { claims } = useSession();
   const router = useRouter();
 
-  // footer.component.ts redirect(): students → /student, institutes → /institute.
-  // DEV-F01: logged-out visitors were meant to see a "#Login" modal that does
-  // not exist in the Angular app (the click did nothing); they go to /login.
+
   const redirect = (e) => {
     e.preventDefault();
     const role = roleOf(claims);
@@ -78,7 +76,7 @@ export default function Footer() {
                   <Link href="/">{t('FOOTER.PRIVACY')}</Link>
                 </li>
                 <L href="/disclaimer">{t('DISCLAIMER.DISCLAIMER')}</L>
-                {/* The linked file does not exist in the Angular app either (see legacy-assets-report). */}
+                {                                                                                          }
                 <L href="/assets/Free_Seats_as_per_reservation.xlsx">NEAT Free Coupons Statistics</L>
                 <li>
                   <a href="https://neatphase2eoi.aicte-india.org/" target="_blank" rel="noreferrer" onClick={scrollToTop}>

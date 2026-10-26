@@ -37,10 +37,7 @@ function Swal({ title, text, button, onClose }) {
   );
 }
 
-/**
- * <a href data-method="DELETE" data-confirm-…> → onConfirm() after the dialog.
- * Renders the anchor (with the original attributes) and the dialog when open.
- */
+
 export function DeleteLink({ href, className = 'btn btn-icon', title, confirmTitle, confirmText, confirmButton = 'Yes, delete it!', onConfirm, children, ...rest }) {
   const [open, setOpen] = useState(false);
   return (

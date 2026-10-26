@@ -1,8 +1,6 @@
 'use client';
-// Port of components/users/institute/student-details: the institute's students
-// (getInstituteDetails → permanent_institute_id → getStudents) in a mat-table
-// with search, sort and paginator. The "ID" column shows application_number
-// but sorts by the row's `id` property, as in the original matColumnDef.
+
+
 import Scope from '@/components/common/Scope';
 import MatFormField from '@/components/mat/MatFormField';
 import MatIcon from '@/components/mat/MatIcon';

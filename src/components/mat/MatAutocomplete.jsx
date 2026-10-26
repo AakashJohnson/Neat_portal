@@ -1,14 +1,6 @@
 'use client';
-// <input matInput [formControl] [matAutocomplete]> + <mat-autocomplete>
-// (Angular Material 7.3.7) as one component: trigger attributes, the panel in
-// the CDK overlay container (pane as wide as the form field's
-// .mat-form-field-flex, below it or flipped above with
-// .mat-autocomplete-panel-above), opened on focus/input, closed on outside
-// click, Escape, Tab or selection; arrow keys move the active option (with
-// wrap), Enter selects it. Selecting an option writes its value to the input
-// and calls onOptionSelected(value).
-//   <MatAutocomplete id={id} value={text} onChange={setText} placeholder="…"
-//     options={[{ value, label }]} onOptionSelected={(v) => …} />
+
+
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import MatInput from '@/components/mat/MatInput';

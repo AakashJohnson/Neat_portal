@@ -1,7 +1,6 @@
 'use client';
-// company-profile/index.blade.php (CompanyCreateProfile@index): look up a
-// NEAT ID in neat_eoi, then create the company login. Messages are alert()s,
-// as in the original.
+
+
 import { useCallback, useState } from 'react';
 import { panelApi } from '@/lib/panelApi';
 import { searchResponse, useAsyncSearch } from '@/lib/liveSearch';

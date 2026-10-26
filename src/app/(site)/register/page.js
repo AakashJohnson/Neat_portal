@@ -1,9 +1,6 @@
 'use client';
-// Port of components/pages/register/register.component.{html,ts}.
-// Validators include the ones Angular derived from template attributes
-// (`required`, `minlength="10"`, `maxlength="10"` on formControlName inputs).
-// The stray <option value="Select Role"> inside <mat-select> is projected into
-// the panel as plain content (not selectable), as in Material.
+
+
 import Link from 'next/link';
 import { useState } from 'react';
 import SiteChrome from '@/components/layout/SiteChrome';

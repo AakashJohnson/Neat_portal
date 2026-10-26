@@ -1,6 +1,6 @@
 'use client';
-// <mat-error> (Angular Material 7.3) outside or inside a form field:
-// <mat-error class="mat-error" role="alert" id="mat-error-N">.
+
+
 import { useId } from 'react';
 
 export function MatError({ className = '', children, ...rest }) {

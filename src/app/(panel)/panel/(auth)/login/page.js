@@ -1,7 +1,6 @@
 'use client';
-// auth/login.blade.php (Web\Auth\LoginController): username/password with
-// LoginRequest client validation, "Remember me?" when enabled, errors from the
-// web login, redirect to ?to= or the dashboard.
+
+
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useSyncExternalStore } from 'react';

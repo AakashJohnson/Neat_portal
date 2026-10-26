@@ -1,7 +1,6 @@
 'use client';
-// Login check for the standalone company-profile pages: no session → the
-// login form, coming back here afterwards. The page title is the original's
-// "@yield('page-title') - app_name" with no page title.
+
+
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

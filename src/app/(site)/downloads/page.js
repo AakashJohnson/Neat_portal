@@ -1,10 +1,6 @@
 'use client';
-// Port of app/components/pages/downloads/downloads.component.{html,ts}
-// The lightbox reproduces modal.js + Angular change detection: onClick(n, type)
-// first runs showSlides(n) on the slides currently rendered (the previous
-// list; n is the photo number, not its position), then the list is replaced.
-// Slides for names present in both lists keep their inline display (ngFor
-// tracks strings by identity); new slides start hidden (.mySlides css).
+
+
 import Link from 'next/link';
 import SiteChrome from '@/components/layout/SiteChrome';
 import Scope from '@/components/common/Scope';
@@ -207,7 +203,7 @@ export default function DownloadsPage() {
                                     <div class="gallery-img">
                                       <img src="../../../../assets/img/user-manual-download/34.jpg"
                                             style="max-width:100%; height: auto;" (click)="onClick(3)"
-                                            class="hover-shadow cursor"> 
+                                            class="hover-shadow cursor">
                                     </div>
                                 </div> */}
                       </div>
@@ -247,4 +243,3 @@ export default function DownloadsPage() {
     </SiteChrome>
   );
 }
-

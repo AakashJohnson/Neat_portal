@@ -1,7 +1,6 @@
 'use client';
-// company-profile/product.blade.php (CompanyCreateProfile@product): load the
-// accepted Phase-2 product codes of a NEAT ID, fill the form from the chosen
-// code, then create the product. Messages are alert()s, as in the original.
+
+
 import { useCallback, useState } from 'react';
 import { panelApi } from '@/lib/panelApi';
 import { searchResponse, useAsyncSearch } from '@/lib/liveSearch';

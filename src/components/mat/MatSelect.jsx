@@ -395,7 +395,7 @@ export function MatSelect({
       id={id}
       tabindex={disabled ? '-1' : '0'}
       aria-label={placeholder || null}
-      // Static template attributes stay on the host element in Angular.
+
       placeholder={placeholder}
       required={required ? '' : undefined}
       aria-required={String(required)}

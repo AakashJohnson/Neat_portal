@@ -91,7 +91,7 @@ export default function AdminShell({ children }) {
         <nav className={`side-navbar ${toggled ? 'shrinked' : ''} ${styles.sidebar}`} aria-label="Admin navigation">
           <div className="sidebar-header d-flex align-items-center">
             <div className="avatar">
-              <img src="http://neatapi.aicte-india.org/assets/img/icons/company_logo/00000000001.png" alt="..." className="img-fluid rounded-circle" />
+              <img src="/assets/img/logo.png" alt="NEAT" className="img-fluid rounded-circle" />
             </div>
             <div className="title">
               <h1 className="h4">NEAT ADMIN</h1>

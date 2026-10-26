@@ -1,6 +1,6 @@
 'use client';
-// settings/notifications.blade.php (settings.notifications): the sign-up
-// email to administrators.
+
+
 import { Crumb, Messages, PanelPage } from '@/components/panel/ui';
 import { SettingSwitch, phpTruthy, settingValue, useSettings } from '@/components/panel/settings';
 

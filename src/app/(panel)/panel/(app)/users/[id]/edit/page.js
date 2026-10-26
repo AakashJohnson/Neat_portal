@@ -1,5 +1,5 @@
 'use client';
-// user/edit.blade.php (users.manage).
+
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import UserEditor from '@/components/panel/UserEditor';

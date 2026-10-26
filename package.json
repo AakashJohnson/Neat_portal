@@ -10,8 +10,7 @@
     "test:flows": "node tests/registration-enquiry.mjs",
     "test:recovered": "node tests/recovered-flows.mjs",
     "test:navigation-search": "node tests/navigation-search.mjs",
-    "check:no-ts": "node scripts/check-no-ts.mjs",
-    "sync:legacy": "node scripts/sync-legacy-assets.mjs && node scripts/extract-material-css.mjs && node scripts/scope-component-css.mjs"
+    "check:no-ts": "node scripts/check-no-ts.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -52,7 +51,7 @@
     "postcss": "^8.5.31",
     "postcss-selector-parser": "^7.1.7"
   },
-  "description": "NEAT portal web app — Next.js + React (plain JavaScript) port of the Angular frontend",
+  "description": "NEAT Portal web application built with Next.js and React",
   "allowScripts": {
     "unrs-resolver": false
   }

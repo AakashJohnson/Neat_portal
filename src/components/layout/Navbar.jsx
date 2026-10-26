@@ -1,6 +1,6 @@
 'use client';
-// Port of components/shared/navbar/navbar.component.{html,ts}. Bootstrap 4
-// collapse/dropdown behaviour (data-toggle) is reproduced with React state.
+
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -10,8 +10,7 @@ import Scope from '@/components/common/Scope';
 
 const scrollToTop = () => window.scrollTo(0, 0);
 
-// Whitespace as Angular renders it: a space before the label and, unless the
-// original closes </a> right after it, one before the ::after caret.
+
 function Dropdown({ label, children, href = '#', trailingSpace = true }) {
   const [open, setOpen] = useState(false);
   return (
@@ -113,7 +112,7 @@ export default function Navbar() {
                 <div className={`collapse navbar-collapse main-menu-item justify-content-end${collapsed ? '' : ' show'}`} id="navbarSupportedContent">
                   <ul className="navbar-nav align-items-center">
                     <li className="nav-item">
-                      {/* Angular used a plain href="/" (full reload); client navigation reaches the same page. */}
+                      {                                                                                           }
                       <Link className="nav-link" href="/" onClick={scrollToTop}>
                         {t('NAVBAR.HOME')}
                       </Link>

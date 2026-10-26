@@ -1,9 +1,6 @@
 'use client';
-// <mat-radio-group>/<mat-radio-button> (Angular Material 7.3) with the same DOM
-// and classes, so the prebuilt theme (legacy.css) and the component styles
-// (material.css) render it identically. Ripple animation is not reproduced;
-// the persistent ripple element (hover/focus halo) is. Custom-element tags are
-// kept: they are display:inline by default, which the layout depends on.
+
+
 import { createContext, useContext, useId } from 'react';
 
 const GroupContext = createContext(null);

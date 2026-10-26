@@ -1,7 +1,6 @@
 'use client';
-// Port of src/app/Services/data.service.ts: in-memory BehaviorSubjects shared
-// between pages of one browser session (lost on a full page reload, as in the
-// Angular app). Initial values are the original's.
+
+
 import { useSyncExternalStore } from 'react';
 
 const readSession = (key) => {

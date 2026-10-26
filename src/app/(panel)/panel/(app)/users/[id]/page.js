@@ -1,7 +1,6 @@
 'use client';
-// user/view.blade.php: avatar, name, e-mail, phone, birthday, full address,
-// last login; Impersonate | Edit links; plus user-activity::recent-activity,
-// which the activity-log plugin's ShowUserComposer adds (10 latest entries).
+
+
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';

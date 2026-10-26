@@ -1,7 +1,6 @@
 'use client';
-// role/add-edit.blade.php and permission/add-edit.blade.php: name, display
-// name, description; Create/Update{Role,Permission}Request client rules
-// (name required, letters/digits/-_. only; unique on the server).
+
+
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Crumb, Messages, PanelPage, setFlash } from '@/components/panel/ui';

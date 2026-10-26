@@ -1,8 +1,6 @@
 'use client';
-// settings/auth.blade.php (settings.auth): Authentication tab (general,
-// two-factor, throttling) and Registration tab (general, reCAPTCHA). The
-// 2FA / reCAPTCHA cards show the "not configured" alert unless AUTHY_KEY /
-// RECAPTCHA_SITEKEY + RECAPTCHA_SECRETKEY are set on the backend.
+
+
 import { useState } from 'react';
 import { Crumb, Messages, PanelPage } from '@/components/panel/ui';
 import { SettingSwitch, phpTruthy, settingValue, useSettings } from '@/components/panel/settings';

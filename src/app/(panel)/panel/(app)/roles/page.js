@@ -1,6 +1,6 @@
 'use client';
-// role/index.blade.php (roles.manage): name, display name, user count; delete
-// only for removable roles.
+
+
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { DeleteLink } from '@/components/panel/confirm';

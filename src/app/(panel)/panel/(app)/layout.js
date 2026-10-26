@@ -1,4 +1,3 @@
-// layouts/app.blade.php: vendor.css + app.css, navbar + sidebar around the page.
 import PanelShell from '@/components/panel/PanelShell';
 
 export default function PanelAppLayout({ children }) {

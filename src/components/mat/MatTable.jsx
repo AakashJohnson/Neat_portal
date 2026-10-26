@@ -1,17 +1,6 @@
 'use client';
-// mat-table + matSort/mat-sort-header + mat-paginator + MatTableDataSource
-// (Angular Material 7.3.7), ported with the same DOM and data behaviour:
-//   - data source: filter (default predicate: all values joined by '◬',
-//     lower-cased, indexOf), then sort (sortingDataAccessor + comparator),
-//     then the current page;
-//   - sort: asc → desc → '' per column (start 'asc', disableClear false), header
-//     arrow view states (hint on hover/focus, active when sorted);
-//   - paginator: page size = first option unless given, range label
-//     "1 - 5 of 20" (MatPaginatorIntl 7.3.7: hyphen) / "0 of N", previous/next with tooltips above.
-//   const ds = useMatTableDataSource({ pageSizeOptions: [5, 10, 25, 100] });
-//   ds.setData(rows); ds.applyFilter(text)
-//   <MatTable dataSource={ds} columns={[{ id, header, cell: (row) => … , sortable, headerClass, cellClass }]} />
-//   <MatPaginator dataSource={ds} />
+
+
 import { useMemo, useState } from 'react';
 import MatFormField from './MatFormField';
 import { MatOption, MatSelect } from './MatSelect';

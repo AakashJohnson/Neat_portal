@@ -1,7 +1,6 @@
 'use client';
-// permission/index.blade.php (permissions.manage): the permissions × roles
-// checkbox matrix ("Save Permissions" syncs every role), edit / delete per
-// permission (delete only when removable).
+
+
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { DeleteLink } from '@/components/panel/confirm';

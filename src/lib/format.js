@@ -1,33 +1,29 @@
-// Shared helpers that replace Angular pipes and template utilities.
 import DOMPurify from 'dompurify';
 import { FILES_ORIGIN } from '@/lib/config';
 import { ngSanitizeHtml } from '@/lib/ngSanitize';
 
-/**
- * [innerHTML] binding: Angular's sanitizer (lib/ngSanitize.js), then DOMPurify.
- * Server render returns '' and the client fills it.
- */
+
 export function sanitize(html) {
   if (html == null) return '';
   if (typeof window === 'undefined') return '';
-  // Angular's own sanitizer decides what is rendered (identical output); DOMPurify
-  // runs afterwards as defense in depth and does not change already-safe markup.
+
+
   let safe;
   try {
     safe = ngSanitizeHtml(html);
   } catch (e) {
-    console.error(e); // Angular threw here too; the binding rendered nothing.
+    console.error(e);
     return '';
   }
-  // target is allowed by Angular (links opening in a new tab); unknown protocols
-  // only appear as Angular's inert "unsafe:…" prefix.
+
+
   return DOMPurify.sanitize(safe, { ADD_ATTR: ['target'], ALLOW_UNKNOWN_PROTOCOLS: true });
 }
 
 /** `{{ imageUrl }}/files/...` — public URL of an uploaded file. */
 export const fileUrl = (subPath) => `${FILES_ORIGIN}/${String(subPath).replace(/^\/+/, '')}`;
 
-/** Angular DatePipe subset: 'mediumDate' (default), 'dd/MM/yyyy', 'yyyy-MM-dd', 'shortDate'. */
+
 export function fmtDate(value, format = 'mediumDate') {
   if (!value) return '';
   const d = new Date(String(value).includes('T') ? value : `${String(value).replace(' ', 'T')}Z`);
@@ -48,7 +44,7 @@ export function fmtDate(value, format = 'mediumDate') {
 
 export const titleCase = (s) => String(s ?? '').replace(/\w\S*/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase());
 
-/** Angular CurrencyPipe default (USD symbol); NEAT templates use INR explicitly where needed. */
+
 export const fmtCurrency = (v, code = 'INR') => (v == null || v === '' ? '' : new Intl.NumberFormat('en-IN', { style: 'currency', currency: code }).format(Number(v)));
 
 export const fmtNumber = (v) => (v == null || v === '' ? '' : new Intl.NumberFormat('en-US').format(Number(v)));

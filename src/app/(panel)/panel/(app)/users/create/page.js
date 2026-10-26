@@ -1,6 +1,6 @@
 'use client';
-// user/add.blade.php → UsersController@store (CreateUserRequest): the user is
-// created Active and verified, then the list shows "User created successfully.".
+
+
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AuthFields, DetailsFields } from '@/components/panel/userForms';

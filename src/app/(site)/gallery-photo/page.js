@@ -1,14 +1,10 @@
-// Port of components/pages/gallery-photo/gallery-photo.component.{html,ts}
-// (the ImageName.json-driven grid is commented out in the original template;
-// the nine fixed images below are what it renders).
 import SiteChrome from '@/components/layout/SiteChrome';
 import Scope from '@/components/common/Scope';
 import LightboxGallery from '@/components/common/LightboxGallery';
 
 const IMAGES = ['g01', 'g09', 'g02', 'g10', 'g03', 'g11', 'g04', 'g12', 'g05'].map((n) => `/assets/img/${n}.jpg`);
 
-// R-31 (original defect, reproduced): the template calls onClick(1) on the
-// first image and onClick(2) on all others; onClick(n) opens slide n + 1.
+
 const THUMB_SLIDES = [2, 3, 3, 3, 3, 3, 3, 3, 3];
 
 export default function GalleryPhotoPage() {

@@ -1,7 +1,6 @@
 'use client';
-// Route "admin/reports" → AdminReportsComponent: Excel exports (SheetJS +
-// FileSaver, "<name>_export_<timestamp>.xlsx"). The tile counters are never
-// loaded in the original, so they stay empty.
+
+
 import Link from 'next/link';
 import { saveAs } from 'file-saver';
 import MatIcon from '@/components/mat/MatIcon';

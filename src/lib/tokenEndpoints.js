@@ -1,10 +1,3 @@
-// Endpoints the Angular services called with `?token=` + localStorage token
-// (extracted from src/app/Services/*.service.ts). The client marks these
-// requests with an empty `token` parameter; the BFF replaces it with the
-// session JWT, or with the string "null" when there is no session — exactly
-// what Angular sent when localStorage had no token. Endpoints not listed were
-// called without a token and are proxied without one. Hardened purchase-list
-// endpoints also require the current session even though Angular omitted it.
 export const TOKEN_ENDPOINTS = new Set([
   'addComment', 'addReplyToComment', 'addToCart', 'allocateseat', 'applyForFreeCourse', 'applyForPaidCourse',
   'assignFreeCourse', 'assignPaidCourse', 'changeProductStatus', 'checkCompanySecretCode', 'checkFileUpload',

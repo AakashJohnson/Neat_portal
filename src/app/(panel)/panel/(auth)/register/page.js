@@ -1,10 +1,6 @@
 'use client';
-// auth/register.blade.php (RegisterController, `registration` middleware:
-// 404 unless reg_enabled). RegisterRequest client rules; the server also
-// requires `phone`, which the form never sends (R-41), so every web sign-up
-// fails with "The phone field is required." exactly as in the original.
-// The success message is shown on the login form (DEV: the original flashed
-// it to "/", whose auth redirect dropped it).
+
+
 import Link from 'next/link';
 import { notFound, useRouter } from 'next/navigation';
 import { useState } from 'react';

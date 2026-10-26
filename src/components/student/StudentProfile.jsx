@@ -1,9 +1,6 @@
 'use client';
-// Port of components/users/student/student-profile/student-profile.component.{html,ts}
-// (inside the student shell; also the shell's default child "/student").
-// View mode shows the saved details; "Edit" calls editStudentDetails and enables
-// the form. Template parts that referenced controls not in the form are
-// commented out in the original and not rendered.
+
+
 import Scope from '@/components/common/Scope';
 import { MatError } from '@/components/mat/MatError';
 import MatInput from '@/components/mat/MatInput';

@@ -1,7 +1,6 @@
 'use client';
-// The panel's charts use the original Chart.js 2 build (assets/js/chart.min.js),
-// loaded once, with the configuration of as/dashboard-admin.js /
-// as/dashboard-default.js.
+
+
 import { useEffect } from 'react';
 
 let loading = null;

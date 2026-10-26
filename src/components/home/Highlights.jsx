@@ -107,12 +107,12 @@ export default function Highlights() {
                 <div className="force-overflow">
                   <div className="internshipMainDivHmcar">
                     {products.map((product, i) => (
-                      // Index key: the listing can contain the same product twice (join duplicates), as in Angular.
+
                       <div className="col-md-4 col-sm-2 col-xs-12 lstCat" key={i}>
                         <div className="lstCatIn">
                           <a href="#" onClick={(e) => { e.preventDefault(); showProductDetails(product?.code, product?.product_type); }}>
                             <div className="CatInImg">
-                              {/* No alt, as in the original: a missing logo shows the browser's broken-image box. */}
+                              {                                                                                      }
                               <img src={fileUrl(`files/course_logo/${product?.course_logo_file}`)} />
                             </div>
                             <div className="lstHdngCnt">

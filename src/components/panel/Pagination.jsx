@@ -1,8 +1,6 @@
 'use client';
-// $paginator->render() with resources/views/vendor/pagination/bootstrap-4
-// .blade.php: « 1 2 … n », Laravel's UrlWindow (onEachSide = 3: the whole
-// range up to 13 pages, otherwise first two + window + last two), current
-// page as a span, other query-string parameters kept on the links.
+
+
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 
