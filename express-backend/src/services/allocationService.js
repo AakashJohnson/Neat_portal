@@ -1,10 +1,9 @@
-// Recovered from the original ProductRepository allocation rules.
 import { randomUUID } from 'node:crypto';
 import { db, table } from '../database/knex.js';
 import { env } from '../config/env.js';
 import { logger } from '../config/logger.js';
 import { requireAccount } from './auth/permissions.js';
-import { validateOrFail } from '../validators/laravelValidator.js';
+import { validateOrFail } from '../validators/validator.js';
 import { httpException } from '../http/respond.js';
 import { nowSql } from '../utils/time.js';
 import { sendMail } from '../integrations/mail/mailer.js';

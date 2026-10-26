@@ -1,14 +1,7 @@
 import { rateLimit } from 'express-rate-limit';
 import { clientIp } from '../utils/request.js';
 
-/**
- * Laravel `throttle:60,1` from the api middleware group: 60 requests per
- * minute per client, X-RateLimit-Limit / X-RateLimit-Remaining on every
- * response, 429 {"message":"Too Many Attempts."} with Retry-After when exceeded.
- * /api/panel/* replaces Laravel *web* routes, which had no such throttle (one
- * server-rendered request per page; the port needs several API calls per
- * page), so it is exempt; the panel login keeps its own ThrottlesLogins.
- */
+
 export const apiThrottle = (limit = 60) =>
   rateLimit({
     windowMs: 60_000,
@@ -30,7 +23,7 @@ export const apiThrottle = (limit = 60) =>
     requestPropertyName: 'rateLimit',
   });
 
-/** Adds Laravel's rate-limit headers to successful responses too. */
+
 export const rateLimitHeaders = (req, res, next) => {
   if (req.rateLimit) {
     res.set('X-RateLimit-Limit', String(req.rateLimit.limit));

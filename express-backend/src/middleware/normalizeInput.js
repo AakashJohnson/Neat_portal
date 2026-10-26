@@ -1,5 +1,3 @@
-// Laravel global middleware TrimStrings (except password fields) followed by
-// ConvertEmptyStringsToNull, applied to query string and body recursively.
 const TRIM_EXCEPT = new Set(['password', 'password_confirmation']);
 
 function normalize(value, key) {

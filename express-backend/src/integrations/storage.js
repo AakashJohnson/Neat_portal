@@ -1,7 +1,3 @@
-// Local file storage under Laravel's public/ directory (PUBLIC_STORAGE_PATH),
-// so files uploaded by either backend keep the same public URLs:
-//   /files/course_logo/<name>, /files/product_video/<name>,
-//   /files/b2b_discount_table/<name>, /files/mou_file/<name>
 import { mkdir, rename, copyFile, unlink, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { env } from '../config/env.js';
@@ -18,7 +14,7 @@ export function publicPath(...parts) {
   return full;
 }
 
-/** Laravel UploadedFile::move(): move a temp upload into public/<subPath>/<fileName>. */
+
 export async function moveUpload(tempPath, subPath, fileName) {
   const dir = publicPath(subPath);
   await mkdir(dir, { recursive: true });

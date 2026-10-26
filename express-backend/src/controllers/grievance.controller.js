@@ -2,7 +2,7 @@ import { asyncHandler, send } from '../http/asyncHandler.js';
 import * as grievance from '../services/grievanceService.js';
 import { input } from '../utils/request.js';
 
-/** Laravel url('/') of the current request — used for links/logos in mails. */
+
 export const appUrlOf = (req) => `${req.protocol}://${req.get('host')}`;
 
 export const submitGrievance = asyncHandler(async (req, res) => {

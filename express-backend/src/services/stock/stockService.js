@@ -6,16 +6,14 @@ import path from 'node:path';
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import sharp from 'sharp';
 import { db, table } from '../../database/knex.js';
-import { validateOrFail } from '../../validators/laravelValidator.js';
+import { validateOrFail } from '../../validators/validator.js';
 import { httpException, HttpError } from '../../http/respond.js';
 import { hashPassword } from '../auth/authService.js';
 import { hasPermissions, rolePermissions } from '../auth/permissions.js';
 import { logActivity } from '../../repositories/activityRepository.js';
 import { publicPath } from '../../integrations/storage.js';
-import { settingEnabled } from '../../config/settings.js';
+import { loadSettings, settingEnabled } from '../../config/settings.js';
 import { phpEmpty } from '../../utils/str.js';
-import { readFileSync } from 'node:fs';
-import { env } from '../../config/env.js';
 import { nowSql } from '../../utils/time.js';
 import { looseEq } from '../../utils/php.js';
 import { phpInt } from '../../http/paginate.js';
@@ -40,7 +38,7 @@ async function findOr404(tbl, id) {
   return row;
 }
 
-/** The per_page value Laravel echoes in meta: the raw input when truthy, else the default. */
+
 const rawPerPage = (value, fallback) => (value === null || value === undefined || value === '' || value === '0' ? fallback : value);
 
 /** `$request->per_page ?: default` (PHP truthiness). */
@@ -243,7 +241,7 @@ export async function createUser(req, input) {
 
 export const showUser = async (req, id) => ok(userTransformer(req, await findOr404('users', id)));
 
-/** PUT|PATCH /api/users/{user} — UpdateUserRequest (unique rules ignore the *acting* admin's id, as in the original). */
+
 export async function updateUser_(req, ctx, id, input) {
   const target = await findOr404('users', id);
   const actingId = ctx.user.id;
@@ -259,10 +257,8 @@ export async function updateUser_(req, ctx, id, input) {
   await updateUser(target.id, pick(input, ['email', 'password', 'username', 'first_name', 'last_name', 'phone', 'address', 'country_id', 'birthday', 'status', 'role_id']));
   const updated = await users().where('id', target.id).first();
   await log(ctx, `Updated profile details for ${nameOrEmail(updated)}.`);
-  // DEV-14: the original compared the *updated* model with the request
-  // ($user->status != $request->status), which is never true after the update,
-  // so banning through the API never revoked sessions/tokens. The port uses
-  // the status before the update, as the code intended.
+
+
   if (target.status !== 'Banned' && input.status === 'Banned') {
     // Banned → InvalidateSessionsAndTokens + "Banned user :name."
     await log(ctx, `Banned user ${nameOrEmail(updated)}.`);
@@ -421,11 +417,7 @@ export async function deletePermission(ctx, id) {
 
 /** GET /api/settings — Setting::all() (the whole settings.json) */
 export function settings() {
-  try {
-    return ok(JSON.parse(readFileSync(path.resolve(env.SETTINGS_PATH), 'utf8')));
-  } catch {
-    return ok({});
-  }
+  return ok(loadSettings());
 }
 
 export const countries = async (req) => ok((await db(table('countries'))).map((c) => countryTransformer(req, c)));
@@ -543,7 +535,6 @@ export async function socialLogin(input) {
   else if (!providers.includes(input.network)) errors.network = ['The selected network is invalid.'];
   if (input.social_token == null || input.social_token === '') errors.social_token = ['The social token field is required.'];
   if (Object.keys(errors).length) throw new HttpError(422, { message: 'The given data was invalid.', errors });
-  // Without provider credentials Socialite::userFromToken() throws in the original.
+
   return ok({ error: 'Could not connect to specified social network.' }, 500);
 }
-

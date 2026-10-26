@@ -1,4 +1,3 @@
-// Port of app/Mail/B2BCompany.php + resources/views/mail/b2b-company.blade.php
 import { e, renderRawHtml } from '../markdownMail.js';
 
 export function b2bCompany(c) {

@@ -14,7 +14,7 @@ export function approvedProductsQuery() {
     .where(`${table('product_details')}.product_active`, 'Approved');
 }
 
-/** Laravel inRandomOrder() on MySQL. */
+
 export const inRandomOrder = (q) => q.orderByRaw('RAND()');
 
 /** `->where(function ($q) { company_name like %x% or course_name like %x% })` */

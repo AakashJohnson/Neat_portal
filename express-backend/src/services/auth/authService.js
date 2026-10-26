@@ -12,16 +12,13 @@ export function getCredentials({ username, password }) {
   return isEmail(username) ? { email: username, password } : { username, password };
 }
 
-/**
- * Laravel bcrypt hashes use the "$2y$" prefix; bcryptjs only emits "$2a$"/"$2b$"
- * but the algorithm is identical, so the prefix is normalised for comparison.
- */
+
 export async function checkPassword(plain, hash) {
   if (typeof hash !== 'string' || !hash.startsWith('$2')) return false;
   return bcrypt.compare(String(plain), hash.replace(/^\$2y\$/, '$2b$'));
 }
 
-/** Laravel Hash::make() equivalent: bcrypt cost 10 with the "$2y$" prefix. */
+
 export async function hashPassword(plain) {
   const hash = await bcrypt.hash(String(plain), 10);
   return hash.replace(/^\$2[ab]\$/, '$2y$');

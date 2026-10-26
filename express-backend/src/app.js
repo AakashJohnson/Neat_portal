@@ -11,12 +11,15 @@ import { normalizeInput } from './middleware/normalizeInput.js';
 import { publicPath } from './integrations/storage.js';
 import { healthRouter } from './routes/health.routes.js';
 import { apiRouter } from './routes/index.js';
+import { loadSettings } from './config/settings.js';
+import { projectPath } from './config/paths.js';
 
 /**
  * Builds the Express application. Kept separate from server.js so tests can
  * exercise it with supertest without opening a port.
  */
 export function createApp({ rateLimit = 60 } = {}) {
+  loadSettings();
   const app = express();
 
   app.disable('x-powered-by');
@@ -25,7 +28,7 @@ export function createApp({ rateLimit = 60 } = {}) {
   // activity log): Next.js BFF on the same host by default; behind a reverse
   // proxy set TRUST_PROXY (Express syntax: hop count, subnet list, …).
   app.set('trust proxy', /^\d+$/.test(env.TRUST_PROXY) ? Number(env.TRUST_PROXY) : env.TRUST_PROXY);
-  // Laravel accepts PHP-style nested query strings (a[b]=c).
+
   app.set('query parser', 'extended');
 
   app.use(
@@ -42,9 +45,7 @@ export function createApp({ rateLimit = 60 } = {}) {
 
   app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
-  // Laravel sent "Access-Control-Allow-Origin: *". The port uses an allow-list
-  // (SECURITY_REVIEW: SEC-CORS) and also allows the Authorization header so
-  // clients no longer need to put the JWT in the query string.
+
   const origins = env.CORS_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean);
   app.use(
     cors({
@@ -57,15 +58,15 @@ export function createApp({ rateLimit = 60 } = {}) {
   app.use(express.json({ limit: '25mb' }));
   app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
-  // Laravel served public/ at the web root; uploaded files keep their URLs.
-  // Static only (no script execution), no directory listings, no dotfiles.
+
   const statics = { index: false, dotfiles: 'deny', fallthrough: true, maxAge: '1h' };
   app.use('/files', express.static(publicPath('files'), statics));
   app.use('/upload', express.static(publicPath('upload'), statics));
   app.use('/assets', express.static(publicPath('assets'), statics));
+  app.use('/assets', express.static(projectPath('assets', 'public'), statics));
 
   app.use('/health', healthRouter);
-  // Laravel api group: throttle:60,1 (rateLimit is only raised by the test suite).
+
   app.use('/api', normalizeInput, apiThrottle(rateLimit), rateLimitHeaders, apiRouter);
 
   app.use(notFound);

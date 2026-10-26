@@ -1,6 +1,3 @@
-// Renders Laravel "markdown mailables" (@component('mail::message')) to the
-// same HTML: resources/views/vendor/mail/html/{layout,header,footer,table,
-// button,panel}.blade.php with the project's themes/default.css inlined.
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { Marked } from 'marked';
@@ -11,7 +8,7 @@ const marked = new Marked({ gfm: true, breaks: false });
 
 const ENTITIES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
 
-/** Blade {{ $value }}: htmlspecialchars with ENT_QUOTES. */
+
 export const e = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ENTITIES[c]);
 
 const md = (source) => marked.parse(source);
@@ -33,17 +30,14 @@ export const panel = (markdown) => `<table class="panel" width="100%" cellpaddin
     <tr><td class="panel-item">${md(markdown)}</td></tr></table></td></tr>
 </table>`;
 
-/**
- * Markdown mailables whose view is plain HTML (no mail::message component):
- * Laravel renders the view as-is and only inlines the theme CSS.
- */
+
 export function renderRawHtml(html) {
   const text = html.replace(/<style[\s\S]*?<\/style>/gi, '').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
   return { html: juice.inlineContent(html, css), text };
 }
 
 /**
- * Wraps a mail::message body in the Laravel layout.
+ * Wrap a Markdown message in the portal email layout.
  * @param {string} bodyMarkdown markdown (may contain inline HTML from the components above)
  * @param {{ appUrl: string, appName?: string, year?: number }} opts
  * @returns {{ html: string, text: string }}
@@ -83,7 +77,7 @@ ${md(bodyMarkdown)}
 </body>
 </html>`;
 
-  // Laravel's text part is the markdown source with HTML stripped.
+
   const text = bodyMarkdown.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').replace(/\n{3,}/g, '\n\n').trim();
   return { html: juice.inlineContent(html, css), text };
 }

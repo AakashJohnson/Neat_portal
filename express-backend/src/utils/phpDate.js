@@ -1,11 +1,3 @@
-// Carbon::parse($string)->age as used by InstituteController::validateStudent()
-// for the "Date of Birth" column of institute Excel uploads.
-//
-// The rules below reproduce PHP 7.4's date parser for the formats that Excel
-// (SheetJS sheet_to_json raw:false) and people realistically produce. They were
-// derived from, and are unit-tested against, real PHP output
-// (tests/unit/phpDate.test.js). Anything outside these formats raises the same
-// warning text PHP raised (Laravel turned it into the API "reason").
 import { PhpError } from './php.js';
 
 const MONTHS = {
@@ -14,8 +6,7 @@ const MONTHS = {
   dec: 12, december: 12,
 };
 
-// Inside Laravel the failure surfaces from DateTime::__construct() (observed
-// via the live reference); positions/reasons match PHP's parser.
+
 const fail = (s, pos, reason = 'Unexpected character') =>
   new PhpError(`DateTime::__construct(): Failed to parse time string (${s}) at position ${pos} (${s[pos] ?? ''}): ${reason}`);
 

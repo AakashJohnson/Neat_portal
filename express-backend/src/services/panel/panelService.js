@@ -1,15 +1,9 @@
-// Web-only (Blade panel) actions of the Laravel app, exposed as authenticated
-// JSON endpoints for the Next.js admin panel (see ARCHITECTURE_DECISIONS ADR-07):
-//   * settings updates (Web\SettingsController::update/enable*/disable*)
-//   * impersonation (lab404/laravel-impersonate, session-based in Laravel)
-//   * company profile tools (Web\CompanyCreateProfile)
-import { readFileSync, writeFileSync } from 'node:fs';
-import path from 'node:path';
+import { writeFileSync } from 'node:fs';
 import { db, table } from '../../database/knex.js';
 import { env } from '../../config/env.js';
 import { HttpError, httpException } from '../../http/respond.js';
 import { hasPermissions, rolePermissions } from '../auth/permissions.js';
-import { setting } from '../../config/settings.js';
+import { loadSettings, setting } from '../../config/settings.js';
 import { issueToken } from '../auth/jwtService.js';
 import { hashPassword } from '../auth/authService.js';
 import { logActivity } from '../../repositories/activityRepository.js';
@@ -48,21 +42,13 @@ const SETTING_GROUPS = {
  * POST /api/panel/settings/{group} — Setting::set() for every posted key, then
  * Setting::save() and "Updated website settings." in the activity log.
  */
-/**
- * GET /api/panel/settings/{group} — what settings/{general,auth,notifications}
- * .blade.php read through setting(), plus whether the Authy and reCAPTCHA keys
- * are configured (the partials show an info alert instead of the toggle).
- */
+
+
 export async function readSettings(ctx, group) {
   const permission = SETTING_GROUPS[group];
   if (!permission) throw httpException(404, '');
   if (!(await hasPermissions(ctx.user, [permission]))) throw httpException(403, 'Forbidden.');
-  let data = {};
-  try {
-    data = JSON.parse(readFileSync(path.resolve(env.SETTINGS_PATH), 'utf8'));
-  } catch {
-    // missing settings file: every setting() falls back to its default
-  }
+  const data = loadSettings();
   return ok({ settings: data, two_factor_configured: Boolean(env.AUTHY_KEY), captcha_configured: Boolean(env.RECAPTCHA_SITEKEY && env.RECAPTCHA_SECRETKEY) });
 }
 
@@ -71,8 +57,8 @@ export async function updateSettings(ctx, group, input) {
   if (!permission) throw httpException(404, '');
   if (!(await hasPermissions(ctx.user, [permission]))) throw httpException(403, 'Forbidden.');
 
-  const file = path.resolve(env.SETTINGS_PATH);
-  const data = JSON.parse(readFileSync(file, 'utf8'));
+  const file = env.SETTINGS_PATH;
+  const data = loadSettings();
   for (const [key, value] of Object.entries(input)) {
     if (key === '_token' || key === 'token') continue;
     setDotted(data, key, value);
@@ -84,12 +70,7 @@ export async function updateSettings(ctx, group, input) {
 
 // --------------------------------------------------------------- context
 
-/**
- * GET /api/panel/context — what the Blade layout read from the session for
- * every page: the user (avatar, name), the role's permission names (sidebar
- * items, @permission blocks), whether an impersonation is active, and the
- * settings the views use.
- */
+
 export async function context(req, ctx) {
   const permissions = (await rolePermissions(ctx.user.role_id)).map((p) => p.name);
   const role = await db(table('roles')).where('id', ctx.user.role_id).first('id', 'name', 'display_name');
@@ -150,11 +131,7 @@ export async function fetchNeatId({ neat_id }) {
   return ok({ msg: 'succes', data: rows[0] });
 }
 
-/**
- * POST /api/panel/company-profile — company_details row + company user
- * (role 4, Active, verified). DEV-15/16: admin-only; only the User model's
- * fillable attributes are written and the password is bcrypt-hashed once.
- */
+
 export async function createCompanyProfile(input) {
   const now = nowSql();
   await db(table('company_details')).insert({ created_at: now, neat_id: input.neat_id ?? null, name: input.company ?? null });
@@ -191,11 +168,7 @@ export async function getEoiProducts({ neat_id }) {
   return ok({ msg: 'succes', data: rows[0] });
 }
 
-/**
- * POST /api/panel/company-profile/product-details {code}
- * DEV-15: the original concatenated $request->code into raw SQL (injection);
- * the same query is parameterised here.
- */
+
 export async function getEoiProductDetails({ code }) {
   const eoi = ident(PHASE2EOI());
   const reg = ident(PHASE2());

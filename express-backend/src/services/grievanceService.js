@@ -1,7 +1,7 @@
 // Port of Api\GrievanceController.
 import { db, table } from '../database/knex.js';
-import { legacyAuthenticate } from './auth/legacyAuth.js';
-import { legacyRun, legacyValidate } from './legacyErrors.js';
+import { tokenAuthenticate } from './auth/tokenAuth.js';
+import { legacyRun, legacyValidate } from './serviceErrors.js';
 import { sendMail } from '../integrations/mail/mailer.js';
 import { feedbackRaised } from '../integrations/mail/templates/feedbackRaised.js';
 import { unixNow } from '../utils/time.js';
@@ -28,15 +28,14 @@ export const submitGrievance = (input) =>
     });
     if (!(id > 0)) return { status: 200, body: { message: 'Error', reason: 'Data not inserted.' } };
 
-    // The original resolved the company's e-mail when company_name was given,
-    // but every Mail::send() in this method is commented out, so no mail is sent.
+
     return { status: 200, body: { message: 'Success', reason: 'Grievance Raised Successfully.' } };
   });
 
 /** POST /api/submitFeedback (JWT, manual guard). */
 export const submitFeedback = (req, input, { appUrl }) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, ['user_id', 'uuid', 'email']);
+    const { payload } = await tokenAuthenticate(req, ['user_id', 'uuid', 'email']);
     await legacyValidate(input, {
       name: 'required',
       email: 'required|email',
@@ -71,7 +70,7 @@ export const getAnnouncements = () =>
     return { status: 200, body: { message: 'Success', announcements, news, articales } };
   });
 
-/** GET /api/get-details-article?id= (public; no try/catch in the original). */
+
 export async function getDetailsArticle({ id }) {
   const articles = await db(table('articles')).select('title', 'id', 'description').where('id', id);
   return { status: 200, body: { message: 'Success', articles } };

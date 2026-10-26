@@ -1,10 +1,10 @@
 // Port of Api\StudentController (students, learners, FAQs, states, colleges,
 // free-seat codes).
 import { db, table } from '../database/knex.js';
-import { legacyAuthenticate, LegacyResponse } from './auth/legacyAuth.js';
+import { tokenAuthenticate, LegacyResponse } from './auth/tokenAuth.js';
 import { assertOwnApplication } from './auth/hardening.js';
 import { extractToken, verifyToken } from './auth/jwtService.js';
-import { legacyRun, legacyValidate, legacyErrorResponse } from './legacyErrors.js';
+import { legacyRun, legacyValidate, legacyErrorResponse } from './serviceErrors.js';
 import { sendMail } from '../integrations/mail/mailer.js';
 import { freeSeatVerification } from '../integrations/mail/templates/freeSeatVerification.js';
 import { nowSql } from '../utils/time.js';
@@ -22,7 +22,7 @@ function claim(payload, key) {
 
 // ------------------------------------------------------------------ FAQs
 
-/** POST /api/getFaqs {role} — bare JSON array, no try/catch in the original. */
+
 export const getFaqs = async ({ role }) => ok(await db(table('faqs')).where('role', role));
 
 /** POST /api/getFaqsHindi {role} */
@@ -49,7 +49,7 @@ const STUDENT_RULES = {
 /** POST /api/submitStudentDetails */
 export const submitStudentDetails = (req, input) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, STUDENT_KEYS);
+    const { payload } = await tokenAuthenticate(req, STUDENT_KEYS);
     await legacyValidate(input, STUDENT_RULES);
 
     const appNo = claim(payload, 'application_number');
@@ -79,9 +79,8 @@ export const submitStudentDetails = (req, input) =>
     if (await details().where('application_number', appNo).first()) {
       await details().where('application_number', appNo).update(row);
     } else {
-      // The original checks uniqueness against $request->email / ->contact_number,
-      // fields the form no longer sends (commented-out rules) — so these compare
-      // against NULL. Behaviour preserved.
+
+
       if (await details().where('email', input.email ?? null).first()) {
         return ok({ message: 'Error', reason: 'Email already exists in database' });
       }
@@ -96,7 +95,7 @@ export const submitStudentDetails = (req, input) =>
 /** GET /api/getStudentDetails */
 export const getStudentDetails = (req) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, STUDENT_KEYS);
+    const { payload } = await tokenAuthenticate(req, STUDENT_KEYS);
     const studentDetails = await db(table('student_details')).where('email', claim(payload, 'email'));
     const first = offset(studentDetails, 0);
     const updated = first.id != null && looseEq(first.isDetailsSubmitted, 'Yes') ? 'Yes' : 'No';
@@ -106,7 +105,7 @@ export const getStudentDetails = (req) =>
 /** GET /api/editStudentDetails — re-opens the student form */
 export const editStudentDetails = (req) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, STUDENT_KEYS);
+    const { payload } = await tokenAuthenticate(req, STUDENT_KEYS);
     await db(table('student_details'))
       .where('application_number', claim(payload, 'application_number'))
       .update({ updated_at: nowSql(), isDetailsSubmitted: 'No' });
@@ -130,25 +129,25 @@ const purchaseQuery = (applicationNumber, courseType) =>
     .where(`${table('product_purchased_audit')}.status`, 'Payment Successful')
     .where(`${table('product_purchased_audit')}.course_type`, courseType);
 
-// The original catch block uses the key "asdlkfj" for the error text.
+
 const purchasesRun = (fn) =>
   legacyRun(fn).then((r) => (r.body?.reason !== undefined && r.body.message === 'Error' && r.status === 200 ? ok({ message: 'Error', asdlkfj: r.body.reason }) : r));
 
-/** POST /api/getPurchasedProducts {application_number} — public in Laravel (SEC-IDOR-01) */
+
 export const getPurchasedProducts = (req, { application_number }) =>
   purchasesRun(async () => {
     await assertOwnApplication(req, application_number);
     return ok({ message: 'Success', products: await purchaseQuery(application_number, 'Paid') });
   });
 
-/** POST /api/getFreeProducts {application_number} — public in Laravel (SEC-IDOR-01) */
+
 export const getFreeProducts = (req, { application_number }) =>
   purchasesRun(async () => {
     await assertOwnApplication(req, application_number);
     return ok({ message: 'Success', products: await purchaseQuery(application_number, 'Free') });
   });
 
-/** POST /api/getAppliedProducts {application_number} — public in Laravel (SEC-IDOR-01) */
+
 export const getAppliedProducts = (req, { application_number }) =>
   purchasesRun(async () => {
     await assertOwnApplication(req, application_number);
@@ -165,7 +164,7 @@ export const getAppliedProducts = (req, { application_number }) =>
 /** POST /api/sendFreeSeatVerificationMail {code} */
 export const sendFreeSeatVerificationMail = (req, { code }) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, STUDENT_KEYS);
+    const { payload } = await tokenAuthenticate(req, STUDENT_KEYS);
     const row = await db(table('free_seat_code')).where('product_code', code).first('company_secret_code');
     await sendMail({ to: claim(payload, 'email'), ...freeSeatVerification({ company_secret_code: row?.company_secret_code ?? null }) });
     return ok({ message: 'Success' });
@@ -215,7 +214,7 @@ export const checkCompanySecretCode = (req, input) =>
 /** POST /api/submitLearnerDetails */
 export const submitLearnerDetails = (req, input) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, STUDENT_KEYS);
+    const { payload } = await tokenAuthenticate(req, STUDENT_KEYS);
     await legacyValidate(input, { date_of_birth: 'required', age: 'required|integer|min:1|max:150', gender: 'required', profession: 'required|string|max:191' });
     const appNo = claim(payload, 'application_number');
     await db.transaction(async trx => {
@@ -240,16 +239,14 @@ export const submitLearnerDetails = (req, input) =>
 /** GET /api/getLearnerDetails */
 export const getLearnerDetails = (req) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, STUDENT_KEYS, { payloadFirst: true });
+    const { payload } = await tokenAuthenticate(req, STUDENT_KEYS, { payloadFirst: true });
     const appNo = claim(payload, 'application_number');
     const [{ n }] = await db(table('learner')).where('application_number', appNo).count({ n: '*' });
     if (Number(n) > 0) {
       return ok({ learner_present: 'Yes', learner_details: (await db(table('learner')).where('application_number', appNo).first()) ?? null });
     }
-    // DEV-05: the original returned the full users row from the query builder,
-    // including the bcrypt password hash and one-time secrets (Eloquent $hidden
-    // does not apply to DB::table()). Those columns are removed; all other
-    // fields are returned unchanged.
+
+
     const user = (await db(table('users')).where('application_number', appNo).first()) ?? null;
     return ok({ learner_present: 'No', learner_details: user && withoutSecrets(user) });
   });
@@ -257,7 +254,7 @@ export const getLearnerDetails = (req) =>
 /** GET /api/editLearnerDetails */
 export const editLearnerDetails = (req) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, STUDENT_KEYS);
+    const { payload } = await tokenAuthenticate(req, STUDENT_KEYS);
     await db(table('learner'))
       .where('application_number', claim(payload, 'application_number'))
       .update({ updated_at: nowSql(), isDetailsSubmitted: 'No' });
@@ -269,7 +266,7 @@ export const editLearnerDetails = (req) =>
 /** POST /api/getCollegeNames {college_state} — bare JSON array */
 export const getCollegeNames = (req, { college_state }) =>
   legacyRun(async () => {
-    await legacyAuthenticate(req, STUDENT_KEYS);
+    await tokenAuthenticate(req, STUDENT_KEYS);
     const names = await db(table('institute'))
       .distinct({ name: 'Institute Name' })
       .where('State', college_state)
@@ -284,18 +281,15 @@ export const getStates = () =>
     return ok({ message: 'Success', states: rows.map((r) => r.State) });
   }).then((r) => (r.body?.message === 'Error' ? ok({ message: 'Error' }) : r));
 
-/**
- * GET /api/checkFileUpload — no try/catch in the original: token problems are
- * uncaught (500, see DEV-04); no rows → empty 200 response.
- */
+
 export async function checkFileUpload(req) {
   let auth;
   try {
-    auth = await legacyAuthenticate(req, STUDENT_KEYS);
+    auth = await tokenAuthenticate(req, STUDENT_KEYS);
   } catch (err) {
     if (err instanceof LegacyResponse && err.status === 404) return { status: 404, body: err.body };
     if (err instanceof LegacyResponse) {
-      // Uncaught JWTException / ErrorException in the original → HTTP 500.
+
       return { status: 500, body: { message: err.body.reason } };
     }
     return legacyErrorResponse(err);

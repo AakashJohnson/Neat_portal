@@ -1,7 +1,5 @@
-// akaunting/setting with the json driver: storage/settings.json, shared with
-// Laravel during the transition (SETTINGS_PATH). Read on every call so admin
-// changes made through either backend take effect immediately.
-import { readFileSync } from 'node:fs';
+// Read on each call so saved admin settings take effect immediately.
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { env } from './env.js';
 import { phpEmpty } from '../utils/str.js';
@@ -18,18 +16,30 @@ const DEFAULTS = Object.freeze({
   login_reset_token_lifetime: '30',
 });
 
-function load() {
-  if (!env.SETTINGS_PATH) return {};
+export function loadSettings() {
+  let source;
   try {
-    return JSON.parse(readFileSync(path.resolve(env.SETTINGS_PATH), 'utf8'));
-  } catch {
-    return {};
+    source = readFileSync(env.SETTINGS_PATH, 'utf8');
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+    mkdirSync(path.dirname(env.SETTINGS_PATH), { recursive: true });
+    try {
+      writeFileSync(env.SETTINGS_PATH, JSON.stringify(DEFAULTS), { flag: 'wx', mode: 0o600 });
+    } catch (writeError) {
+      if (writeError.code !== 'EEXIST') throw writeError;
+    }
+    source = readFileSync(env.SETTINGS_PATH, 'utf8');
   }
+  let data;
+  try { data = JSON.parse(source); }
+  catch { throw new Error('The settings file contains invalid JSON. Restore a valid settings file before starting the API.'); }
+  if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('The settings file must contain a JSON object.');
+  return data;
 }
 
-/** setting('a.b'): dotted access like Laravel's Arr::get(). */
+
 export function setting(key, fallback = DEFAULTS[key]) {
-  let value = load();
+  let value = loadSettings();
   for (const part of key.split('.')) {
     if (value === null || typeof value !== 'object' || !(part in value)) return fallback;
     value = value[part];

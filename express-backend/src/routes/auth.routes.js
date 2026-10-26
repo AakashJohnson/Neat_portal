@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as auth from '../controllers/auth.controller.js';
 import { requireAuth, requireGuest } from '../middleware/auth.js';
-import { validateRequest } from '../validators/laravelValidator.js';
+import { validateRequest } from '../validators/validator.js';
 import { asyncHandler, send } from '../http/asyncHandler.js';
 import * as account from '../services/auth/accountService.js';
 import { requestAll } from '../utils/request.js';
@@ -21,7 +21,7 @@ authRouter.post('/register', handle((req) => account.register(requestAll(req))))
 authRouter.post('/register/verify-email/:token', handle((req) => account.verifyEmailToken(req.params.token)));
 authRouter.post('/resendEmailVerificationLink', handle((req) => account.resendEmailVerificationLink(requestAll(req))));
 
-// Password reset — stock broker (guest + password-reset) and the custom pair used by Angular.
+
 authRouter.post('/password/remind', requireGuest, handle((req) => account.passwordRemind(requestAll(req), ctx(req))));
 authRouter.post('/sendPasswordResetLink', handle((req) => account.sendPasswordResetLink(requestAll(req))));
 authRouter.post('/resetPassword', handle((req) => account.changePassword(requestAll(req))));

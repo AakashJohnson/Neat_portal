@@ -5,7 +5,7 @@ import { randomBytes, randomInt, randomUUID } from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import { db, table } from '../../database/knex.js';
 import { settingEnabled } from '../../config/settings.js';
-import { validateOrFail } from '../../validators/laravelValidator.js';
+import { validateOrFail } from '../../validators/validator.js';
 import { HttpError, httpException } from '../../http/respond.js';
 import { env } from '../../config/env.js';
 import { sendMail } from '../../integrations/mail/mailer.js';
@@ -61,8 +61,8 @@ export async function register(input) {
     let nominatedStudent = false;
     try {
       fresh = await db.transaction(async (trx) => {
-      // Serialize registrations of the same role, including the institute-ID
-      // check (the legacy users table has no unique constraint on that field).
+
+
         await trx(table('roles')).where('id', role.id).forUpdate().first();
         if (roleName === 'Institute' && await trx(table('users')).where({
           permanent_institute_id: input.permanent_institute_id, role_id: role.id,
@@ -73,8 +73,8 @@ export async function register(input) {
           ? await trx(table('student')).where('email', input.email).first('application_number')
           : null;
         nominatedStudent = existing?.application_number != null;
-        // Keep the legacy ten-digit shape, without collisions for registrations
-        // submitted during the same second.
+
+
         const applicationNumber = existing?.application_number ?? String(randomInt(1_000_000_000, 10_000_000_000));
         const [id] = await trx(table('users')).insert({
           email: input.email, username: input.username, password,
@@ -162,10 +162,7 @@ export async function verifyEmailToken(token) {
   return result.body.message === 'Success' ? ok({ success: true }) : result;
 }
 
-// --------------------------------------------------- custom password reset
 
-// DEV-12: the original reused a stored reset token forever. Tokens are now
-// only reused/accepted for 60 minutes (config/auth.php passwords.users.expire).
 const RESET_TOKEN_MINUTES = 60;
 const tokenFresh = (createdAt) =>
   createdAt != null && Date.now() - new Date(`${String(createdAt).replace(' ', 'T')}Z`).getTime() < RESET_TOKEN_MINUTES * 60_000;
@@ -198,7 +195,7 @@ export async function changePassword(input) {
   const user = await users().where('email', input.email).first('id');
   if (user) await users().where('id', user.id).update({ password: await hashPassword(input.password), updated_at: nowSql() });
   await db(table('password_resets')).where({ email: input.email, token: input.token }).delete();
-  // Original: response()->json(['data' => '...', Response::HTTP_CREATED]) → {"data":…,"0":201} with status 200.
+
   return ok({ data: 'Password Successfully Changed', 0: 201 });
 }
 
@@ -226,7 +223,7 @@ export async function passwordRemind(input, ctx) {
 
 // ------------------------------------------------------------------ mobile
 
-/** Eloquent toArray() of a users row ($hidden + $dates), minus secrets (DEV-05). */
+
 function serializeUser(row) {
   const out = withoutSecrets(row);
   if (out.birthday && /^\d{4}-\d{2}-\d{2}$/.test(out.birthday)) out.birthday = `${out.birthday} 00:00:00`;
@@ -244,12 +241,7 @@ export async function mobileLogin(input, ctx) {
   return ok({ success: true, message: 'Login successful', token, user: serializeUser(user) });
 }
 
-/**
- * POST /api/mobile/register — fails in the original under strict SQL mode
- * (role_id/status are NOT NULL without defaults and are not supplied), and it
- * double-hashed the password (R-07). The port reproduces the failure (500)
- * instead of creating unusable accounts.
- */
+
 export async function mobileRegister(input) {
   await validateOrFail(input, { name: 'required', email: 'required|email|unique:users,email', password: 'required|min:6' });
   return { status: 500, body: { message: 'Server Error' } };

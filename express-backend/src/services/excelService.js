@@ -1,15 +1,13 @@
-// Port of Api\ExcelController — JSON data the admin UI turns into .xlsx files.
-// DEV-08: admin role required (the original accepted any logged-in user).
 import { db, table } from '../database/knex.js';
-import { legacyAuthenticate, LegacyResponse } from './auth/legacyAuth.js';
-import { legacyRun } from './legacyErrors.js';
+import { tokenAuthenticate, LegacyResponse } from './auth/tokenAuth.js';
+import { legacyRun } from './serviceErrors.js';
 import { looseEq } from '../utils/php.js';
 
 const ok = (body) => ({ status: 200, body });
 const KEYS = ['user_id', 'uuid', 'email'];
 
 async function adminGuard(req) {
-  const { user } = await legacyAuthenticate(req, KEYS);
+  const { user } = await tokenAuthenticate(req, KEYS);
   if (Number(user.role_id) !== 1) throw new LegacyResponse(403, { message: 'Error', reason: 'Forbidden' });
 }
 

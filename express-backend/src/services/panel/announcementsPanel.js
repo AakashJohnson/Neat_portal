@@ -1,13 +1,5 @@
-// Web\AnnouncementsController, AnnouncementListController and the navbar hook
-// of neatapp/announcements, for the Next.js panel (ADR-07): the Blade views
-// show each announcement's creator (avatar, name, username), which the API
-// transformer does not include. Writes go through the same rules as the
-// original and log the same activity lines (ActivityLogSubscriber — including
-// its quirk of logging updates with the "created" text and an unfilled
-// :title); "E-Mail Notification" mails every user (SendEmailNotification),
-// in chunks of 200, after the response.
 import { db, table } from '../../database/knex.js';
-import { validateOrFail } from '../../validators/laravelValidator.js';
+import { validateOrFail } from '../../validators/validator.js';
 import { httpException } from '../../http/respond.js';
 import { logActivity } from '../../repositories/activityRepository.js';
 import { announcementTransformer, avatarUrl, fractalPaginate } from '../stock/transformers.js';

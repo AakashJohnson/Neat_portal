@@ -1,9 +1,6 @@
-// Subset of Laravel's validator that reproduces its rule semantics and the
-// messages from resources/lang/en/validation.php, so 422 responses match:
-//   {"message": "The given data was invalid.", "errors": {"field": ["..."]}}
-//
-// Rules are written exactly as in the Laravel source, e.g.
-//   { email: 'required|email|unique:users,email', password: 'required|min:6|confirmed' }
+
+
+
 import { db, table } from '../database/knex.js';
 import { HttpError } from '../http/respond.js';
 import { isEmail } from '../utils/str.js';
@@ -50,7 +47,7 @@ const MESSAGES = {
   },
 };
 
-// Laravel turns "first_name" into "first name" when building messages.
+
 const attributeName = (field) => field.replace(/_/g, ' ');
 
 const isEmptyValue = (v) =>
@@ -84,7 +81,7 @@ function format(template, field, replacements = {}) {
 }
 
 /**
- * Validate `data` against Laravel-style `rules`.
+ * Validate data against pipe-separated rules for each field.
  * @returns {Promise<Record<string,string[]>>} errors keyed by field (empty when valid)
  */
 export async function validate(data, rules) {
@@ -103,7 +100,7 @@ export async function validate(data, rules) {
       if (name === 'required') {
         if (empty) {
           add(field, format(MESSAGES.required, field));
-          break; // Laravel stops on a failed "implicit" required rule
+          break;
         }
         continue;
       }
@@ -183,7 +180,7 @@ export async function validate(data, rules) {
   return errors;
 }
 
-/** Throws the Laravel 422 response when validation fails. */
+
 export async function validateOrFail(data, rules) {
   const errors = await validate(data, rules);
   if (Object.keys(errors).length) {
@@ -191,7 +188,7 @@ export async function validateOrFail(data, rules) {
   }
 }
 
-/** Express middleware form: validates req.body merged with req.query (Laravel $request->all()). */
+
 export const validateRequest = (rules) => async (req, _res, next) => {
   try {
     await validateOrFail({ ...req.query, ...req.body }, rules);

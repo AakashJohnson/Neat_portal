@@ -17,8 +17,8 @@ export const stockRouter = Router();
 
 const ctx = (req) => ({ user: req.auth.user, ip: clientIp(req), userAgent: req.get('user-agent') ?? '' });
 const h = (fn) => asyncHandler(async (req, res) => send(res, await fn(req)));
-// Laravel resource routes include GET {id}/edit although the controllers have no edit():
-// BadMethodCallException → HTTP 500 (DEV-04 body).
+
+
 const missingEdit = (_req, res) => res.status(500).json({ message: 'Server Error' });
 
 const twoFactor = h(() => stock.assertTwoFactorEnabled());

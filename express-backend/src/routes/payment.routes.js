@@ -10,5 +10,3 @@ paymentRouter.post('/paymentSuccess', asyncHandler(async (req, res) => send(res,
 paymentRouter.post('/paymentFailure', asyncHandler(async (req, res) => send(res, await payment.paymentFailure(req, input(req, 'studentid', 'courseid')))));
 paymentRouter.get('/getInstitutesWithStudentsForExcel', asyncHandler(async (req, res) => send(res, await excel.getInstitutesWithStudents(req))));
 paymentRouter.get('/getUsersExcel', asyncHandler(async (req, res) => send(res, await excel.getUsersExcel(req, input(req, 'role_id')))));
-
-// UNRESOLVED (R-03): paymentRedirect — commented out in PaymentController.

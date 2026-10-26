@@ -3,10 +3,7 @@ import { nowSql } from '../utils/time.js';
 
 const users = () => db(table('users'));
 
-/**
- * Columns that must never leave the API (DEV-05). Neat\User::$hidden covered
- * password/remember_token for Eloquent, but DB::table() rows were returned raw.
- */
+
 export const SECRET_USER_COLUMNS = Object.freeze([
   'password',
   'remember_token',
@@ -20,10 +17,7 @@ export const withoutSecrets = (row) =>
 
 export const findById = (id) => users().where('id', id).first();
 
-/**
- * Laravel EloquentUserProvider::retrieveByCredentials(): every credential except
- * the password becomes a WHERE clause (email or username).
- */
+
 export function findByCredentials(credentials) {
   const q = users();
   for (const [key, value] of Object.entries(credentials)) {

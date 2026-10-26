@@ -1,9 +1,9 @@
 // Port of Api\InstituteController (institute profile, students, Excel uploads).
 import { db, table } from '../database/knex.js';
 import { randomInt } from 'node:crypto';
-import { legacyAuthenticate, LegacyResponse } from './auth/legacyAuth.js';
+import { tokenAuthenticate, LegacyResponse } from './auth/tokenAuth.js';
 import { requireAccount } from './auth/permissions.js';
-import { legacyRun, legacyValidate } from './legacyErrors.js';
+import { legacyRun, legacyValidate } from './serviceErrors.js';
 import { logger } from '../config/logger.js';
 import { carbonAge, carbonParse } from '../utils/phpDate.js';
 import { idx, looseEq, strOf, PhpError } from '../utils/php.js';
@@ -19,8 +19,7 @@ function claim(payload, key) {
 }
 
 /**
- * Laravel `$request->all()` for a JSON array body posted with ?token=...:
- * the body's numeric keys first, then query-string keys not in the body.
+ * Merge numeric body entries first, then query-string keys absent from the body.
  * @returns {Array<[string|number, unknown]>}
  */
 function allEntries(req) {
@@ -56,7 +55,7 @@ async function validateStudent(entries) {
     }
     return true;
   }
-  return null; // empty input: the original falls off the loop
+  return null;
 }
 
 /** InstituteController::deleteRecords() — manual rollback of rows inserted so far. */
@@ -71,7 +70,7 @@ async function deleteRecords(ids) {
  *   rowOf builds each insert row (may throw PhpError), failureName feeds the error reason.
  */
 async function excelUpload(req, { prepare = async () => ({}), rowOf, failureName }) {
-  const { payload } = await legacyAuthenticate(req, KEYS);
+  const { payload } = await tokenAuthenticate(req, KEYS);
   const ctx = await prepare(payload);
   const entries = allEntries(req);
   const recordsInserted = [];
@@ -90,8 +89,8 @@ async function excelUpload(req, { prepare = async () => ({}), rowOf, failureName
       recordsInserted.push(id);
     }
   } catch (err) {
-    // DEV-06: the original echo()'d $e->getMessage() before the JSON body,
-    // producing an unparsable response. The port logs it instead.
+
+
     logger.warn({ err: err.message }, 'institute excel upload row failed');
     await deleteRecords(recordsInserted);
     return ok({ message: 'Error', reason: `Invalid data for student: ${strOf(failureName(val))}` });
@@ -192,7 +191,7 @@ export const uploadExcelPaid = (req) =>
         aicte_code: idx(val, 'AICTE Code'),
         isEligibleFreeCourse: 'No',
       }),
-      // The original reports $val['Name'], a column the sheet does not have.
+
       failureName: (val) => idx(val, 'Name'),
     });
   });
@@ -200,7 +199,7 @@ export const uploadExcelPaid = (req) =>
 /** POST /api/submitInstituteDetails */
 export const submitInstituteDetails = (req, input) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, KEYS);
+    const { payload } = await tokenAuthenticate(req, KEYS);
     await legacyValidate(input, {
       institute_address: 'required',
       institute_contact_person_email: 'required|email|max:191',
@@ -245,7 +244,7 @@ export const submitInstituteDetails = (req, input) =>
 /** POST /api/submitStudentDetailsFromInstitute — add or edit one student of the institute. */
 export const submitStudentDetails = (req, input) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, KEYS);
+    const { payload } = await tokenAuthenticate(req, KEYS);
     await legacyValidate(input, {
       name: 'required',
       father_name: 'required',
@@ -276,7 +275,7 @@ export const submitStudentDetails = (req, input) =>
     const appNo = input.application_number ?? null;
 
     if (await students().where({ application_number: appNo, permanent_institute_id: permanentId }).first()) {
-      // Note: the update is keyed by application_number only (as in the original).
+
       const affected = await students().where('application_number', appNo).update(fields);
       return affected === 0 ? ok({ message: 'Error', reason: 'Data not Updated.' }) : ok({ message: 'Success' });
     }
@@ -291,14 +290,14 @@ export const submitStudentDetails = (req, input) =>
 /** POST /api/getStudents */
 export const getStudents = (req) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, KEYS);
+    const { payload } = await tokenAuthenticate(req, KEYS);
     return ok({ message: 'Success', students: await students().where('permanent_institute_id', claim(payload, 'permanent_institute_id')) });
   });
 
 /** GET /api/getInstituteDetails */
 export const getInstituteDetails = (req) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, KEYS);
+    const { payload } = await tokenAuthenticate(req, KEYS);
     const details = await db(table('institute_details')).where('application_number', claim(payload, 'application_number'));
     const permanentId = claim(payload, 'permanent_institute_id');
     const type = await db(table('institute')).where('Permanent Institute Id', permanentId).first('Institution Type');
@@ -318,6 +317,6 @@ export const getInstituteDetails = (req) =>
 /** Compatibility action: opening the form must not delete the saved profile. */
 export const editInstituteDetails = (req) =>
   legacyRun(async () => {
-    await legacyAuthenticate(req, KEYS);
+    await tokenAuthenticate(req, KEYS);
     return ok({ message: 'Success', reason: 'You can now Edit your details' });
   });
