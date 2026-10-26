@@ -1,11 +1,3 @@
-// Read-only schema (and optional data) fingerprint of a MySQL/MariaDB schema.
-//
-//   node scripts/schema-baseline.js <schema> [--data] [--out <dir>]
-//
-// Only SELECTs against information_schema, SHOW CREATE TABLE, COUNT(*) and
-// CHECKSUM TABLE are executed. Nothing is written to the database.
-// Output: <out>/schema-baseline-<schema>-<timestamp>.json with SHA-256 hashes,
-// used to prove the structure is unchanged before vs after the migration.
 import 'dotenv/config';
 import { createHash } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -16,7 +8,7 @@ const args = process.argv.slice(2);
 const schemaName = args.find((a) => !a.startsWith('--'));
 const withData = args.includes('--data');
 const outIdx = args.indexOf('--out');
-const outDir = outIdx >= 0 ? args[outIdx + 1] : path.resolve('../migration-docs/evidence');
+const outDir = outIdx >= 0 ? args[outIdx + 1] : path.resolve(import.meta.dirname, '../../docs/evidence');
 
 if (!schemaName) {
   console.error('usage: node scripts/schema-baseline.js <schema> [--data] [--out <dir>]');

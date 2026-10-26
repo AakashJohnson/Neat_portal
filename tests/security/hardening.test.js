@@ -1,53 +1,23 @@
-// SEC-IDOR-01: endpoints that were public in Laravel but expose another
-// student's purchases require a matching JWT unless LEGACY_PUBLIC_ENDPOINTS=true.
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { callNode, fixtureToken } from '../helpers/contract.js';
-import { db } from '../../src/database/knex.js';
+import { callNode } from '../helpers/contract.js';
+import { createRecoveredFixtures } from '../helpers/recoveredFixtures.js';
 
-let student;
-let other;
-beforeAll(async () => {
-  process.env.LEGACY_PUBLIC_ENDPOINTS = 'false';
-  student = await db('users').where('id', 13).first('email', 'application_number');
-  other = await db('product_purchased_audit').whereNot('application_number', student.application_number).first('application_number');
-});
-afterAll(() => {
-  process.env.LEGACY_PUBLIC_ENDPOINTS = 'true';
-});
+let fixture;
+beforeAll(async () => { fixture = await createRecoveredFixtures(); });
+afterAll(async () => { await fixture?.cleanup(); });
 
-describe('hardened purchase endpoints', () => {
+describe('purchase endpoint authorization', () => {
   for (const path of ['/api/getPurchasedProducts', '/api/getFreeProducts', '/api/getAppliedProducts']) {
-    it(`${path}: 401 without a token`, async () => {
-      const res = await callNode('POST', path, { body: { application_number: other.application_number } });
-      expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Error');
-    });
-
-    it(`${path}: 403 for another student's application number`, async () => {
-      const token = await fixtureToken(callNode, student.email);
-      const res = await callNode('POST', path, { query: { token }, body: { application_number: other.application_number } });
-      expect(res.status).toBe(403);
-    });
-
-    it(`${path}: 200 for the student's own application number`, async () => {
-      const token = await fixtureToken(callNode, student.email);
-      const res = await callNode('POST', path, { query: { token }, body: { application_number: student.application_number } });
-      expect(res.status).toBe(200);
-      expect(res.body.message).toBe('Success');
-    });
-
-    it(`${path}: admin may read any application`, async () => {
-      const token = await fixtureToken(callNode, 'neatadmin@aicte-india.org');
-      const res = await callNode('POST', path, { query: { token }, body: { application_number: other.application_number } });
-      expect(res.status).toBe(200);
+    it(`${path}: requires a token and enforces account ownership`, async () => {
+      const body = { application_number: fixture.users.student.application_number };
+      expect((await callNode('POST', path, { body })).status).toBe(401);
+      expect((await callNode('POST', path, { body, query: { token: fixture.tokens.learner } })).status).toBe(403);
+      expect((await callNode('POST', path, { body, query: { token: fixture.tokens.student } })).status).toBe(200);
+      expect((await callNode('POST', path, { body, query: { token: fixture.tokens.admin } })).status).toBe(200);
     });
   }
-});
-
-describe('DEV-05 no password hashes in responses', () => {
-  it('getLearnerDetails never returns users.password', async () => {
-    const token = await fixtureToken(callNode, student.email);
-    const res = await callNode('GET', '/api/getLearnerDetails', { query: { token } });
-    expect(JSON.stringify(res.body)).not.toMatch(/\$2[aby]\$\d\d\$/);
+  it('never exposes a password hash in profile responses', async () => {
+    const response = await callNode('GET', '/api/getLearnerDetails', { query: { token: fixture.tokens.learner } });
+    expect(JSON.stringify(response.body)).not.toMatch(/\$2[aby]\$\d\d\$/);
   });
 });

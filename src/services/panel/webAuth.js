@@ -1,20 +1,9 @@
-// Web (Blade) authentication of the admin panel, for the Next.js panel:
-// Web\Auth\LoginController, RegisterController, ResetPasswordController and
-// VerificationController. They differ from the API (Api\Auth\AuthController):
-//   - login: "These credentials do not match our records." / "Your account is
-//     banned by administrator.", Unconfirmed users may log in (the `verified`
-//     middleware then shows the verification notice), no unique_uuid refresh,
-//     ThrottlesLogins keyed by lower(username)|ip with the throttle_* settings;
-//   - register: RegisterRequest as modified for NEAT (phone required, which the
-//     Blade form never sends — R-41), role "User";
-//   - password reset: the stock broker (hashed token, expiry login_reset_token_lifetime);
-//   - e-mail verification: signed links (expires + signature), 60 minutes.
 import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import { db, table } from '../../database/knex.js';
 import { env } from '../../config/env.js';
 import { setting, settingEnabled } from '../../config/settings.js';
-import { validateOrFail } from '../../validators/laravelValidator.js';
+import { validateOrFail } from '../../validators/validator.js';
 import { httpException } from '../../http/respond.js';
 import { checkPassword, getCredentials, hashPassword, UserStatus } from '../auth/authService.js';
 import { issueToken } from '../auth/jwtService.js';

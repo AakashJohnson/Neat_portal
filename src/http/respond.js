@@ -1,5 +1,3 @@
-// Response helpers equivalent to Laravel's Api\ApiController.
-
 /** respondWithArray(): JSON body with the given status. */
 export const respondWithArray = (res, body, status = 200) => res.status(status).json(body);
 
@@ -14,10 +12,7 @@ export const errorNotFound = errorWith(404, 'Resource Not Found');
 export const errorUnauthorized = errorWith(401, 'Unauthorized');
 export const errorWrongArgs = errorWith(400, 'Wrong Arguments');
 
-/**
- * Error carrying an HTTP status and the exact JSON body Laravel would emit.
- * Thrown from services/middleware and rendered by the central error handler.
- */
+
 export class HttpError extends Error {
   constructor(status, body, message) {
     super(message ?? (typeof body?.message === 'string' ? body.message : `HTTP ${status}`));
@@ -26,5 +21,5 @@ export class HttpError extends Error {
   }
 }
 
-/** Laravel's rendering of HttpException with APP_DEBUG=false: {"message": "..."} */
+
 export const httpException = (status, message = '') => new HttpError(status, { message });

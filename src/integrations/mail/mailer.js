@@ -1,6 +1,3 @@
-// Mail delivery. MAIL_TRANSPORT=smtp uses the same SMTP settings as Laravel;
-// MAIL_TRANSPORT=json (default, and forced in tests) never delivers anything —
-// messages are kept in memory so tests can assert on them.
 import nodemailer from 'nodemailer';
 import { env } from '../../config/env.js';
 import { logger } from '../../config/logger.js';
@@ -41,9 +38,7 @@ function getTransport() {
 }
 
 /**
- * Laravel Mail::to()->cc()->bcc()->send(new Mailable). Sent synchronously,
- * like the original (QUEUE_DRIVER=sync); a transport failure throws so the
- * caller reports it exactly where Laravel's exception would surface.
+ * Send or capture mail. Transport failures propagate to the caller.
  * @param {{ to: string|string[], cc?: string|string[], bcc?: string|string[], subject: string, html: string, text?: string, mailable: string }} message
  */
 export async function sendMail({ mailable, ...message }) {

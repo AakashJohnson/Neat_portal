@@ -1,24 +1,10 @@
-// Port of Api\FileController (uploadFile, deleteFile, updateMou).
-//
-// DEV-10 (always on — legitimate uploads are unaffected):
-//   * uploadFile: the stored extension came from the client "type" field, so a
-//     .php file could be placed in Laravel's public/ (remote code execution).
-//     The port accepts only the types the Angular client itself allows
-//     (course_logo/b2b_discount_table: png|jpg|jpeg ≤2 MB, product_video: mp4
-//     ≤100 MB, mouFile: pdf ≤10 MB) and checks the file's magic bytes.
-//   * deleteFile: unlink(public/files/mou_file/<fileName>) allowed "../"
-//     traversal (arbitrary file deletion). Only the base name is used now.
-//   * updateMou: the stored extension came from the client file name; it is
-//     now limited to pdf|doc|docx (the types the validator already required).
-// Authentication (SEC-UPLOAD-01) is required unless LEGACY_PUBLIC_ENDPOINTS=true,
-// because the unchanged Angular client posts these without a token.
 import { unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { fileTypeFromFile } from 'file-type';
 import { db, table } from '../database/knex.js';
 import { assertAuthenticated } from './auth/hardening.js';
-import { legacyErrorResponse } from './legacyErrors.js';
-import { LegacyResponse } from './auth/legacyAuth.js';
+import { legacyErrorResponse } from './serviceErrors.js';
+import { LegacyResponse } from './auth/tokenAuth.js';
 import { moveUpload, removeFile } from '../integrations/storage.js';
 import { saveDocument } from '../integrations/eoiApi.js';
 import { logger } from '../config/logger.js';
@@ -64,7 +50,7 @@ export async function uploadFile(req) {
     }
     await assertUploadAllowed(req, inputField, code);
 
-    // `$File->move(...)` on a missing upload is an uncaught Error in the original.
+
     if (!file) return { status: 500, body: { message: 'Server Error' } };
 
     const sniffed = (await fileTypeFromFile(file.path))?.ext;
@@ -129,7 +115,7 @@ export async function deleteFile(req, { neat_id, fileName, type }) {
   try {
     await removeFile('files/mou_file', path.basename(String(fileName ?? '')));
   } catch (err) {
-    // unlink() warning → uncaught ErrorException in the original (500, DEV-04).
+
     logger.warn({ err: err.message }, 'deleteFile: unlink failed');
     return { status: 500, body: { message: 'Server Error' } };
   }
@@ -137,7 +123,7 @@ export async function deleteFile(req, { neat_id, fileName, type }) {
 }
 
 const MOU_TYPES = ['pdf', 'doc', 'docx'];
-// file-type reports legacy .doc (OLE2) as "cfb".
+
 const sniffToMou = (ext) => (ext === 'cfb' ? 'doc' : ext);
 
 /** POST /api/updateMou (multipart: neat_id, mou_document) */
@@ -176,7 +162,7 @@ export async function updateMou(req) {
     }
 
     const clientExt = path.extname(file.originalname).slice(1);
-    const extension = MOU_TYPES.includes(clientExt.toLowerCase()) ? clientExt : file.sniffed; // DEV-10
+    const extension = MOU_TYPES.includes(clientExt.toLowerCase()) ? clientExt : file.sniffed;
     const fileName = `File_${neatId}_mou_document_${unixNow()}.${extension}`;
     await moveUpload(file.path, 'files/mou_file', fileName);
     await db(table('company_details')).where('neat_id', neatId).update({ mou_file_uploaded: 'Yes', mou_file_name: file.originalname, mou_file: fileName });

@@ -3,15 +3,15 @@
 import { randomInt, randomUUID } from 'node:crypto';
 import { db, table } from '../database/knex.js';
 import * as products from '../repositories/productRepository.js';
-import { legacyAuthenticate } from './auth/legacyAuth.js';
+import { tokenAuthenticate } from './auth/tokenAuth.js';
 import { extractToken, verifyToken } from './auth/jwtService.js';
 import { findById } from '../repositories/userRepository.js';
-import { legacyRun } from './legacyErrors.js';
+import { legacyRun } from './serviceErrors.js';
 import { sendMail } from '../integrations/mail/mailer.js';
 import { b2bCompany } from '../integrations/mail/templates/b2bCompany.js';
 import { logger } from '../config/logger.js';
 import { env } from '../config/env.js';
-import { validateOrFail } from '../validators/laravelValidator.js';
+import { validateOrFail } from '../validators/validator.js';
 import { httpException } from '../http/respond.js';
 import { nowSql } from '../utils/time.js';
 import { looseEq, offset, phpConcat, phpMultiply, prop, toPhpNumber } from '../utils/php.js';
@@ -27,7 +27,7 @@ const catalog = (fn) =>
 export const getProductsLandingPage = () =>
   catalog(async () => ok({ message: 'Success', products: await products.inRandomOrder(products.approvedProductsQuery()) }));
 
-/** GET /api/getB2BProductsLandingPage (type filter commented out in the original; orderBy id after RAND()) */
+
 export const getB2BProductsLandingPage = () =>
   catalog(async () =>
     ok({ message: 'Success', products: await products.inRandomOrder(products.approvedProductsQuery()).orderBy('id', 'desc') }),
@@ -119,8 +119,8 @@ export const getProductDetails = (req, { code }) =>
         }
       }
       if (user && (looseEq(payload.role_id, '3') || looseEq(payload.role_id, '6'))) {
-        // The student-enquiry mail to the company is commented out in the
-        // original; only the property reads (which fail on unknown codes) remain.
+
+
         prop(await products.findProductByCode(code), 'name');
         prop(await products.findDetailsByCode(code), 'course_name');
       }
@@ -147,7 +147,7 @@ export const getProductDetails = (req, { code }) =>
 /** POST /api/addComment */
 export const addComment = (req, input) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, ['user_id', 'uuid', 'email'], { payloadFirst: true });
+    const { payload } = await tokenAuthenticate(req, ['user_id', 'uuid', 'email'], { payloadFirst: true });
     const [id] = await db(table('comments')).insert({
       comment_id: randomUUID(),
       student_id: payload.application_number,
@@ -163,7 +163,7 @@ export const addComment = (req, input) =>
 /** POST /api/getComments {code, count} → bare JSON array (limit count*3) */
 export const getComments = (req, input) =>
   legacyRun(async () => {
-    await legacyAuthenticate(req, ['user_id', 'uuid', 'email'], { payloadFirst: true });
+    await tokenAuthenticate(req, ['user_id', 'uuid', 'email'], { payloadFirst: true });
     const limit = phpMultiply(input.count, 3);
     const comments = await db(table('comments')).where('course_id', input.code).limit(Math.trunc(limit));
     for (const c of comments) {
@@ -175,7 +175,7 @@ export const getComments = (req, input) =>
 /** POST /api/addReplyToComment */
 export const addReplyToComment = (req, input) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, ['user_id', 'uuid', 'email'], { payloadFirst: true });
+    const { payload } = await tokenAuthenticate(req, ['user_id', 'uuid', 'email'], { payloadFirst: true });
     const [id] = await db(table('replies')).insert({
       comment_id: input.comment_id,
       reply: input.reply,
@@ -191,15 +191,15 @@ export const addReplyToComment = (req, input) =>
 /** POST /api/editProductDetails — re-opens a product for editing */
 export const editProductDetails = (req, { code }) =>
   legacyRun(async () => {
-    await legacyAuthenticate(req, ['user_id', 'uuid', 'email'], { payloadFirst: true });
+    await tokenAuthenticate(req, ['user_id', 'uuid', 'email'], { payloadFirst: true });
     await db(table('product_details')).where('code', code).update({ isDetailsSubmitted: 'No' });
     return ok({ message: 'Success' });
   });
 
-/** POST /api/getAppliedStudents — note: the original answers message "Error" on success. */
+
 export const getAppliedStudents = (req, { code }) =>
   legacyRun(async () => {
-    await legacyAuthenticate(req, ['user_id', 'uuid', 'email'], { payloadFirst: true });
+    await tokenAuthenticate(req, ['user_id', 'uuid', 'email'], { payloadFirst: true });
     const numbers = await db(table('product_purchased_audit'))
       .where({ code, course_type: 'Free', status: 'Applied' })
       .pluck('application_number');
@@ -257,15 +257,10 @@ export const submitB2BEnquiry = async (input) => {
 
 // ---------------------------------------------------- paid/free application
 
-/**
- * POST /api/applyForPaidCourse {code, quantity}
- * Records the purchase intent in product_purchased_audit and returns the URL
- * the browser is sent to (company payment link or direct product URL).
- * The URL is concatenated without encoding, exactly like the original.
- */
+
 export const applyForPaidCourse = (req, input) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, ['user_id', 'uuid', 'email'], { payloadFirst: true });
+    const { payload } = await tokenAuthenticate(req, ['user_id', 'uuid', 'email'], { payloadFirst: true });
     const appNo = payload.application_number;
     const { code, quantity } = input;
 
@@ -273,8 +268,7 @@ export const applyForPaidCourse = (req, input) =>
     const price = (await db(table('product_details')).where('code', code).first('price'))?.price ?? null;
     const fee = phpMultiply(price, quantity);
 
-    // DEV-11: the original used MySQL UUID() (time-based v1, partly predictable)
-    // as the purchase session secret. A random v4 UUID has the same format.
+
     const uuid = randomUUID();
     const audit = () => db(table('product_purchased_audit'));
     const count = Number((await audit().where({ application_number: appNo, code }).count({ n: '*' }))[0].n);

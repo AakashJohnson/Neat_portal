@@ -2,7 +2,7 @@ import { randomBytes } from 'node:crypto';
 
 const ALPHANUM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-/** Equivalent of Laravel Str::random($length): cryptographically random [A-Za-z0-9]. */
+
 export function strRandom(length = 16) {
   let out = '';
   while (out.length < length) {
@@ -15,10 +15,7 @@ export function strRandom(length = 16) {
   return out;
 }
 
-/**
- * Approximation of Laravel 6's `email` validation rule (egulias RFCValidation).
- * Used where Laravel decided between email and username login.
- */
+
 export function isEmail(value) {
   return typeof value === 'string' && /^[^\s@"(),:;<>[\\\]]+@[^\s@"(),:;<>[\\\]]+$/.test(value) && !value.includes('..');
 }

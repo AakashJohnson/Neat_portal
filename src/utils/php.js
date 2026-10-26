@@ -1,8 +1,3 @@
-// PHP 7.4 semantics that leak into API behaviour. Laravel turns notices and
-// warnings into ErrorException, so the messages below are what clients saw
-// in "reason" fields when these situations occurred.
-
-/** PHP error that a Laravel catch(Exception) block would have reported. */
 export class PhpError extends Error {}
 
 /** PHP ucfirst() (C locale): only an ASCII a-z first byte is upper-cased. */
@@ -16,12 +11,7 @@ export function prop(obj, name) {
   return obj[name];
 }
 
-/**
- * `$value['key']` with PHP 7.4 diagnostics (all became ErrorException in Laravel):
- *   array/object without the key → "Undefined index: key"
- *   string                       → "Illegal string offset 'key'"
- *   null / int / bool / float    → "Trying to access array offset on value of type null|int|bool|float"
- */
+
 export function idx(value, key) {
   if (value === null || value === undefined) throw new PhpError('Trying to access array offset on value of type null');
   if (typeof value === 'string') throw new PhpError(`Illegal string offset '${key}'`);

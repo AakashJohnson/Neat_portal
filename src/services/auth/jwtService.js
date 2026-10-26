@@ -8,7 +8,7 @@ import { env } from '../../config/env.js';
 import * as apiTokens from '../../repositories/apiTokenRepository.js';
 import { unixNow } from '../../utils/time.js';
 
-// sha1(get_class($user)) with the Laravel model class "Neat\User".
+
 export const SUBJECT_PRV = createHash('sha1').update('Neat\\User').digest('hex');
 
 export class JwtError extends Error {
@@ -64,10 +64,7 @@ export async function issueToken(user, { issuer, ip, userAgent, extraClaims = {}
   return jwt.sign(payload, env.JWT_SECRET, { algorithm: 'HS256', header: { typ: 'JWT', alg: 'HS256' } });
 }
 
-/**
- * Parser chain used by tymon's Laravel provider: Authorization header,
- * ?token= query string, "token" input field, then the "token" cookie.
- */
+
 export function extractToken(req) {
   const header = req.get('authorization') ?? '';
   const bearer = header.match(/^\s*Bearer\s+(\S+)/i);

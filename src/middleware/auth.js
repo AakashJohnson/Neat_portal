@@ -1,5 +1,3 @@
-// Authentication middleware equivalents of the Laravel `auth` / `guest`
-// middleware under the api (JWT) guard.
 import { extractToken, verifyToken, JwtError } from '../services/auth/jwtService.js';
 import { findById } from '../repositories/userRepository.js';
 
@@ -24,11 +22,7 @@ export async function resolveAuth(req) {
   return req.auth;
 }
 
-/**
- * Laravel `auth` middleware (app/Http/Middleware/Authenticate.php): API requests
- * always "want JSON" (UseApiGuard), so guests get the plain-text body
- * "Unauthorized." with status 401 and a text/html content type.
- */
+
 export const requireAuth = async (req, res, next) => {
   try {
     if (await resolveAuth(req)) return next();
@@ -38,7 +32,7 @@ export const requireAuth = async (req, res, next) => {
   }
 };
 
-/** Laravel `guest` middleware (RedirectIfAuthenticated): authenticated users are redirected to "/". */
+
 export const requireGuest = async (req, res, next) => {
   try {
     if (await resolveAuth(req)) return res.redirect(302, `${req.protocol}://${req.get('host')}/`);

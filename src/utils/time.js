@@ -1,6 +1,3 @@
-// Laravel's app timezone is GMT (config/app.php) and Carbon writes timestamps
-// as "Y-m-d H:i:s". These helpers produce exactly that format in UTC.
-
 const pad = (n) => String(n).padStart(2, '0');
 
 /** @param {Date} [date] @returns {string} "YYYY-MM-DD HH:mm:ss" (UTC) */

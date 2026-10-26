@@ -1,15 +1,6 @@
-// Port of Api\PaymentController (paymentSuccess, paymentFailure).
-//
-// SEC-PAY-01 (OPEN, owner decision required): the payment result reaches the
-// API through the student's own browser (payment-verification page relays
-// ?Success=1&sessionid=… from the company gateway). There is no server-to-server
-// confirmation or signature, so whoever knows a purchase's sessionid can mark
-// it paid. Fixing this needs a verification contract with each company gateway;
-// it is NOT silently changed here. DEV-11 makes sessionids unguessable (random
-// v4 instead of MySQL time-based UUID()), see courseService.applyForPaidCourse.
 import { db, table } from '../database/knex.js';
-import { legacyAuthenticate } from './auth/legacyAuth.js';
-import { legacyRun } from './legacyErrors.js';
+import { tokenAuthenticate } from './auth/tokenAuth.js';
+import { legacyRun } from './serviceErrors.js';
 import { sendMail } from '../integrations/mail/mailer.js';
 import { institutePayment, learnerPayment } from '../integrations/mail/templates/paymentMails.js';
 import { looseEq, toPhpNumber } from '../utils/php.js';
@@ -19,10 +10,7 @@ const SUPPORT_BCC = 'neatsupport@aicte-india.org';
 
 const value = async (tbl, where, column) => (await db(table(tbl)).where(where).first(column))?.[column] ?? null;
 
-/**
- * POST /api/paymentSuccess {studentid, courseid, token=sessionid}
- * Public (no JWT check) like the original.
- */
+
 export const paymentSuccess = (input) =>
   legacyRun(async () => {
     const { studentid = null, courseid = null, token: sessionid = null } = input;
@@ -80,10 +68,10 @@ export const paymentSuccess = (input) =>
     return ok({ message: 'Success', reason: update });
   });
 
-/** POST /api/paymentFailure — guarded; answers an empty 200 on success (no return in the original). */
+
 export const paymentFailure = (req, input) =>
   legacyRun(async () => {
-    await legacyAuthenticate(req, ['user_id', 'uuid', 'email']);
+    await tokenAuthenticate(req, ['user_id', 'uuid', 'email']);
     await db(table('product_purchased_audit'))
       .where('application_number', input.studentid ?? null)
       .where('code', input.courseid ?? null)

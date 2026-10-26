@@ -1,7 +1,3 @@
-// Ports of app/Mail/UserRegistered.php and app/Mail/ResetPassword.php
-// (resources/views/mail/{user-registered,reset-password}.blade.php).
-// Links point at the public portal (FRONTEND_URL, default https://neat.aicte-india.org,
-// which the original hard-coded).
 import { button, renderRawHtml } from '../markdownMail.js';
 import { setting } from '../../../config/settings.js';
 

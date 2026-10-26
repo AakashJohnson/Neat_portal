@@ -20,8 +20,3 @@ export const fileRouter = Router();
 fileRouter.post('/uploadFile', upload.single('myfile'), normalizeBody, asyncHandler(async (req, res) => send(res, await files.uploadFile(req))));
 fileRouter.post('/deleteFile', upload.none(), normalizeBody, asyncHandler(async (req, res) => send(res, await files.deleteFile(req, input(req, 'neat_id', 'fileName', 'type')))));
 fileRouter.post('/updateMou', upload.single('mou_document'), normalizeBody, asyncHandler(async (req, res) => send(res, await files.updateMou(req))));
-
-// UNRESOLVED (R-03): getFile, getFileExtension, getFileFlags exist in
-// FileController but are NOT routed in Laravel (the Angular calls get 404),
-// and exportAsExcel exists nowhere. They answer 404 here as well until the
-// owner confirms the intended behaviour (see API_MAPPING.md).

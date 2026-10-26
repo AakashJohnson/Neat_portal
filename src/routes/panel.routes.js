@@ -1,4 +1,3 @@
-// Admin-panel endpoints that replace Laravel web (Blade) actions — ADR-07.
 import { Router } from 'express';
 import { asyncHandler, send } from '../http/asyncHandler.js';
 import { requireAuth } from '../middleware/auth.js';
@@ -52,7 +51,7 @@ panelRouter.post('/panel/settings/:group', requireAuth, h((req) => panel.updateS
 panelRouter.post('/panel/impersonate/leave', requireAuth, h((req) => panel.leaveImpersonation(ctx(req), tokenCtx(req))));
 panelRouter.post('/panel/impersonate/:user', requireAuth, h((req) => panel.impersonate(ctx(req), req.params.user, tokenCtx(req))));
 
-// Web\CompanyCreateProfile — public in Laravel; admin-only here (DEV-15/16).
+
 panelRouter.post('/panel/company-profile/fetch-neat-id', ...admin, h((req) => panel.fetchNeatId(requestAll(req))));
 panelRouter.post('/panel/company-profile/products', ...admin, h((req) => panel.getEoiProducts(requestAll(req))));
 panelRouter.post('/panel/company-profile/product-details', ...admin, h((req) => panel.getEoiProductDetails(requestAll(req))));

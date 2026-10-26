@@ -2,14 +2,14 @@
 // submitProductDetails). The remaining 30+ CompanyController methods are not
 // routed in routes/api.php and are listed as "not exposed" in API_MAPPING.md.
 import { db, table } from '../database/knex.js';
-import { legacyAuthenticate, LegacyResponse } from './auth/legacyAuth.js';
+import { tokenAuthenticate, LegacyResponse } from './auth/tokenAuth.js';
 import { assertOwnApplication } from './auth/hardening.js';
-import { legacyRun } from './legacyErrors.js';
+import { legacyRun } from './serviceErrors.js';
 import { nowSql } from '../utils/time.js';
 import { looseEq } from '../utils/php.js';
 import { phpEmpty } from '../utils/str.js';
 import { requireAccount } from './auth/permissions.js';
-import { validateOrFail } from '../validators/laravelValidator.js';
+import { validateOrFail } from '../validators/validator.js';
 import { httpException } from '../http/respond.js';
 
 const ok = (body) => ({ status: 200, body });
@@ -71,7 +71,7 @@ export async function getStudentTransactionIds(req) {
   return ok({ message: 'Success', students });
 }
 
-/** POST /api/getProducts {application_number} — public in Laravel (SEC-IDOR-03). */
+
 export const getProducts = (req, { application_number }) =>
   legacyRun(async () => {
     await assertOwnApplication(req, application_number);
@@ -85,15 +85,10 @@ export const getProducts = (req, { application_number }) =>
     return ok({ message: 'Success', products });
   }).then((r) => (r.status === 200 && r.body?.message === 'Error' && r.body.reason !== undefined ? ok({ message: 'Error' }) : r));
 
-/**
- * POST /api/submitProductDetails — company edits a product page.
- * Quirk preserved: an unknown code answers {"message":"Exists"}.
- * DEV-09: the original let any logged-in user edit any product; the port
- * requires the product to belong to the token's company (or an admin token).
- */
+
 export const submitProductDetails = (req, input) =>
   legacyRun(async () => {
-    const { payload } = await legacyAuthenticate(req, KEYS, { payloadFirst: true });
+    const { payload } = await tokenAuthenticate(req, KEYS, { payloadFirst: true });
     const details = () => db(table('product_details'));
 
     const [{ n }] = await details().where('code', input.code ?? null).count({ n: '*' });

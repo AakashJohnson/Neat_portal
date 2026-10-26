@@ -1,4 +1,3 @@
-// Port of app/Mail/FeedbackRaised.php + resources/views/mail/feedback-raised.blade.php
 import { e, renderMessage, table } from '../markdownMail.js';
 
 /** @param {{ name, email, experience, feedback }} content */
@@ -20,6 +19,6 @@ ${e(content.feedback)}
 
 Thanks,<br>
 NEAT`;
-  // Mailable without ->subject(): Laravel derives "Feedback Raised" from the class name.
+
   return { subject: 'Feedback Raised', mailable: 'FeedbackRaised', ...renderMessage(body, { appUrl }) };
 }

@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { db, table } from '../database/knex.js';
 import { requireAccount } from './auth/permissions.js';
 import { requireOwnedProduct } from './companyService.js';
-import { validateOrFail } from '../validators/laravelValidator.js';
+import { validateOrFail } from '../validators/validator.js';
 import { httpException } from '../http/respond.js';
 import { applyForPaidCourse } from './courseService.js';
 import { nowSql } from '../utils/time.js';

@@ -5,14 +5,7 @@ import { nowSql } from '../utils/time.js';
 
 const users = () => db(table('users'));
 
-/**
- * GET /api/verifyUserLoggedIn
- * - no token        → empty 200 response (controller returns nothing)
- * - invalid token   → {"message":"Not logged In","reason":<jwt-auth message>}
- * - valid token     → {"message":"Success"}
- * The original `User::where(...)->get() != null` comparison is always true,
- * so the uuid/email/role match never rejected a token (R-04). Behaviour kept.
- */
+
 export async function verifyUserLoggedIn(token) {
   if (token == null) return { status: 200, empty: true };
   try {
@@ -46,7 +39,7 @@ export async function emailVerification({ email, token }) {
 
 /** POST /api/otpVerification */
 export async function otpVerification(input) {
-  // Missing input is null in Laravel ($request->phone), i.e. "phone IS NULL".
+
   const phone = input.phone ?? null;
   const otp = input.otp ?? null;
   const match = await users().where({ phone, sms_otp: otp, sms_otp_verified: 'No' }).first();

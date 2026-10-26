@@ -1,4 +1,3 @@
-// Laravel `throttle:60,1` behaviour of the api middleware group.
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../../src/app.js';

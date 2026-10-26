@@ -21,6 +21,3 @@ studentRouter.get('/getLearnerDetails', s.getLearnerDetails);
 studentRouter.get('/editLearnerDetails', s.editLearnerDetails);
 studentRouter.post('/getFaqs', s.getFaqs);
 studentRouter.post('/getFaqsHindi', s.getFaqsHindi);
-
-// UNRESOLVED (R-03): getStudentEligibility, submitTransactionId,
-// sendFreeAllocationMail — routed in Laravel, methods missing.

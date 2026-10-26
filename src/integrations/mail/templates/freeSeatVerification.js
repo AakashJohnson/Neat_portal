@@ -1,4 +1,3 @@
-// Port of app/Mail/FreeSeatVerification.php + resources/views/mail/free-seat-verification.blade.php
 import { e, renderRawHtml } from '../markdownMail.js';
 
 export function freeSeatVerification(content, { year = new Date().getUTCFullYear() } = {}) {

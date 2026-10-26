@@ -2,7 +2,7 @@
   "name": "neat-express-backend",
   "version": "0.1.0",
   "private": true,
-  "description": "NEAT portal API — Node.js + Express.js (plain JavaScript) port of the Laravel backend. Uses the existing MySQL schema unchanged.",
+  "description": "NEAT Portal API built with Express, JavaScript, Knex and MySQL",
   "type": "module",
   "main": "src/server.js",
   "engines": {
@@ -17,6 +17,7 @@
     "schema:baseline": "node scripts/schema-baseline.js",
     "check:no-ts": "node scripts/check-no-ts.js",
     "check:imports": "node scripts/check-imports.js",
+    "check:standalone": "node scripts/check-standalone.js",
     "mail:verify": "node scripts/check-mail.js",
     "pretest": "node scripts/check-imports.js",
     "check:no-ddl": "node scripts/check-no-ddl.js src scripts tests"

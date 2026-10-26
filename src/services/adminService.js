@@ -1,10 +1,10 @@
 // Port of Api\AdminController and the admin parts of Api\ProductController.
 import { db, table } from '../database/knex.js';
-import { legacyAuthenticate, LegacyResponse } from './auth/legacyAuth.js';
+import { tokenAuthenticate, LegacyResponse } from './auth/tokenAuth.js';
 import { assertAuthenticated } from './auth/hardening.js';
 import { extractToken, verifyToken, JwtError } from './auth/jwtService.js';
 import { findById } from '../repositories/userRepository.js';
-import { legacyRun } from './legacyErrors.js';
+import { legacyRun } from './serviceErrors.js';
 import { paginate, phpInt } from '../http/paginate.js';
 import { phpUcfirst } from '../utils/php.js';
 
@@ -12,7 +12,7 @@ const ok = (body) => ({ status: 200, body });
 const KEYS = ['user_id', 'uuid', 'email'];
 const ADMIN_ROLE = 1;
 
-// Test/staff accounts excluded from every admin statistic in the original.
+
 export const EXCLUDED_EMAILS = Object.freeze([
   'admin@example.com', 'test@inst.com', 'surya.pillai@lntinfotech.com', 'vishal@lntinfotech.com', 'piyush@lntinfotech.com',
   'chandrakant.borse@lntinfotech.com', 'manoj0mishra02@gmail.com', 'kamlesh@i2k2.com', 'chandrasekhar.buddha@gmail.com',
@@ -21,18 +21,14 @@ export const EXCLUDED_EMAILS = Object.freeze([
   'chandrakantborse87@gmail.com', 'shwetabhatnagar99@gmail.com',
 ]);
 
-/**
- * DEV-08: the original checked only that *some* user was logged in. Admin-only
- * endpoints additionally require role_id 1 (the Angular admin screens already
- * send an admin token, so the unchanged client keeps working).
- */
+
 function requireAdmin(user) {
   if (Number(user.role_id) !== ADMIN_ROLE) throw new LegacyResponse(403, { message: 'Error', reason: 'Forbidden' });
 }
 
 /** Standard guard + admin role. */
 async function adminGuard(req) {
-  const auth = await legacyAuthenticate(req, KEYS);
+  const auth = await tokenAuthenticate(req, KEYS);
   requireAdmin(auth.user);
   return auth;
 }
@@ -107,7 +103,7 @@ export async function getStudents(req, input) {
   }
 }
 
-/** GET /api/getAdminLearners?page&per_page&search (DEV-04: no PHP "line" in errors) */
+
 export async function getLearners(req, input) {
   try {
     await paginatedGuard(req);
@@ -142,7 +138,7 @@ export const getAdminProducts = (req) =>
 /** GET /api/getCompanies — also used by the public grievance page (any logged-in user). */
 export const getCompanies = (req) =>
   quiet(async () => {
-    await legacyAuthenticate(req, KEYS);
+    await tokenAuthenticate(req, KEYS);
     return ok({ message: 'Success', companies: await db(table('company')) });
   });
 
@@ -163,7 +159,7 @@ export const getInstitutes = (req) =>
 /** POST /api/getCompanyWiseProduct {company_name} — also used by the grievance page. */
 export const getCompanyWiseProduct = (req, { company_name }) =>
   quiet(async () => {
-    await legacyAuthenticate(req, KEYS);
+    await tokenAuthenticate(req, KEYS);
     const company = await db(table('company_details')).where('name', company_name).first('neat_id');
     const products = await db(table('product_details')).where({ neat_id: company?.neat_id ?? null, isDetailsSubmitted: 'Yes' });
     return ok({ message: 'Success', products });
@@ -193,11 +189,7 @@ export const mouList = (req) =>
     return ok({ message: 'Success', status: 200, mouLists: { companyLists } });
   });
 
-/**
- * GET /api/getCompanyDetails?neat_id= — public in Laravel (SEC-IDOR-02, hardened:
- * admin token required). Reads `financial_competence`, which does not exist in
- * this database (R-01), so the original always answers {"message":"Error"}.
- */
+
 export const getCompanyDetails = (req, { neat_id }) =>
   quiet(async () => {
     await assertAuthenticated(req, [ADMIN_ROLE]);
@@ -275,7 +267,7 @@ export async function updateMouDate(req, { neat_id, mou_date }) {
   }
 }
 
-/** GET /api/product-management — ProductController::productDetails (DEV-04: no PHP "line") */
+
 export async function productManagement(req) {
   try {
     const payload = await verifyToken(extractToken(req), { mode: 'parseToken' });

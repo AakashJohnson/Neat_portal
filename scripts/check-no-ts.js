@@ -1,4 +1,3 @@
-// Gate A/B: the migrated code must be plain JavaScript — no TypeScript files or config.
 import { readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 

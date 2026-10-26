@@ -1,5 +1,3 @@
-// Carbon::parse()->age parity, checked against real PHP 7.4 + Carbon output
-// captured in tests/fixtures/php-carbon-parse-oracle.jsonl (run 2026-10-23T19:05:40Z).
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { carbonParse, carbonAge } from '../../src/utils/phpDate.js';
@@ -26,8 +24,8 @@ describe('carbonParse / carbonAge vs PHP oracle', () => {
   for (const [input, parsed, age] of oracle) {
     it(JSON.stringify(input), () => {
       if (parsed === 'ERROR') {
-        // The standalone oracle printed DateTime::modify() warnings; inside Laravel
-        // (live reference, contract tests) the same failure reads DateTime::__construct().
+
+
         expect(() => carbonParse(input, ORACLE_NOW)).toThrow(`DateTime::__construct(): Failed to parse time string (${input}) ${WARNINGS[input]}`);
         return;
       }

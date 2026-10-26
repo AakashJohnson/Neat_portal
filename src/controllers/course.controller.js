@@ -12,7 +12,7 @@ export const getBucketWiseProducts = asyncHandler(async (req, res) => send(res, 
 export const getB2BBucketWiseProducts = asyncHandler(async (req, res) => send(res, await course.getBucketWiseProducts(bucketOf(req), 'B2B')));
 export const getB2CBucketWiseProducts = asyncHandler(async (req, res) => send(res, await course.getBucketWiseProducts(bucketOf(req), 'B2C')));
 
-// Only the B2C search variant filters by product type in the original.
+
 export const getBucketWiseSearchProducts = asyncHandler(async (req, res) => send(res, await course.getBucketWiseSearchProducts(bucketOf(req), null)));
 export const getB2BBucketWiseSearchProducts = asyncHandler(async (req, res) => send(res, await course.getBucketWiseSearchProducts(bucketOf(req), null)));
 export const getB2CBucketWiseSearchProducts = asyncHandler(async (req, res) => send(res, await course.getBucketWiseSearchProducts(bucketOf(req), 'B2C')));

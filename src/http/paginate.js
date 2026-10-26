@@ -1,4 +1,3 @@
-// Laravel 6 `$query->paginate($perPage)` → LengthAwarePaginator::toArray().
 import { requestUrl } from '../utils/request.js';
 
 /** PHP `(int) $value` for request input ("20abc" → 20, "abc" → 0). */
@@ -16,11 +15,7 @@ function currentPage(req) {
   return Number.isInteger(n) && n >= 1 ? n : 1;
 }
 
-/**
- * Runs COUNT(*) + LIMIT/OFFSET on a Knex query and returns Laravel's JSON shape:
- * { current_page, data, first_page_url, from, last_page, last_page_url,
- *   next_page_url, path, per_page, prev_page_url, to, total }
- */
+
 export async function paginate(req, query, perPage) {
   const page = currentPage(req);
   const [{ total }] = await query.clone().clearSelect().clearOrder().count({ total: '*' });

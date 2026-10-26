@@ -1,8 +1,6 @@
-// Ports of app/Mail/InstitutePayment.php and app/Mail/LearnerPayment.php
-// (resources/views/mail/{institute,learner}-payment.blade.php).
 import { e, renderRawHtml, table } from '../markdownMail.js';
 
-/** Indentation is part of the Blade slot, exactly as in the original view. */
+
 export function institutePayment(c, { year = new Date().getUTCFullYear() } = {}) {
   const slot = `            |                               |                                       |
             |:------------------------------|--------------------------------------:|

@@ -158,7 +158,7 @@ export async function fractalPaginate(req, query, perPage, transform, perPageRaw
     data: rows.map(transform),
     meta: {
       total: totalN,
-      // Laravel passes $request->per_page through unchanged: a string when supplied.
+
       per_page: perPageRaw,
       current_page: page,
       last_page: lastPage,
