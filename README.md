@@ -1,98 +1,69 @@
 # NEAT Portal
 
-NEAT portal migration from Angular/Laravel to Next.js/React and Express, written
-in JavaScript and using the existing MySQL schema.
+A web platform for educational products, students, learners, institutes,
+companies and administrators.
 
-## Repository layout
+| Component | Technology | Setup |
+|---|---|---|
+| API | Express, JavaScript, Knex, MySQL | [Backend](express-backend/README.md) |
+| Web | Next.js, React, JavaScript | [Frontend](nextjs-frontend/README.md) |
+| Documentation | Configuration, deployment and testing | [Docs](docs/README.md) |
+| Architecture dashboard | Source graphs, API traces and SQL snapshots | [Dashboard](docs/architecture-dashboard/README.md) |
 
-| Folder | Purpose |
-|---|---|
-| [express-backend](express-backend/README.md) | API, authentication, SQL persistence, mail and regression tests |
-| [nextjs-frontend](nextjs-frontend/README.md) | Public portal, role dashboards, BFF and browser acceptance tests |
-| [migration-docs](migration-docs/README.md) | Migration status, API mapping, deviations, test evidence and deployment guidance |
+## Run locally
 
-## Getting started
+Use Node.js 22.13+ or 24+, npm and a provisioned NEAT MySQL database.
+Configure the backend's `.env` and frontend's `.env.local` from their examples.
+Start `npm run dev` in each application directory.
 
-Requirements: Node.js 22+, npm, and an existing NEAT MySQL database. The repository
-does not provision or modify database structure. Obtain an approved database
-copy separately; use `neat_portal_test` for write-based tests.
-
-Start the backend in one terminal:
+Backend terminal:
 
 ```powershell
 Set-Location express-backend
 npm ci
 Copy-Item .env.example .env
-# Configure DB_* and JWT_SECRET locally before starting.
+# Set database credentials, JWT_SECRET and service URLs before starting.
 npm run dev
 ```
 
-Start the frontend in another:
+Frontend terminal:
 
 ```powershell
 Set-Location nextjs-frontend
 npm ci
 Copy-Item .env.example .env.local
-# Set NEAT_API_ORIGIN=http://localhost:4000 and the matching NEAT_JWT_SECRET.
+# Set NEAT_API_ORIGIN and the matching NEAT_JWT_SECRET.
 npm run dev
 ```
 
-The portal is at `http://localhost:3000`; API readiness is at
-`http://localhost:4000/health/ready`. Do not overwrite existing local environment
-files. Configure existing asset storage and runtime settings as described in the
-backend README.
+Copy the examples only on first setup; never overwrite existing configuration.
 
-## Configuration and data safety
+- Portal: `http://localhost:3000`
+- API readiness: `http://localhost:4000/health/ready`
+- Architecture dashboard: `npm run dev` from `docs/architecture-dashboard`
 
-- Local `.env` and `.env.local` files are excluded from Git. Only configuration
-  templates belong in source control.
-- Keep credentials, SMTP keys, database dumps and personal data out of commits.
-- `MAIL_TRANSPORT=json` captures mail without sending it. Configure SMTP
-  separately when real delivery is required.
-- Keep production data separate from test fixtures. Tests require
-  `DB_DATABASE=neat_portal_test`.
-- Schema changes are not part of this migration.
+Both applications are self-contained. Backend uploads and settings live in
+`express-backend/storage`; frontend assets are in `nextjs-frontend/public`.
+No other local source project is required.
 
-## Verified progress
+## Data and credentials
 
-The 2026-10-25 core acceptance pass covered:
+Keep credentials and runtime storage out of Git. Back up the database and
+backend storage together; restore them separately from source deployment.
+Use only `neat_portal_test` for write-based automated tests.
+Optional SMTP, payment and Phase-2 integrations require their own configuration.
 
-- Student, Institute and Learner registration, verification, login and profiles.
-- B2B enquiry validation and complete SQL persistence.
-- Institute nomination uploads using the downloadable Excel template.
-- Company transaction approvals and student/learner purchased-course lists.
-- Admin free-seat allocation and allocation/code-redemption persistence.
-- All 16 formerly placeholder APIs now have implementations.
+See [deployment](docs/DEPLOYMENT.md), [configuration](docs/CONFIGURATION.md)
+and [testing](docs/TESTING.md). Third-party notices and licenses are retained.
 
-Results: **65 backend tests passed**, both expanded browser-to-SQL suites passed,
-and the frontend production build passed. Both SQL schema fingerprints remained
-unchanged. **77 Laravel-reference comparisons were skipped**, not passed.
+## Verification
 
-Run commands and evidence are in [TEST_PLAN.md](migration-docs/TEST_PLAN.md).
-Intentional corrections are documented in
-[DEVIATIONS.md](migration-docs/DEVIATIONS.md).
+The 2026-10-26 verification passed 108 API tests, all three browser-to-SQL
+workflow suites, the frontend production build, and 19 architecture-dashboard
+tests plus its browser checks. The database schema was not changed.
 
-### Navigation, live search and architecture dashboard
-
-- Admin Home navigation preserves login; both admin menus scroll independently.
-- Every existing search field updates while typing, preserving filters and
-  pagination behavior, with debouncing and stale-response protection for server
-  searches.
-- The search/navigation browser suite, existing recovered-workflow suite, five
-  focused backend tests and frontend production build passed. External Phase-2
-  product lookup responses were simulated because those databases are unavailable
-  locally; other search checks used actual SQL-backed fixtures.
-- The standalone [architecture dashboard](migration-docs/architecture-dashboard/README.md)
-  provides source-derived graphs, API traces, snapshot-based SQL diagrams and
-  development watching without executing application source or connecting to a
-  database. Its 19 tests, lint and build passed.
-
-## Remaining work
-
-This is a working migration snapshot, **not a full production sign-off**.
-Company product-editor workflows, broader admin/report/panel acceptance,
-legacy reference comparisons, payment callback verification, external login
-integrations and staging deployment still require completion.
-
-Use the [migration tracker](migration-docs/MIGRATION_TRACKER.md) for current scope
-and the [deployment guide](migration-docs/DEPLOYMENT.md) before deployment.
+Use `npm run check:standalone` from `express-backend` to check the combined
+source layout for obsolete external-project paths. Detailed commands and
+coverage limitations are documented in [testing](docs/TESTING.md).
+Optional external integrations and production deployment still require
+environment-specific validation.
