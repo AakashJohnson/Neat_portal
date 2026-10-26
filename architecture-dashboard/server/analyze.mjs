@@ -13,7 +13,7 @@ const safeRoute = value => typeof value === 'string' && value.startsWith('/') &&
 const key = n => n?.name ?? text(n);
 const isFunction = n => ['FunctionDeclaration', 'FunctionExpression', 'ArrowFunctionExpression', 'ObjectMethod'].includes(n?.type);
 const namedType = name => /^use[A-Z]/.test(name) ? 'hook' : /Provider$/.test(name) ? 'state provider' : /^[A-Z]/.test(name) ? 'component' : 'function';
-const authPattern = /^(?:requireAuth|requireAccount|requirePermission|authenticate|assertOwn|ensureAdmin|verifyToken|verifyUser|verifyLogged|legacyAuth|currentAccount)/i;
+const authPattern = /^(?:requireAuth|requireAccount|requirePermission|authenticate|assertOwn|ensureAdmin|verifyToken|verifyUser|verifyLogged|tokenAuth|currentAccount)/i;
 const validationPattern = /validat|schema|safeParse|checkRules/i;
 
 export function classify(file) {

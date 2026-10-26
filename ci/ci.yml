@@ -1,7 +1,5 @@
-# GitHub Actions workflow of the monorepo (published to .github/workflows/ci.yml
-# by migration-docs/tools/publish-monorepo.sh). Static gates only: the contract
-# and parity suites need the MySQL test copy and the Laravel/Angular reference
-# apps, and run on the migration workstation (see TEST_PLAN.md).
+# Copy to .github/workflows/ci.yml when publishing the combined repository.
+# Database and browser suites run separately against an isolated test database.
 name: ci
 on:
   push:
