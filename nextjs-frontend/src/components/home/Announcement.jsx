@@ -28,7 +28,11 @@ export default function Announcement() {
   const [data, setData] = useState({ news: [], announcements: [], articles: [] });
   useEffect(() => {
     grievanceService.getAnnouncements().then((res) =>
-      setData({ news: res.data?.news ?? [], announcements: res.data?.announcements ?? [], articles: res.data?.articales ?? [] }),
+      setData({
+        news: res.data?.news ?? [],
+        announcements: res.data?.announcements ?? [],
+        articles: res.data?.articles ?? res.data?.articales ?? [],
+      }),
     );
   }, []);
 
@@ -55,16 +59,13 @@ export default function Announcement() {
                       <div>
                         <div>
                           <Marquee>
-                            {                                                                 }
-                            {data.news.map((n, i) => (
-                              <div className="news-block" key={i}>
-                                {data.articles.map((article) => (
-                                  <div className="titlelist" key={article.id}>
-                                    <Link href={`/article/${article.id}`} className="text-justify">
-                                      {article.title}
-                                    </Link>
-                                  </div>
-                                ))}
+                            {data.articles.map((article) => (
+                              <div className="news-block" key={article.id}>
+                                <div className="titlelist">
+                                  <Link href={`/article/${article.id}`} className="text-justify">
+                                    {article.title}
+                                  </Link>
+                                </div>
                               </div>
                             ))}
                           </Marquee>
