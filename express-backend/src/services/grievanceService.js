@@ -67,7 +67,7 @@ export const getAnnouncements = () =>
       db(table('announcements')).where('type', 'news'),
       db(table('articles')).select('title', 'id').where('status', 1),
     ]);
-    return { status: 200, body: { message: 'Success', announcements, news, articales } };
+    return { status: 200, body: { message: 'Success', announcements, news, articales, articles: articales } };
   });
 
 
